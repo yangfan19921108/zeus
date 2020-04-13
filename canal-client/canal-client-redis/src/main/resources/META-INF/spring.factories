@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.fanxuankai.zeus.canal.client.redis.config.CanalAutoConfiguration
