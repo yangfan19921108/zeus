@@ -3,12 +3,14 @@ package com.fanxuankai.zeus.canal.client.core.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * canal参数配置
  *
  * @author fanxuankai
  */
+@Configuration
 @ConfigurationProperties(prefix = CanalConfig.PREFIX)
 @Getter
 @Setter

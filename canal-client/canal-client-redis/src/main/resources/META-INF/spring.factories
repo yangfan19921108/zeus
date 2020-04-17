@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.canal.client.redis.config.CanalAutoConfiguration
+  com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryAutoConfiguration,\
+  com.fanxuankai.zeus.canal.client.redis.configuration.CanalWorkerAutoConfiguration

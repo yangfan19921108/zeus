@@ -35,13 +35,15 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onNext(ContextWrapper item) {
-        if (item.getMessageWrapper().getAllRawRowDataCount() > 0) {
-            log.info("{} Handle batchId: {}", config.applicationInfo.uniqueString(),
-                    item.getMessageWrapper().getBatchId());
-        }
         if (!config.skip) {
             try {
+                long l = System.currentTimeMillis();
                 config.handler.handle(item.getMessageWrapper());
+                long l1 = System.currentTimeMillis();
+                if (item.getMessageWrapper().getRowDataCountAfterFilter() > 0) {
+                    log.info("{} Handle batchId: {} time: {}ms", config.applicationInfo.uniqueString(),
+                            item.getMessageWrapper().getBatchId(), l1 - l);
+                }
             } catch (HandleException e) {
                 log.error(e.getLocalizedMessage(), e);
                 item.setHandleError(true);
@@ -66,8 +68,10 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
     @AllArgsConstructor
     @Getter
     public static class Config {
+        // 消息处理器
         private final Handler<MessageWrapper> handler;
         private final ApplicationInfo applicationInfo;
+        // 是否跳过而不处理
         private final boolean skip;
     }
 }

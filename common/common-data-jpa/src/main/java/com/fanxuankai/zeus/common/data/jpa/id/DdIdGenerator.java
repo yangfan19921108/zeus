@@ -7,6 +7,8 @@ import org.hibernate.id.IdentityGenerator;
 import java.io.Serializable;
 
 /**
+ * 当当网 ID 生成器
+ *
  * @author fanxuankai
  */
 public class DdIdGenerator extends IdentityGenerator {

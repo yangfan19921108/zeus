@@ -5,17 +5,16 @@
     <parent>
         <artifactId>canal-client</artifactId>
         <groupId>com.fanxuankai.zeus</groupId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>canal-client-rabbit</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.fanxuankai.zeus</groupId>
             <artifactId>canal-client-mq-core</artifactId>
-            <version>0.0.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

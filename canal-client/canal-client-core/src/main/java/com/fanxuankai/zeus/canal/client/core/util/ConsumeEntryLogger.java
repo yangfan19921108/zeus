@@ -84,10 +84,7 @@ public class ConsumeEntryLogger {
 
         @Override
         public String toString() {
-            return String.format("%s.%s %s.%s.%s, batchId: %s, count: %s, time: %sms %s",
-                    entryWrapper.getLogfileName(), entryWrapper.getLogfileOffset(), entryWrapper.getSchemaName(),
-                    entryWrapper.getTableName(), entryWrapper.getEventType(), batchId,
-                    entryWrapper.getRawRowDataCount(), time, name);
+            return String.format("%s batchId: %s time: %sms %s", entryWrapper.toString(), batchId, time, name);
         }
     }
 

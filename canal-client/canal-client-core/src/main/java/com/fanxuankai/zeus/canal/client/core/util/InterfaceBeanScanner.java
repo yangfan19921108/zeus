@@ -7,6 +7,7 @@ import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,29 +27,54 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Bean 扫描器
+ * 接口实现类扫描器
+ * <p>
+ * I: 接口
+ * A: 注解
+ * M: 注解的元数据
  *
  * @author fanxuankai
  */
 @Slf4j
 public class InterfaceBeanScanner<I, A extends Annotation, M> {
-    public final List<Class<? extends I>> ALL_INTERFACE_BEAN_CLASSES = Lists.newArrayList();
-    private final Map<Class<? extends I>, Class<?>> DOMAIN_TYPE_CACHE = Maps.newHashMap();
-    private final List<CanalTableMetadata> ALL_CANAL_TABLE_METADATA = Lists.newArrayList();
-    private final Map<Class<?>, CanalTableMetadata> CANAL_TABLE_METADATA_CACHE = Maps.newHashMap();
-    private final Map<String, M> METADATA_CACHE = Maps.newHashMap();
-    private final Map<String, Class<? extends I>> CLASS_BY_FULL_TABLE_NAME = Maps.newHashMap();
+    /**
+     * 所有接口实现类
+     */
+    public final Set<Class<? extends I>> ALL_INTERFACE_BEAN_CLASSES = Sets.newHashSet();
+    /**
+     * 所有 @CanalTable 元数据
+     */
+    private final Set<CanalTableMetadata> ALL_CANAL_TABLE_METADATA = Sets.newHashSet();
 
     /**
-     * @param iClass     定义的接口
-     * @param aClass     定义的注解
-     * @param iPredicate 子类断言
-     * @param pPredicate 父类断言
-     * @param mFunction  注解转换
+     * key: 接口实现类 value: 实体类
+     */
+    private final Map<Class<? extends I>, Class<?>> DOMAIN_CLASS_BY_INTERFACE_BEAN = Maps.newHashMap();
+    /**
+     * key: 实体类 value: @CanalTable 元数据
+     */
+    private final Map<Class<?>, CanalTableMetadata> CANAL_TABLE_METADATA_BY_DOMAIN = Maps.newHashMap();
+    /**
+     * key: 数据库表名(schema.table) value: 注解元数据
+     */
+    private final Map<String, M> ANNOTATION_METADATA_BY_TABLE = Maps.newHashMap();
+    /**
+     * key: 数据库表名(schema.table) value: 接口实现类
+     */
+    private final Map<String, Class<? extends I>> INTERFACE_BEAN_BY_TABLE = Maps.newHashMap();
+
+    /**
+     * @param iClass           定义的接口
+     * @param aClass           定义的注解
+     * @param iPredicate       子类断言
+     * @param pPredicate       父类断言
+     * @param domainClassIndex 第几个泛型
+     * @param mFunction        注解转换
      */
     public InterfaceBeanScanner(Class<I> iClass, Class<A> aClass,
                                 Predicate<Class<? extends I>> iPredicate,
                                 Predicate<ParameterizedType> pPredicate,
+                                int domainClassIndex,
                                 Function<A, M> mFunction) {
         Reflections r =
                 new Reflections(new ConfigurationBuilder()
@@ -57,8 +83,8 @@ public class InterfaceBeanScanner<I, A extends Annotation, M> {
                 );
         long l = System.currentTimeMillis();
         Set<Class<? extends I>> interfaceBeanClasses = r.getSubTypesOf(iClass);
-        log.info("Finished {} scanning in {}ms. Found {} {} interfaces.", iClass.getName(),
-                System.currentTimeMillis() - l, interfaceBeanClasses.size(), iClass.getName());
+        log.info("Finished {} scanning in {}ms. Found {} {} interfaces.", iClass.getSimpleName(),
+                System.currentTimeMillis() - l, interfaceBeanClasses.size(), iClass.getSimpleName());
         List<Bean> beans = Lists.newArrayList();
         for (Class<? extends I> interfaceBeanClass : interfaceBeanClasses) {
             if (!iPredicate.test(interfaceBeanClass)) {
@@ -68,10 +94,10 @@ public class InterfaceBeanScanner<I, A extends Annotation, M> {
             Class<?> domainType = null;
             for (Type genericInterface : genericInterfaces) {
                 ParameterizedType p = (ParameterizedType) genericInterface;
-                if (!pPredicate.test(p)) {
-                    continue;
+                if (pPredicate.test(p)) {
+                    domainType = (Class<?>) p.getActualTypeArguments()[domainClassIndex];
+                    break;
                 }
-                domainType = (Class<?>) p.getActualTypeArguments()[0];
             }
             if (domainType == null) {
                 continue;
@@ -87,7 +113,7 @@ public class InterfaceBeanScanner<I, A extends Annotation, M> {
     }
 
     public Class<?> getDomainType(Class<? extends I> redisRepositoryClass) {
-        return DOMAIN_TYPE_CACHE.get(redisRepositoryClass);
+        return DOMAIN_CLASS_BY_INTERFACE_BEAN.get(redisRepositoryClass);
     }
 
     public String getFilter() {
@@ -98,17 +124,21 @@ public class InterfaceBeanScanner<I, A extends Annotation, M> {
     }
 
     public Class<? extends I> getInterfaceBeanClass(EntryWrapper entryWrapper) {
-        return CLASS_BY_FULL_TABLE_NAME.get(CommonUtils.fullTableName(entryWrapper.getSchemaName(),
+        return INTERFACE_BEAN_BY_TABLE.get(CommonUtils.fullTableName(entryWrapper.getSchemaName(),
                 entryWrapper.getTableName()));
     }
 
     public M getMetadata(EntryWrapper entryWrapper) {
-        return METADATA_CACHE.get(CommonUtils.fullTableName(entryWrapper.getSchemaName(),
+        return ANNOTATION_METADATA_BY_TABLE.get(CommonUtils.fullTableName(entryWrapper.getSchemaName(),
                 entryWrapper.getTableName()));
     }
 
+    public M getMetadata(String schema, String table) {
+        return ANNOTATION_METADATA_BY_TABLE.get(CommonUtils.fullTableName(schema, table));
+    }
+
     public CanalTableMetadata getCanalTableMetadata(Class<?> domainType) {
-        return CANAL_TABLE_METADATA_CACHE.get(domainType);
+        return CANAL_TABLE_METADATA_BY_DOMAIN.get(domainType);
     }
 
     private void setup(List<Bean> beans) {
@@ -118,12 +148,12 @@ public class InterfaceBeanScanner<I, A extends Annotation, M> {
         for (Bean bean : beans) {
             Class<? extends I> redisRepositoryClass = bean.redisRepositoryClass;
             CanalTableMetadata canalTableMeta = bean.canalTableMeta;
-            DOMAIN_TYPE_CACHE.put(redisRepositoryClass, bean.domainType);
+            DOMAIN_CLASS_BY_INTERFACE_BEAN.put(redisRepositoryClass, bean.domainType);
             ALL_CANAL_TABLE_METADATA.add(canalTableMeta);
             String fullTableName = CommonUtils.fullTableName(canalTableMeta.getSchema(), canalTableMeta.getName());
-            CLASS_BY_FULL_TABLE_NAME.put(fullTableName, redisRepositoryClass);
-            METADATA_CACHE.put(fullTableName, bean.canalToRedisMetadata);
-            CANAL_TABLE_METADATA_CACHE.put(bean.domainType, canalTableMeta);
+            INTERFACE_BEAN_BY_TABLE.put(fullTableName, redisRepositoryClass);
+            ANNOTATION_METADATA_BY_TABLE.put(fullTableName, bean.canalToRedisMetadata);
+            CANAL_TABLE_METADATA_BY_DOMAIN.put(bean.domainType, canalTableMeta);
             ALL_INTERFACE_BEAN_CLASSES.add(redisRepositoryClass);
         }
     }

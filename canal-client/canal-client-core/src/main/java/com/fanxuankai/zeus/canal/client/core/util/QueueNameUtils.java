@@ -21,4 +21,8 @@ public class QueueNameUtils {
     public static String customName(String queue, CanalEntry.EventType eventType) {
         return QueuePrefixConstants.CANAL_2_MQ + CommonConstants.SEPARATOR + queue + CommonConstants.SEPARATOR + eventType;
     }
+
+    public static String customName(String queue) {
+        return QueuePrefixConstants.CANAL_2_MQ + CommonConstants.SEPARATOR + queue;
+    }
 }

@@ -63,12 +63,14 @@ public abstract class AbstractOtter implements Otter {
                     try {
                         // 获取指定数量的数据
                         CanalConnector canalConnector = CanalConnectorHolder.get();
+                        long l = System.currentTimeMillis();
                         Message message = canalConnector.getWithoutAck(canalConfig.getBatchSize());
+                        long l1 = System.currentTimeMillis();
                         message.setEntries(filter(message.getEntries()));
                         long batchId = message.getId();
                         if (batchId != -1) {
                             if (!message.getEntries().isEmpty()) {
-                                log.info("{} Get batchId: {}", subscriberName, batchId);
+                                log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId, l1 - l);
                             }
                             process(new Context(canalConnector, message));
                         }

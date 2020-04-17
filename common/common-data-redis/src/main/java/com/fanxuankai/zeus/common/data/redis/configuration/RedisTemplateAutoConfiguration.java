@@ -33,7 +33,6 @@ public class RedisTemplateAutoConfiguration {
         serializer.setObjectMapper(mapper);
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(serializer);
-        //使用StringRedisSerializer来序列化和反序列化redis的key值
         template.afterPropertiesSet();
         return template;
     }

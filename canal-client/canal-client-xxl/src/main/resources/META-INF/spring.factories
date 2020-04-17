@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.canal.client.xxl.config.CanalAutoConfiguration
+  com.fanxuankai.zeus.canal.client.xxl.configuration.XxlConsumerAutoConfiguration,\
+  com.fanxuankai.zeus.canal.client.xxl.configuration.CanalWorkerAutoConfiguration

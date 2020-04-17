@@ -6,6 +6,10 @@ import com.fanxuankai.zeus.canal.client.mq.core.consumer.MqConsumer;
 import com.fanxuankai.zeus.canal.client.mq.core.metadata.CanalToMqMetadata;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 /**
  * @author fanxuankai
  */
@@ -16,8 +20,9 @@ public class MqConsumerScanner {
     public static final InterfaceBeanScanner<MqConsumer, CanalToMq, CanalToMqMetadata> INTERFACE_BEAN_SCANNER;
 
     static {
-        INTERFACE_BEAN_SCANNER = new InterfaceBeanScanner<>(MqConsumer.class, CanalToMq.class,
-                aClass -> true, parameterizedType -> true, CanalToMqMetadata::new);
+        Predicate<ParameterizedType> pPredicate = p -> Objects.equals(p.getRawType(), MqConsumer.class);
+        INTERFACE_BEAN_SCANNER = new InterfaceBeanScanner<>(MqConsumer.class, CanalToMq.class, aClass -> true,
+                pPredicate, 0, CanalToMqMetadata::new);
     }
 
 }

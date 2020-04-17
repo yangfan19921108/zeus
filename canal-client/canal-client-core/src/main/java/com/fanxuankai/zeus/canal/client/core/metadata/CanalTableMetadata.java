@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -24,7 +25,7 @@ public class CanalTableMetadata {
         if (StringUtils.isBlank(schema)) {
             schema = optionalTableAttributes.map(TableAttributes::getSchema).orElse("");
             if (StringUtils.isBlank(schema)) {
-                schema = EnableCanalAttributes.getDefaultSchema();
+                schema = EnableCanalAttributes.getSchema();
                 if (StringUtils.isBlank(schema)) {
                     throw new RuntimeException(String.format("无法找到 %s 所对应的数据库名", domainType.getName()));
                 }
@@ -41,5 +42,23 @@ public class CanalTableMetadata {
         this.schema = schema;
         this.name = name;
         this.domainType = domainType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CanalTableMetadata that = (CanalTableMetadata) o;
+        return Objects.equals(schema, that.schema) &&
+                Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema, name);
     }
 }

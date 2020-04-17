@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.canal.client.redis.util;
 
-import com.fanxuankai.zeus.canal.client.redis.consumer.SimpleRedisRepository;
+import com.fanxuankai.zeus.canal.client.redis.repository.SimpleRedisRepository;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
@@ -8,7 +8,6 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
-import org.springframework.asm.Opcodes;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileOutputStream;
@@ -18,7 +17,7 @@ import java.io.FileOutputStream;
  *
  * @author fanxuankai
  */
-public class JavassistBeanGenerator extends ClassLoader implements Opcodes {
+public class JavassistBeanGenerator {
 
     public static Class<?> generateRedisRepository(Class<?> redisRepositoryInterface, Class<?> domainType) {
         try {
@@ -33,14 +32,12 @@ public class JavassistBeanGenerator extends ClassLoader implements Opcodes {
                     AnnotationsAttribute.visibleTag);
             classAttribute.addAnnotation(new Annotation(Repository.class.getName(), constPool));
             classFile.addAttribute(classAttribute);
-
             //添加构造函数
             CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, clazz);
             //为构造函数设置函数体
             ctConstructor.setBody(String.format("{setDomainType(%s.class);}", domainType.getName()));
             //把构造函数添加到新的类中
             clazz.addConstructor(ctConstructor);
-
             return clazz.toClass();
         } catch (Exception e) {
             throw new RuntimeException(e);

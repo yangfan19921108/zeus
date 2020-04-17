@@ -29,8 +29,8 @@ public class EnableCanalAttributes {
         attributes.put(BASE_PACKAGE, ClassUtils.getPackageName(metadata.getClassName()));
     }
 
-    public static String getDefaultSchema() {
-        return attributes.getString("defaultSchema");
+    public static String getSchema() {
+        return attributes.getString("schema");
     }
 
     public static String getBasePackage() {

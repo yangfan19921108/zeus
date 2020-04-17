@@ -23,7 +23,12 @@ public class EraseConsumer extends AbstractRedisConsumer<Set<String>> {
     }
 
     @Override
-    public void consume(Set<String> strings) {
-        redisTemplate.delete(strings);
+    public boolean filterable() {
+        return false;
+    }
+
+    @Override
+    public void consume(Set<String> keys) {
+        redisTemplate.delete(keys);
     }
 }

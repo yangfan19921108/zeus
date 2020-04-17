@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class EntryWrapper implements Serializable {
     private final CanalEntry.Entry raw;
-    private final CanalEntry.RowChange rowChange;
     /**
      * RowChange 所有数据, 可变集合, 支持数据过滤
      */
@@ -24,15 +23,11 @@ public class EntryWrapper implements Serializable {
     public EntryWrapper(CanalEntry.Entry raw) {
         this.raw = raw;
         try {
-            rowChange = CanalEntry.RowChange.parseFrom(raw.getStoreValue());
+            CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(raw.getStoreValue());
             allRowDataList = new ArrayList<>(rowChange.getRowDatasList());
         } catch (Exception e) {
             throw new RuntimeException("error parse " + raw.toString());
         }
-    }
-
-    public boolean isDdl() {
-        return rowChange.getIsDdl();
     }
 
     public String getSchemaName() {
@@ -56,7 +51,12 @@ public class EntryWrapper implements Serializable {
     }
 
     public int getRawRowDataCount() {
-        return rowChange.getRowDatasCount();
+        return allRowDataList.size();
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s.%s %s.%s.%s rowDataCount: %s", getLogfileName(), getLogfileOffset(), getSchemaName(),
+                getTableName(), getEventType(), getRawRowDataCount());
+    }
 }

@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.canal.client.rabbit.config.CanalAutoConfiguration
+  com.fanxuankai.zeus.canal.client.rabbit.configuration.RabbitListenerAutoConfiguration,\
+  com.fanxuankai.zeus.canal.client.rabbit.configuration.CanalWorkerAutoConfiguration

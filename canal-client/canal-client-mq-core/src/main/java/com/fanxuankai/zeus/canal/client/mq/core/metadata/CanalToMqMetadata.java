@@ -6,8 +6,9 @@ import com.fanxuankai.zeus.canal.client.mq.core.annotation.CanalToMq;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.*;
 
 /**
  * CanalToMq 注解元数据
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 public class CanalToMqMetadata {
     private String name = "";
-    private List<CanalEntry.EventType> eventTypes = Collections.emptyList();
+    private List<CanalEntry.EventType> eventTypes = Arrays.asList(INSERT, DELETE, UPDATE);
     private FilterMetadata filterMetadata = new FilterMetadata();
 
     public CanalToMqMetadata(CanalToMq canalToMq) {

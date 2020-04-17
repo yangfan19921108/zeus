@@ -31,7 +31,10 @@ public class ThreadPoolService {
 
         Singleton() {
             executorService = threadPoolExecutor();
-            Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdown));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                log.info("Shut down thread pool");
+                executorService.shutdown();
+            }));
         }
 
         private ThreadPoolExecutor threadPoolExecutor() {
@@ -39,5 +42,4 @@ public class ThreadPoolService {
                     new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("canal-%d").build());
         }
     }
-
 }

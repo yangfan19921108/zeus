@@ -32,10 +32,14 @@ public class ConvertProcessor extends SubmissionPublisher<ContextWrapper>
 
     @Override
     public void onNext(Context item) {
+        long l = System.currentTimeMillis();
+        ContextWrapper wrapper = new ContextWrapper(item);
+        long l1 = System.currentTimeMillis();
         if (!item.getMessage().getEntries().isEmpty()) {
-            log.info("{} Convert batchId: {}", applicationInfo.uniqueString(), item.getMessage().getId());
+            log.info("{} Convert batchId: {} time: {}ms", applicationInfo.uniqueString(), item.getMessage().getId(),
+                    l1 - l);
         }
-        submit(new ContextWrapper(item));
+        submit(wrapper);
         subscription.request(1);
     }
 

@@ -1,16 +1,19 @@
 package com.fanxuankai.zeus.canal.client.core.aviator;
 
-import com.fanxuankai.zeus.canal.client.core.util.ReflectionUtils;
 import com.google.common.base.CaseFormat;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.Expression;
 import com.googlecode.aviator.exception.ExpressionSyntaxErrorException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.reflections.ReflectionUtils;
 import org.springframework.core.convert.ConversionService;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author fanxuankai
@@ -70,7 +73,11 @@ public class Aviators {
         for (Map.Entry<String, String> entry : columnMap.entrySet()) {
             String name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, entry.getKey());
             Class<?> fieldType = allFieldsType.get(name);
-            map.put(name, CONVERSION_SERVICE.convert(entry.getValue(), fieldType));
+            Object convert = null;
+            if (!StringUtils.isBlank(entry.getValue())) {
+                convert = CONVERSION_SERVICE.convert(entry.getValue(), fieldType);
+            }
+            map.put(name, convert);
         }
         return map;
     }
@@ -81,10 +88,13 @@ public class Aviators {
      * @param clazz 类
      * @return key: 字段名 value: 字段类型
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, Class<?>> getAllFieldsType(Class<?> clazz) {
         Map<String, Class<?>> fieldsTypeMap = FIELDS_TYPE_CLASS_MAP.get(clazz);
         if (fieldsTypeMap == null) {
-            fieldsTypeMap = ReflectionUtils.getAllFieldsType(clazz);
+            fieldsTypeMap = ReflectionUtils.getAllFields(clazz)
+                    .stream()
+                    .collect(Collectors.toMap(Field::getName, Field::getType));
             FIELDS_TYPE_CLASS_MAP.put(clazz, fieldsTypeMap);
         }
         return fieldsTypeMap;

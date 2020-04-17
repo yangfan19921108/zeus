@@ -28,10 +28,13 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
 
     @Override
     public void onNext(ContextWrapper item) {
-        if (item.getMessageWrapper().getAllRawRowDataCount() > 0) {
-            log.info("{} Confirm batchId: {}", applicationInfo.uniqueString(), item.getMessageWrapper().getBatchId());
-        }
+        long l = System.currentTimeMillis();
         item.confirm();
+        long l1 = System.currentTimeMillis();
+        if (item.getMessageWrapper().getRowDataCountBeforeFilter() > 0) {
+            log.info("{} Confirm batchId: {} time: {}ms", applicationInfo.uniqueString(),
+                    item.getMessageWrapper().getBatchId(), l1 - l);
+        }
         subscription.request(1);
     }
 

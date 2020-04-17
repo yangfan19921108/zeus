@@ -1,119 +1,139 @@
-## ¼ò½é
-
+## ç®€ä»‹
+ä¸€ä¸ªè½»é‡çº§ã€å¯æ‰©å±•ã€ä¸ªæ€§åŒ–ã€éä¾µå…¥å¼çš„ Canal Client;
+<br/>
+ä¸ Spring Boot æ— ç¼å¯¹æ¥, application é…ç½®ä¿®æ”¹æ— éœ€é‡å¯æœåŠ¡;
+<br/>
+æ•°æ®æ¶ˆè´¹å®ç°äº†æ•°æ®é€‰æ‹©æ€§ã€é«˜æ€§èƒ½ã€é¡ºåºæ€§ã€é˜²é‡;
+<br/>
+ç›®å‰æ”¯æŒçš„æ•°æ®åº“æœ‰ Redis, æ¶ˆæ¯é˜Ÿåˆ—æœ‰ RabbitMQã€XXL-MQ;
+<br/>
+ç†è®ºä¸Šå¯ä»¥å®ç°åŒæ­¥åˆ°ä»»ä½•æ•°æ®åº“æˆ–æ¶ˆæ¯é˜Ÿåˆ—, å®ç°æœ€å°‘åªéœ€è¦ä¸‰æ­¥: å®šä¹‰æ³¨è§£ã€æ¶ˆè´¹å®ç°ã€å¯åŠ¨ Canal å·¥ä½œçº¿ç¨‹.
+<br/>
 ![](http://processon.com/chart_image/5e7d8f17e4b08e4e24428c33.png)
 https://www.processon.com/view/link/5e7d8f28e4b08e4e24428c6c
 
-### ¹¦ÄÜ
-- Redis »º´æË¢ĞÂ, Ö§³ÖÔöÁ¿ºÍÈ«Á¿
-- Êı¾İ¸ĞÖª MQ ÍÆËÍ, Ä¿Ç°Ö§³Ö RabbitMQ¡¢XXL-MQ
-- ¹¹½¨ Elasticsearch Ë÷Òı £¨ÔİÎ´Ö§³Ö£©
+### åœºæ™¯
+- åŒæ­¥ç¼“å­˜ redis
+- å…¨æ–‡æœç´¢ es
+- ä»»åŠ¡ä¸‹å‘, æ¯”å¦‚: è®¢å•å®Œæˆç»Ÿè®¡æŠ¥è¡¨ã€å•†å“ä»·æ ¼å˜åŒ–æ›´æ–°å•†å“è¯¦æƒ…é¡µ.
 
-### »·¾³
-- Canal ·şÎñ
+### ç¯å¢ƒ
+- Canal æœåŠ¡
 - JDK 14
+- Redis
 
-### ºËĞÄ×¢½â
+### æ ¸å¿ƒæ³¨è§£
 @EnableCanal
-- ÔÚ spring boot Æô¶¯ÀàÊ¹ÓÃ, ±íÊ¾¼¤»î Canal Ïû·Ñ
-- defaultSchema Ä¬ÈÏÊı¾İ¿âÃû
+- åœ¨ spring boot å¯åŠ¨ç±»ä½¿ç”¨, è¡¨ç¤ºæ¿€æ´» Canal æ¶ˆè´¹
+- schema é»˜è®¤æ•°æ®åº“å
 
-### ÅäÖÃÎÄ¼ş
+### é…ç½®æ–‡ä»¶
 ```
 ## application.yml
 canal:
-  application-name: admin-service
+  application-name: example-service
   redis:
-    # ¶ÔÓ¦µÄ Canal ÊµÀıÃû
+    # å¯¹åº”çš„ Canal å®ä¾‹å
     instance: redis-example
     #enabled: true
   rabbit:
     instance: rabbit-example
-    # MQ Ìø¹ı´¦Àí, ÊÊÓÃ³¡¾°: Redis È«Á¿Í¬²½Ê±, MQ Ìø¹ı
+    # MQ è·³è¿‡å¤„ç†, é€‚ç”¨åœºæ™¯: Redis å…¨é‡åŒæ­¥æ—¶, MQ è·³è¿‡
     #skip: false
     #enabled: true
   xxl:
     instance: xxl-example
     #skip: false
     #enabled: true
-  # ¼¯ÈºÅäÖÃ
+  # é›†ç¾¤é…ç½®
   #cluster:
-    # zookeeperµÄip+¶Ë¿Ú, ÒÔ¶ººÅ¸ô¿ª
+    # zookeeperçš„ip+ç«¯å£, ä»¥é€—å·éš”å¼€
     #nodes: localhost:2181,localhost:2182,localhost:2183
-  # µ¥½ÚµãÅäÖÃ
+  # å•èŠ‚ç‚¹é…ç½®
   #single-node:
     # ip
     #hostname: localhost
-    # ¶Ë¿Ú
+    # ç«¯å£
     #port: 11111
-  # ÕËºÅ
+  # è´¦å·
   #username: canal
-  # ÃÜÂë
+  # å¯†ç 
   #password: canal
-  # ¼ä¸ô
+  # é—´éš”
   #interval-millis: 1000
-  # Åú´ÎÊıÁ¿
+  # æ‰¹æ¬¡æ•°é‡
   #batch-size: 100
-  # ´òÓ¡ÈÕÖ¾
+  # æ‰“å°æ—¥å¿—
   #show-log: false
-  # ´òÓ¡Êı¾İÃ÷Ï¸ÈÕÖ¾
+  # æ‰“å°æ•°æ®æ˜ç»†æ—¥å¿—
   #show-row-change: false
-  # ¸ñÊ½»¯Êı¾İÃ÷Ï¸ÈÕÖ¾
+  # æ ¼å¼åŒ–æ•°æ®æ˜ç»†æ—¥å¿—
   #format-row-change-log: false
-  # Åú´Î´ïµ½Ò»¶¨ÊıÁ¿½øĞĞ²¢ĞĞ´¦Àí, ÇÒÈ·±£Ë³ĞòÏû·Ñ
+  # æ‰¹æ¬¡è¾¾åˆ°ä¸€å®šæ•°é‡è¿›è¡Œå¹¶è¡Œå¤„ç†, ä¸”ç¡®ä¿é¡ºåºæ¶ˆè´¹
   #performance-threshold: 10000
-  # Ôİ²»Ö§³Ö¼¯Èº, ÉèÖÃ¸Ã²ÎÊıÎª true Ê±, µ±Æô¶¯ÁË Canal ·şÎñµÄ½ÚµãÍ£Ö¹ºó¿ÉÒÔ¼°Ê±²¹Î»
+  # æš‚ä¸æ”¯æŒé›†ç¾¤, è®¾ç½®è¯¥å‚æ•°ä¸º true æ—¶, å½“å¯åŠ¨äº† Canal æœåŠ¡çš„èŠ‚ç‚¹åœæ­¢åå¯ä»¥åŠæ—¶è¡¥ä½
   #retry-start: true
-  # retryStart µÄ¼ä¸ôÃëÊı
+  # retryStart çš„é—´éš”ç§’æ•°
   #retry-start-interval-seconds = 300L
 ```
 
-### Ê¹ÓÃÖ¸ÄÏ
-- maven Ìí¼ÓÏà¹Ø canal-client ÒÀÀµ
-- SpringBoot Æô¶¯Àà±ê×¢ @EnableCanal
-- ÒÀÀµ¶à¸ö canal-client, @CanalEnable Ö»ĞèÒªÒ»´Î×¢½â
+### ä½¿ç”¨æŒ‡å—
+- maven æ·»åŠ ç›¸å…³ canal-client ä¾èµ–
+- SpringBoot å¯åŠ¨ç±»æ ‡æ³¨ @EnableCanal
+- ä¾èµ–å¤šä¸ª canal-client, @EnableCanal åªéœ€è¦ä¸€æ¬¡æ³¨è§£
+- æ•°æ®åº“å¯¹åº”çš„å®ä½“ç±»ä½¿ç”¨ @CanalTable æŒ‡å®šæ•°æ®åº“å’Œè¡¨åç­‰ä¿¡æ¯
 
-#### Redis ¿ìËÙÊ¹ÓÃ
-- pom.xml Ìí¼ÓÒÔÏÂÅäÖÃ
+#### Redis å¿«é€Ÿä½¿ç”¨
+- pom.xml æ·»åŠ ä»¥ä¸‹é…ç½®
 ```
 <!-- Redis -->
 <dependency>
     <groupId>com.fanxuankai.zeus</groupId>
     <artifactId>canal-client-redis</artifactId>
-    <version>${canal.client-version}</version>
+    <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
-- SpringBoot Æô¶¯Àà±ê×¢ @EnableCanal
-- ´´½¨ XXXRedisRepository ½Ó¿Ú, ¼Ì³Ğ RedisRepository<XXX>
+- SpringBoot å¯åŠ¨ç±»æ ‡æ³¨ @EnableCanal
+- åˆ›å»º XXXRedisRepository æ¥å£, ç»§æ‰¿ RedisRepository<XXX>
+- ä½¿ç”¨ @CanalToRedis æ³¨è§£æŒ‡å®šæ¶ˆè´¹ (å¯é€‰)
 
-#### RabbitMQ ¿ìËÙÊ¹ÓÃ
-- pom.xml Ìí¼ÓÒÔÏÂÅäÖÃ
+#### RabbitMQ å¿«é€Ÿä½¿ç”¨
+- pom.xml æ·»åŠ ä»¥ä¸‹é…ç½®
 ```
 <!-- RabbitMQ -->
 <dependency>
     <groupId>com.fanxuankai.zeus</groupId>
     <artifactId>canal-client-rabbit</artifactId>
-    <version>${canal.client-version}</version>
+    <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
-- SpringBoot Æô¶¯Àà±ê×¢ @EnableCanal
-- ´´½¨ MqConsumer<XXX> µÄÊµÏÖÀà
+- SpringBoot å¯åŠ¨ç±»æ ‡æ³¨ @EnableCanal
+- åˆ›å»º MqConsumer<XXX> çš„å®ç°ç±», å¹¶ä½œä¸º Spring Bean
+- ä½¿ç”¨ @CanalToMq æ³¨è§£æŒ‡å®šæ¶ˆè´¹ (å¯é€‰)
 
-#### XxlMQ ¿ìËÙÊ¹ÓÃ
-- pom.xml Ìí¼ÓÒÔÏÂÅäÖÃ
+#### XxlMQ å¿«é€Ÿä½¿ç”¨
+- pom.xml æ·»åŠ ä»¥ä¸‹é…ç½®
 ```
 <!-- XxlMQ -->
 <dependency>
     <groupId>com.fanxuankai.zeus</groupId>
     <artifactId>canal-client-xxl</artifactId>
-    <version>${canal.client-version}</version>
+    <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
-- SpringBoot Æô¶¯Àà±ê×¢ @EnableCanal
-- ´´½¨ MqConsumer<XXX> µÄÊµÏÖÀà
+- SpringBoot å¯åŠ¨ç±»æ ‡æ³¨ @EnableCanal
+- åˆ›å»º MqConsumer<XXX> çš„å®ç°ç±», å¹¶ä½œä¸º Spring Bean
+- ä½¿ç”¨ @CanalToMq æ³¨è§£æŒ‡å®šæ¶ˆè´¹ (å¯é€‰)
 
-### ³£¼ûÎÊÌâ
-- ÒÑÓĞÊµÀı½¨Á¢ÁË Canal Á´½Ó£¿
-    - Çå³ı Redis ±ê¼ÇÖØÆô¼´¿É, key µÄ¸ñÊ½Îª Canal.ServiceCache.·şÎñÃû.CanalRunning
+### å¸¸è§é—®é¢˜
+- Canal.ServiceCache.admin-service.Redis.CanalRunning Canal å·²å­˜åœ¨?
+    - Redis åˆ æ‰ key: Canal.ServiceCache.admin-service.Redis.CanalRunning, é‡å¯æˆ–ç­‰å¾…é‡è¯•å³å¯
 - exception=com.alibaba.otter.canal.meta.exception.CanalMetaManagerException: batchId:845 is not the firstly:844
-    - Èç¹ûÍ¬Ê±¼¤»îÁË Redis¡¢Mq, ÇÒÁ½Õß¹²ÓÃÍ¬Ò»¸ö Canal ÊµÀı, ¿ÉÄÜ»áµ¼ÖÂ batchId Ìá½»Ë³Ğò´íÎó
-    - ½¨ÒéÁ½ÕßÊ¹ÓÃ¶ÀÁ¢µÄ Canal ÊµÀı 
+    - å¦‚æœåŒæ—¶æ¿€æ´»äº† Redisã€Mq, ä¸”ä¸¤è€…å…±ç”¨åŒä¸€ä¸ª Canal å®ä¾‹, å¯èƒ½ä¼šå¯¼è‡´ batchId æäº¤é¡ºåºé”™è¯¯
+    - å»ºè®®ä¸¤è€…ä½¿ç”¨ç‹¬ç«‹çš„ Canal å®ä¾‹ 
+- åˆ è¡¨æ—¶, Redis æš‚æ”¯æŒå•è¡¨åˆ é™¤.
+ ä¸€æ¬¡åˆ é™¤ä¸€å¼ è¡¨ Redis å¯ä»¥æ­£å¸¸åŒæ­¥, ä¸€æ¬¡åˆ é™¤å¤šå¼ è¡¨ Redis åªåŒæ­¥ç¬¬ä¸€å¼ è¡¨.
+- canal ä¸æ”¯æŒæ•°æ®åº“ bit æ ¼å¼
+- åŒæ­¥åˆ° Redis æ—¶ç”¨ç»„åˆé”®, å‘ç° mysql ä¸ Redis æ•°é‡ä¸å¯¹
+    - åŸå› æ˜¯æ•°æ®åº“æ’åºè§„åˆ™ä¸åŒºåˆ†å¤§å°å†™, å¯¼è‡´ mysql çš„æ•°é‡æ¯” Redis å°‘.
+    - ä¿®æ”¹ä¸º CHARSET=utf8mb4 COLLATE=utf8mb4_bin, éªŒè¯ç»“æœå®Œå…¨ä¸€è‡´.  

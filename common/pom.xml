@@ -6,15 +6,15 @@
     <parent>
         <groupId>com.fanxuankai.zeus</groupId>
         <artifactId>zeus-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
     <artifactId>common</artifactId>
     <packaging>pom</packaging>
-
     <modules>
         <module>common-data-jpa</module>
         <module>common-data-redis</module>
         <module>common-xxl-mq</module>
+        <module>common-spring-context</module>
+        <module>common-util</module>
     </modules>
-
 </project>

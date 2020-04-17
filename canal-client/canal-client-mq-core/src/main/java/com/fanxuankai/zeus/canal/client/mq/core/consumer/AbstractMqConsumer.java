@@ -28,7 +28,11 @@ public abstract class AbstractMqConsumer implements MessageConsumer<MessageInfo>
 
     @Override
     public boolean canProcess(EntryWrapper entryWrapper) {
-        return INTERFACE_BEAN_SCANNER.getInterfaceBeanClass(entryWrapper) != null;
+        if (INTERFACE_BEAN_SCANNER.getInterfaceBeanClass(entryWrapper) == null) {
+            return false;
+        }
+        CanalToMqMetadata metadata = INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
+        return metadata == null || metadata.getEventTypes().contains(entryWrapper.getEventType());
     }
 
     @Override

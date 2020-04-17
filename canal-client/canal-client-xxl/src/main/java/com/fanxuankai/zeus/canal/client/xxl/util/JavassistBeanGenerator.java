@@ -2,19 +2,19 @@ package com.fanxuankai.zeus.canal.client.xxl.util;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
-import com.fanxuankai.zeus.canal.client.core.util.DomainConverter;
 import com.fanxuankai.zeus.canal.client.mq.core.consumer.MqConsumer;
+import com.fanxuankai.zeus.canal.client.mq.core.util.JavassistUtils;
+import com.google.common.base.CaseFormat;
 import com.xxl.mq.client.consumer.IMqConsumer;
-import com.xxl.mq.client.consumer.MqResult;
-import javassist.*;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.asm.Opcodes;
-import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 
@@ -23,19 +23,20 @@ import java.io.FileOutputStream;
  *
  * @author fanxuankai
  */
-public class JavassistBeanGenerator extends ClassLoader implements Opcodes {
+public class JavassistBeanGenerator implements MqConsumer<String> {
 
-    public static Class<?> generateXxlMqConsumer(Class<?> domainType, String topic, CanalEntry.EventType eventType) {
+    @SuppressWarnings("rawtypes")
+    public static Class<?> generateXxlMqConsumer(Class<? extends MqConsumer> mqConsumer, Class<?> domainClass,
+                                                 String topic, CanalEntry.EventType eventType) {
         try {
+            String mqConsumerFieldName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, mqConsumer.getSimpleName());
             ClassPool pool = ClassPool.getDefault();
-            CtClass clazz = pool.makeClass(domainType.getName() + "JavassistProxyXxlMqConsumer" + eventType);
+            CtClass clazz = pool.makeClass(mqConsumer.getName() + "JavassistProxyXxlMqConsumer" + eventType);
             clazz.addInterface(pool.getCtClass(IMqConsumer.class.getName()));
             ClassFile classFile = clazz.getClassFile();
             ConstPool constPool = classFile.getConstPool();
             AnnotationsAttribute classAttribute = new AnnotationsAttribute(constPool,
                     AnnotationsAttribute.visibleTag);
-            // 类注解
-            classAttribute.addAnnotation(new Annotation(Service.class.getName(), constPool));
             Annotation mqConsumerAnnotation =
                     new Annotation(com.xxl.mq.client.consumer.annotation.MqConsumer.class.getName(),
                             constPool);
@@ -43,51 +44,54 @@ public class JavassistBeanGenerator extends ClassLoader implements Opcodes {
                     new StringMemberValue(topic + CommonConstants.SEPARATOR + eventType, constPool));
             classAttribute.addAnnotation(mqConsumerAnnotation);
             classFile.addAttribute(classAttribute);
-            addConsumerConstructor(clazz);
-            clazz.addMethod(CtMethod.make(xxlConsumeMethodSrc(domainType, eventType), clazz));
+            JavassistUtils.injectionMqConsumer(clazz, mqConsumer, mqConsumerFieldName);
+            addConsumeMethod(clazz, domainClass, eventType, mqConsumerFieldName);
             return clazz.toClass();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static String xxlConsumeMethodSrc(Class<?> type, CanalEntry.EventType eventType) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("public ").append(MqResult.class.getName()).append(" consume(String s) {");
+    private static void addConsumeMethod(CtClass clazz,
+                                         Class<?> domainClass,
+                                         CanalEntry.EventType eventType,
+                                         String mqConsumerFieldName)
+            throws CannotCompileException {
         if (eventType == CanalEntry.EventType.INSERT) {
-            sb.append(type.getName()).append(" t ").append(" = ").append(DomainConverter.class.getName()).append(".of" +
-                    "($1, ").append(type.getName()).append(".class);");
-            sb.append("this.mqConsumer.insert(t);");
+            clazz.addMethod(CtMethod.make(insertSrc(domainClass, mqConsumerFieldName), clazz));
         } else if (eventType == CanalEntry.EventType.UPDATE) {
-            sb.append(Pair.class.getName()).append(" p ").append(" = ").append(DomainConverter.class.getName()).append(".pairOf" +
-                    "($1, ").append(type.getName()).append(".class);");
-            sb.append("this.mqConsumer.update(p.getLeft(), p.getRight());");
+            clazz.addMethod(CtMethod.make(updateSrc(domainClass, mqConsumerFieldName), clazz));
         } else if (eventType == CanalEntry.EventType.DELETE) {
-            sb.append(type.getName()).append(" t ").append(" = ").append(DomainConverter.class.getName()).append(".of" +
-                    "($1, ").append(type.getName()).append(".class);");
-            sb.append("this.mqConsumer.delete(t);");
+            clazz.addMethod(CtMethod.make(deleteSrc(domainClass, mqConsumerFieldName), clazz));
         }
-        sb.append("return ");
-        sb.append(MqResult.class.getName());
-        sb.append(".SUCCESS;");
-        sb.append("}");
-        return sb.toString();
     }
 
-    private static void addConsumerConstructor(CtClass clazz) throws NotFoundException, CannotCompileException {
-        CtClass mqConsumerCtClass = ClassPool.getDefault().get(MqConsumer.class.getName());
+    private static String insertSrc(Class<?> domainClass, String mqConsumerFieldName) {
+        String src = "public com.xxl.mq.client.consumer.MqResult consume(String s) {\n" +
+                "    %s t = com.fanxuankai.zeus.canal.client.core.util.DomainConverter.of($1, %s.class);\n" +
+                "    this.%s.insert(t);\n" +
+                "    return com.xxl.mq.client.consumer.MqResult.SUCCESS;\n" +
+                "}";
+        return String.format(src, domainClass.getName(), domainClass.getName(), mqConsumerFieldName);
+    }
 
-        // 增加字段
-        CtField mqConsumerField = new CtField(mqConsumerCtClass, "mqConsumer", clazz);
-        mqConsumerField.setModifiers(Modifier.PRIVATE);
-        clazz.addField(mqConsumerField);
+    private static String updateSrc(Class<?> domainClass, String mqConsumerFieldName) {
+        String src = "public com.xxl.mq.client.consumer.MqResult consume(String s) {\n" +
+                "    org.apache.commons.lang3.tuple.Pair p = com.fanxuankai.zeus.canal.client.core.util" +
+                ".DomainConverter.pairOf($1, %s.class);\n" +
+                "    this.%s.update(p.getLeft(), p.getRight());\n" +
+                "    return com.xxl.mq.client.consumer.MqResult.SUCCESS;\n" +
+                "}";
+        return String.format(src, domainClass.getName(), mqConsumerFieldName);
+    }
 
-        //添加构造函数
-        CtConstructor ctConstructor = new CtConstructor(new CtClass[]{mqConsumerCtClass}, clazz);
-        //为构造函数设置函数体
-        ctConstructor.setBody("{this.mqConsumer=$1;}");
-        //把构造函数添加到新的类中
-        clazz.addConstructor(ctConstructor);
+    private static String deleteSrc(Class<?> domainClass, String mqConsumerFieldName) {
+        String src = "public com.xxl.mq.client.consumer.MqResult consume(String s) {\n" +
+                "    %s t = com.fanxuankai.zeus.canal.client.core.util.DomainConverter.of($1, %s.class);\n" +
+                "    this.%s.delete(t);\n" +
+                "    return com.xxl.mq.client.consumer.MqResult.SUCCESS;\n" +
+                "}";
+        return String.format(src, domainClass.getName(), domainClass.getName(), mqConsumerFieldName);
     }
 
     private static void w(byte[] code, String name) throws Exception {
