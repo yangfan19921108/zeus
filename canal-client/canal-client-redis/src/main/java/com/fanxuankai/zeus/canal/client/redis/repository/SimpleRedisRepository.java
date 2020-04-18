@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 
 import static com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
 
-//import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
-
 /**
  * RedisRepository 实现类
  *
@@ -47,13 +45,6 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
         this.canalToRedisMetadata = INTERFACE_BEAN_SCANNER.getMetadata(canalTableMetadata.getSchema(),
                 canalTableMetadata.getName());
     }
-
-    // Javassist 不支持泛型
-//    @SuppressWarnings("unchecked")
-//    public SimpleRedisRepository() {
-//        tClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-//        this.metadata = CanalEntityMetadataCache.getMetadata(tClass);
-//    }
 
     @Override
     public Optional<Object> findById(Object id) {

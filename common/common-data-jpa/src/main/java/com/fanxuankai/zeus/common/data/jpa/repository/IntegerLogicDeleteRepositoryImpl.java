@@ -19,14 +19,14 @@ public class IntegerLogicDeleteRepositoryImpl<ID extends Serializable>
 
     @Override
     public void logicDelete(IntegerLogicDeleteEntity entity) {
-        entity.setDeleted(0);
+        entity.setDeleted(1);
         save(entity);
     }
 
     @Override
     public void batchLogicDelete(Iterable<IntegerLogicDeleteEntity> entities) {
-        entities.forEach(t -> t.setDeleted(0));
-        batchSave(entities);
+        entities.forEach(t -> t.setDeleted(1));
+        batchUpdate(entities);
     }
 
 }

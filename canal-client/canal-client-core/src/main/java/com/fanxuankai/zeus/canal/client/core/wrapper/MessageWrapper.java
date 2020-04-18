@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 public class MessageWrapper {
     private final Message raw;
     @Getter
+    private final int rowDataCountBeforeFilter;
+    @Getter
     @Setter
     private List<EntryWrapper> entryWrapperList;
-    @Getter
-    private final int rowDataCountBeforeFilter;
 
     public MessageWrapper(Message raw) {
         this.raw = raw;

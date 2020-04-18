@@ -26,6 +26,6 @@ public class BooleanLogicDeleteRepositoryImpl<ID extends Serializable>
     @Override
     public void batchLogicDelete(Iterable<BooleanLogicDeleteEntity> entities) {
         entities.forEach(t -> t.setDeleted(Boolean.TRUE));
-        batchSave(entities);
+        batchUpdate(entities);
     }
 }
