@@ -63,6 +63,10 @@ canal:
   #interval-millis: 1000
   # 批次数量
   #batch-size: 100
+  #拉取数据阻塞时间 ms
+  #一般情况下是不需要的, 会造成阻塞
+  #数据量大的时候, 可调此值减少 IO 次数
+  # timeout-millis:
   # 打印日志
   #show-log: false
   # 打印数据明细日志

@@ -1,6 +1,7 @@
 package com.fanxuankai.zeus.canal.client.redis.consumer;
 
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
+import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -15,7 +16,7 @@ public class EraseConsumer extends AbstractRedisConsumer<Set<String>> {
 
     @Override
     public Set<String> process(EntryWrapper entryWrapper) {
-        Set<String> keys = redisTemplate.keys(keyOf(entryWrapper) + "*");
+        Set<String> keys = redisTemplate.keys(RedisKeyGenerator.keyOf(entryWrapper) + "*");
         if (CollectionUtils.isEmpty(keys)) {
             return Collections.emptySet();
         }

@@ -5,6 +5,7 @@ import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScanner;
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
+import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.util.CollectionUtils;
@@ -24,16 +25,16 @@ public class InsertConsumer extends AbstractRedisConsumer<Map<String, Map<String
         CanalToRedisMetadata canalToRedisMetadata =
                 RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
         List<String> keys = canalToRedisMetadata.getKeys();
-        boolean idAsField = canalToRedisMetadata.isIdAsField();
+        boolean idAsHashKey = canalToRedisMetadata.isIdAsHashKey();
         List<List<String>> combineKeys = canalToRedisMetadata.getCombineKeys();
         Map<String, Map<String, Object>> map = Maps.newHashMap();
-        String key = keyOf(entryWrapper);
+        String key = RedisKeyGenerator.keyOf(entryWrapper);
         entryWrapper.getAllRowDataList().forEach(rowData -> {
             Map<String, String> hashValue = CommonUtils.toMap(rowData.getAfterColumnsList());
             rowData.getAfterColumnsList()
                     .stream()
                     .filter(column -> {
-                        if (idAsField && column.getIsKey()) {
+                        if (idAsHashKey && column.getIsKey()) {
                             return true;
                         }
                         if (CollectionUtils.isEmpty(keys)) {
@@ -45,7 +46,7 @@ public class InsertConsumer extends AbstractRedisConsumer<Map<String, Map<String
                         if (column.getIsKey()) {
                             map.computeIfAbsent(key, s -> Maps.newHashMap()).put(column.getValue(), hashValue);
                         } else if (keys.contains(column.getName())) {
-                            map.computeIfAbsent(keyOf(entryWrapper, column.getName()),
+                            map.computeIfAbsent(RedisKeyGenerator.keyOf(entryWrapper, column.getName()),
                                     s -> Maps.newHashMap()).put(column.getValue(), hashValue);
                         }
                     });
@@ -53,7 +54,7 @@ public class InsertConsumer extends AbstractRedisConsumer<Map<String, Map<String
                 for (List<String> columnList : combineKeys) {
                     String keySuffix = RedisUtils.keySuffix(columnList);
                     String hashKey = RedisUtils.combineHashKey(columnList, hashValue);
-                    map.computeIfAbsent(keyOf(entryWrapper, keySuffix), s -> Maps.newHashMap())
+                    map.computeIfAbsent(RedisKeyGenerator.keyOf(entryWrapper, keySuffix), s -> Maps.newHashMap())
                             .put(hashKey, hashValue);
                 }
             }

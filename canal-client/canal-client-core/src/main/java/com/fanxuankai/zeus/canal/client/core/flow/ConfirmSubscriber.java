@@ -1,6 +1,7 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
+import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,10 +14,12 @@ import java.util.concurrent.Flow;
  */
 @Slf4j
 public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
+    private final Otter otter;
     private final ApplicationInfo applicationInfo;
     private Flow.Subscription subscription;
 
-    public ConfirmSubscriber(ApplicationInfo applicationInfo) {
+    public ConfirmSubscriber(Otter otter, ApplicationInfo applicationInfo) {
+        this.otter = otter;
         this.applicationInfo = applicationInfo;
     }
 
@@ -31,7 +34,7 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
         long l = System.currentTimeMillis();
         item.confirm();
         long l1 = System.currentTimeMillis();
-        if (item.getMessageWrapper().getRowDataCountBeforeFilter() > 0) {
+        if (!item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
             log.info("{} Confirm batchId: {} time: {}ms", applicationInfo.uniqueString(),
                     item.getMessageWrapper().getBatchId(), l1 - l);
         }
@@ -41,6 +44,7 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
     @Override
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", applicationInfo.uniqueString(), throwable.getLocalizedMessage()), throwable);
+        this.otter.stop();
     }
 
     @Override

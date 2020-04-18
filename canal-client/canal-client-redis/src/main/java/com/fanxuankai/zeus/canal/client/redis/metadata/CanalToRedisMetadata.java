@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 public class CanalToRedisMetadata {
     private String key = "";
-    private boolean idAsField;
+    private boolean idAsHashKey;
     private List<String> keys = Collections.emptyList();
     private List<List<String>> combineKeys = Collections.emptyList();
     private FilterMetadata filterMetadata = new FilterMetadata();
@@ -27,7 +27,7 @@ public class CanalToRedisMetadata {
     public CanalToRedisMetadata(CanalToRedis canalToRedis) {
         if (canalToRedis != null) {
             this.key = canalToRedis.key();
-            this.idAsField = canalToRedis.idAsField();
+            this.idAsHashKey = canalToRedis.idAsHashKey();
             this.keys = Arrays.stream(canalToRedis.uniqueKeys())
                     .map(KeyMetadata::new)
                     .map(KeyMetadata::getValue)

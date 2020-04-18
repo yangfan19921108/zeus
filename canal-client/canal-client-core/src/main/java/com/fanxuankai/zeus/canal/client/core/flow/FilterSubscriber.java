@@ -6,6 +6,7 @@ import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableCache;
 import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
+import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
@@ -30,9 +31,11 @@ import java.util.stream.Collectors;
 public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implements Flow.Subscriber<ContextWrapper> {
 
     private final ConsumerInfo consumerInfo;
+    private Otter otter;
     private Flow.Subscription subscription;
 
-    public FilterSubscriber(ConsumerInfo consumerInfo) {
+    public FilterSubscriber(Otter otter, ConsumerInfo consumerInfo) {
+        this.otter = otter;
         this.consumerInfo = consumerInfo;
     }
 
@@ -51,7 +54,6 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             messageWrapper.setEntryWrapperList(messageWrapper.getEntryWrapperList()
                     .stream()
                     .peek(this::filterEntryRowData)
-                    .filter(entryWrapper -> !CollectionUtils.isEmpty(entryWrapper.getAllRowDataList()))
                     .collect(Collectors.toList())
             );
             long l1 = System.currentTimeMillis() - l;
@@ -68,6 +70,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", consumerInfo.getApplicationInfo().uniqueString(),
                 throwable.getLocalizedMessage()), throwable);
+        this.otter.stop();
     }
 
     @Override

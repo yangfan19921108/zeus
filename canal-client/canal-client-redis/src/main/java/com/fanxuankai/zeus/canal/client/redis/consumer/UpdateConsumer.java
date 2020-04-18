@@ -23,7 +23,6 @@ public class UpdateConsumer extends AbstractRedisConsumer<UpdateConsumer.Process
 
     @Override
     public ProcessData process(EntryWrapper entryWrapper) {
-        //
         Map<String, Map<String, Object>> forInsert = insertConsumer.process(entryWrapper);
         Map<String, List<String>> forDelete = deleteConsumer.process(entryWrapper);
         ProcessData processData = new ProcessData();

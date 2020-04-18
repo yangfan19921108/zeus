@@ -17,10 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.Objects;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Canal 工作者
@@ -77,7 +74,7 @@ public class CanalWorker implements ApplicationRunner {
         }
         log.info("{} Running...", key);
         shouldClearTagWhenExit = true;
-        config.otter.start();
+        ForkJoinPool.commonPool().execute(config.otter::start);
         log.info("{} Start", key);
         return true;
     }

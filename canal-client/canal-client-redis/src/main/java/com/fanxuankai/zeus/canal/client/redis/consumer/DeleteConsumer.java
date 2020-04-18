@@ -5,6 +5,7 @@ import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScanner;
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
+import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.util.CollectionUtils;
@@ -25,14 +26,18 @@ public class DeleteConsumer extends AbstractRedisConsumer<Map<String, List<Strin
         CanalToRedisMetadata canalToRedisMetadata =
                 RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
         List<String> keys = canalToRedisMetadata.getKeys();
+        boolean idAsHashKey = canalToRedisMetadata.isIdAsHashKey();
         List<List<String>> combineKeys = canalToRedisMetadata.getCombineKeys();
-        String key = keyOf(entryWrapper);
+        String key = RedisKeyGenerator.keyOf(entryWrapper);
         Map<String, List<String>> hash = Maps.newHashMap();
         entryWrapper.getAllRowDataList()
                 .forEach(rowData -> {
                     rowData.getBeforeColumnsList()
                             .stream()
                             .filter(column -> {
+                                if (idAsHashKey && column.getIsKey()) {
+                                    return true;
+                                }
                                 if (CollectionUtils.isEmpty(keys)) {
                                     return true;
                                 }
@@ -42,7 +47,7 @@ public class DeleteConsumer extends AbstractRedisConsumer<Map<String, List<Strin
                                 if (o.getIsKey()) {
                                     hash.computeIfAbsent(key, s -> new ArrayList<>()).add(o.getValue());
                                 } else if (keys.contains(o.getName())) {
-                                    hash.computeIfAbsent(keyOf(entryWrapper, o.getName()),
+                                    hash.computeIfAbsent(RedisKeyGenerator.keyOf(entryWrapper, o.getName()),
                                             s -> new ArrayList<>()).add(o.getValue());
                                 }
                             });
@@ -51,7 +56,8 @@ public class DeleteConsumer extends AbstractRedisConsumer<Map<String, List<Strin
                         for (List<String> columnList : combineKeys) {
                             String keySuffix = RedisUtils.keySuffix(columnList);
                             String name = RedisUtils.combineHashKey(columnList, columnMap);
-                            hash.computeIfAbsent(keyOf(entryWrapper, keySuffix), s -> new ArrayList<>()).add(name);
+                            hash.computeIfAbsent(RedisKeyGenerator.keyOf(entryWrapper, keySuffix),
+                                    s -> new ArrayList<>()).add(name);
                         }
                     }
                 });

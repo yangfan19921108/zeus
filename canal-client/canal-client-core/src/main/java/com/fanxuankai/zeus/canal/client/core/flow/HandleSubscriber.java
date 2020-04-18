@@ -3,6 +3,7 @@ package com.fanxuankai.zeus.canal.client.core.flow;
 import com.fanxuankai.zeus.canal.client.core.execption.HandleException;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.Handler;
+import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
 import lombok.AllArgsConstructor;
@@ -20,10 +21,12 @@ import java.util.concurrent.SubmissionPublisher;
 @Slf4j
 public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implements Flow.Processor<ContextWrapper,
         ContextWrapper> {
+    private final Otter otter;
     private final Config config;
     private Flow.Subscription subscription;
 
-    public HandleSubscriber(Config config) {
+    public HandleSubscriber(Otter otter, Config config) {
+        this.otter = otter;
         this.config = config;
     }
 
@@ -40,7 +43,7 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
                 long l = System.currentTimeMillis();
                 config.handler.handle(item.getMessageWrapper());
                 long l1 = System.currentTimeMillis();
-                if (item.getMessageWrapper().getRowDataCountAfterFilter() > 0) {
+                if (!item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
                     log.info("{} Handle batchId: {} time: {}ms", config.applicationInfo.uniqueString(),
                             item.getMessageWrapper().getBatchId(), l1 - l);
                 }
@@ -58,6 +61,7 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", config.applicationInfo.uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
+        this.otter.stop();
     }
 
     @Override

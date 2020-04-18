@@ -73,7 +73,12 @@ public class CanalWorkerAutoConfiguration {
                 applicationInfo, false);
         ConnectConfig connectConfig = new ConnectConfig(canalRedisConfig.getInstance(),
                 RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
-        return new FlowOtter(connectConfig, config, consumerInfo);
+        return new FlowOtter(FlowOtter.Config.builder()
+                .canalConfig(canalConfig)
+                .connectConfig(connectConfig)
+                .consumerInfo(consumerInfo)
+                .hsConfig(config)
+                .build());
     }
 
     @Bean("redisCanalWorker")

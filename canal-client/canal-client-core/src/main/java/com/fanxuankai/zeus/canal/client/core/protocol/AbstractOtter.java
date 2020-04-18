@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,43 +52,47 @@ public abstract class AbstractOtter implements Otter {
         if (running) {
             return;
         }
+        running = true;
         // CanalConnector 传给 subscriber 消费后再提交
         String subscriberName = connectConfig.getApplicationInfo().uniqueString();
-        ForkJoinPool.commonPool().execute(() -> {
-            try {
-                CanalConnectorHolder.connect(connectConfig, canalConfig);
-                running = true;
-                while (running) {
-                    try {
-                        // 获取指定数量的数据
-                        CanalConnector canalConnector = CanalConnectorHolder.get();
-                        long l = System.currentTimeMillis();
-                        Message message = canalConnector.getWithoutAck(canalConfig.getBatchSize());
-                        long l1 = System.currentTimeMillis();
-                        message.setEntries(filter(message.getEntries()));
-                        long batchId = message.getId();
-                        if (batchId != -1) {
-                            if (!message.getEntries().isEmpty()) {
-                                log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId, l1 - l);
-                            }
-                            process(new Context(canalConnector, message));
+        try {
+            CanalConnectorHolder.connect(connectConfig, canalConfig);
+            while (running) {
+                try {
+                    // 获取指定数量的数据
+                    CanalConnector canalConnector = CanalConnectorHolder.get();
+                    long l = System.currentTimeMillis();
+                    Message message;
+                    if (canalConfig.getTimeoutMillis() == null) {
+                        message = canalConnector.getWithoutAck(canalConfig.getBatchSize());
+                    } else {
+                        message = canalConnector.getWithoutAck(canalConfig.getBatchSize(),
+                                canalConfig.getTimeoutMillis(), TimeUnit.MILLISECONDS);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    message.setEntries(filter(message.getEntries()));
+                    long batchId = message.getId();
+                    if (batchId != -1) {
+                        if (!message.getEntries().isEmpty()) {
+                            log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId, l1 - l);
                         }
-                    } catch (CanalClientException e) {
-                        log.error(String.format("%s Stop get data %s", subscriberName, e.getLocalizedMessage()), e);
-                        CanalConnectorHolder.reconnect(connectConfig, canalConfig);
-                        log.info("{} Start get data", subscriberName);
+                        process(new Context(canalConnector, message));
                     }
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(canalConfig.getIntervalMillis());
-                    } catch (InterruptedException e) {
-                        log.error(e.getLocalizedMessage(), e);
-                    }
+                } catch (CanalClientException e) {
+                    log.error(String.format("%s Stop get data %s", subscriberName, e.getLocalizedMessage()), e);
+                    CanalConnectorHolder.reconnect(connectConfig, canalConfig);
+                    log.info("{} Start get data", subscriberName);
                 }
-            } finally {
-                CanalConnectorHolder.disconnect();
-                log.info("{} Stop get data", subscriberName);
+                try {
+                    TimeUnit.MILLISECONDS.sleep(canalConfig.getIntervalMillis());
+                } catch (InterruptedException e) {
+                    log.error(e.getLocalizedMessage(), e);
+                }
             }
-        });
+        } finally {
+            CanalConnectorHolder.disconnect();
+            log.info("{} Stop get data", subscriberName);
+        }
     }
 
     /**

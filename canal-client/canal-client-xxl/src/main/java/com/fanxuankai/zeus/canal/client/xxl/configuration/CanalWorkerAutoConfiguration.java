@@ -71,7 +71,12 @@ public class CanalWorkerAutoConfiguration {
                 applicationInfo, canalXxlConfig.getSkip());
         ConnectConfig connectConfig = new ConnectConfig(canalXxlConfig.getInstance(),
                 MqConsumerScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
-        return new FlowOtter(connectConfig, config, consumerInfo);
+        return new FlowOtter(FlowOtter.Config.builder()
+                .canalConfig(canalConfig)
+                .connectConfig(connectConfig)
+                .consumerInfo(consumerInfo)
+                .hsConfig(config)
+                .build());
     }
 
     @Bean("xxlCanalWorker")

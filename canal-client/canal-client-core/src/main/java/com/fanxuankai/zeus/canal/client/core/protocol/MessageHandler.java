@@ -148,8 +148,14 @@ public class MessageHandler implements Handler<MessageWrapper> {
 
     private void logEntry(EntryWrapper entryWrapper, long batchId, long time) {
         if (Objects.equals(canalConfig.getShowLog(), Boolean.TRUE)) {
-            ConsumeEntryLogger.asyncLog(new ConsumeEntryLogger.LogInfo(canalConfig,
-                    consumerInfo.getApplicationInfo(), entryWrapper, batchId, time));
+            ConsumeEntryLogger.asyncLog(ConsumeEntryLogger.LogInfo
+                    .builder()
+                    .canalConfig(canalConfig)
+                    .applicationInfo(consumerInfo.getApplicationInfo())
+                    .entryWrapper(entryWrapper)
+                    .batchId(batchId)
+                    .time(time)
+                    .build());
         }
     }
 

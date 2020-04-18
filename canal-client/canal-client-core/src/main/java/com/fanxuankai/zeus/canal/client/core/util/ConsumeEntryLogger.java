@@ -5,7 +5,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,7 +64,7 @@ public class ConsumeEntryLogger {
         return Collections.emptyList();
     }
 
-    @AllArgsConstructor
+    @Builder
     @Getter
     public static class LogInfo {
         private final CanalConfig canalConfig;
@@ -74,7 +74,7 @@ public class ConsumeEntryLogger {
         private final long time;
     }
 
-    @AllArgsConstructor
+    @Builder
     @Getter
     private static class LogRowChange {
         private final String name;
@@ -88,7 +88,7 @@ public class ConsumeEntryLogger {
         }
     }
 
-    @AllArgsConstructor
+    @Builder
     @Getter
     private static class LogColumn {
         private final String name;

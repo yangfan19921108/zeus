@@ -44,7 +44,7 @@ public class CanalConfig {
     private String password = "canal";
 
     /**
-     * 拉取数据的间隔(ms)
+     * 拉取数据的间隔 ms
      */
     private Long intervalMillis = 1000L;
 
@@ -52,6 +52,11 @@ public class CanalConfig {
      * 拉取数据的数量
      */
     private Integer batchSize = 100;
+
+    /**
+     * 拉取数据超时时间 ms
+     */
+    private Long timeoutMillis;
 
     /**
      * 打印日志

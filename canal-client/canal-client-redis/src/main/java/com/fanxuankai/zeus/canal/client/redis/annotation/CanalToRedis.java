@@ -25,11 +25,11 @@ public @interface CanalToRedis {
     String key() default "";
 
     /**
-     * id 是否作为 hash 的 field
+     * id 是否作为 hashKey
      *
      * @return true or false
      */
-    boolean idAsField() default true;
+    boolean idAsHashKey() default true;
 
     /**
      * hash key 增加 uniqueKey 后缀, 作为 hash 的集合名, 以 uniqueKey 的值作为 hash 的 field
