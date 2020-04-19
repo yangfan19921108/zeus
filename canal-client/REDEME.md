@@ -78,7 +78,7 @@ canal:
   # 暂不支持集群, 设置该参数为 true 时, 当启动了 Canal 服务的节点停止后可以及时补位
   #retry-start: true
   # retryStart 的间隔秒数
-  #retry-start-interval-seconds = 300L
+  #retry-start-interval-seconds: 300
 ```
 
 ### 使用指南
