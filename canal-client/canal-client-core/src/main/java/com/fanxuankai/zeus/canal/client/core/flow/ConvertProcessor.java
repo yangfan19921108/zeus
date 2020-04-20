@@ -52,6 +52,7 @@ public class ConvertProcessor extends SubmissionPublisher<ContextWrapper>
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", config.applicationInfo.uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
+        this.subscription.cancel();
         config.otter.stop();
     }
 

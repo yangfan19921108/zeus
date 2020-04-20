@@ -70,6 +70,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", consumerInfo.getApplicationInfo().uniqueString(),
                 throwable.getLocalizedMessage()), throwable);
+        this.subscription.cancel();
         this.otter.stop();
     }
 

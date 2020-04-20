@@ -1,6 +1,5 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
-import com.fanxuankai.zeus.canal.client.core.execption.HandleException;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.Handler;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
@@ -39,21 +38,15 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
     @Override
     public void onNext(ContextWrapper item) {
         if (!config.skip) {
-            try {
-                long l = System.currentTimeMillis();
-                config.handler.handle(item.getMessageWrapper());
-                long l1 = System.currentTimeMillis();
-                if (!item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
-                    log.info("{} Handle batchId: {} time: {}ms", config.applicationInfo.uniqueString(),
-                            item.getMessageWrapper().getBatchId(), l1 - l);
-                }
-            } catch (HandleException e) {
-                log.error(e.getLocalizedMessage(), e);
-                item.setHandleError(true);
-            } finally {
-                submit(item);
+            long l = System.currentTimeMillis();
+            config.handler.handle(item.getMessageWrapper());
+            long l1 = System.currentTimeMillis();
+            if (!item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
+                log.info("{} Handle batchId: {} time: {}ms", config.applicationInfo.uniqueString(),
+                        item.getMessageWrapper().getBatchId(), l1 - l);
             }
         }
+        submit(item);
         subscription.request(1);
     }
 
@@ -61,6 +54,7 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", config.applicationInfo.uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
+        this.subscription.cancel();
         this.otter.stop();
     }
 

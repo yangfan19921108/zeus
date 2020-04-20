@@ -6,7 +6,7 @@
     <parent>
         <artifactId>common</artifactId>
         <groupId>com.fanxuankai.zeus</groupId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
     </parent>
     <artifactId>common-data-jpa</artifactId>
     <dependencies>

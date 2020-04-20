@@ -44,6 +44,7 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
     @Override
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", applicationInfo.uniqueString(), throwable.getLocalizedMessage()), throwable);
+        this.subscription.cancel();
         this.otter.stop();
     }
 

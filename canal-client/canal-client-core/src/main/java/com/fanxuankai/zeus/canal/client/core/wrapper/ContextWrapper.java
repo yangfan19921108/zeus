@@ -10,10 +10,8 @@ import lombok.Setter;
 public class ContextWrapper {
 
     private final Context raw;
-
     @Getter
     private final MessageWrapper messageWrapper;
-
     @Setter
     private boolean handleError;
 
