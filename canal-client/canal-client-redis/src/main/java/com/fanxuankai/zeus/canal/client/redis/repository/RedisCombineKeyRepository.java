@@ -21,6 +21,14 @@ public interface RedisCombineKeyRepository<T> {
     Optional<T> findOne(CombineKeyModel combineKeyModel);
 
     /**
+     * 查询
+     *
+     * @param combineKeyModel CombineKeyModel
+     * @return 无记录抛出 NullPointerException
+     */
+    T getOne(CombineKeyModel combineKeyModel);
+
+    /**
      * 查询所有
      *
      * @param combineKey 组合键

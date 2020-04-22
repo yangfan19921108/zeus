@@ -51,7 +51,7 @@ public interface RedisRepository<T> extends RedisUniqueKeyRepository<T>, RedisCo
      * 指定id查询
      *
      * @param id 主键
-     * @return 有可能为null
+     * @return 无记录抛出 NullPointerException
      */
     T getOne(Object id);
 }

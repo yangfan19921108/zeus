@@ -192,6 +192,11 @@
                 <artifactId>fastjson</artifactId>
                 <version>1.2.58</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.jsonzou</groupId>
+                <artifactId>jmockdata</artifactId>
+                <version>4.2.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

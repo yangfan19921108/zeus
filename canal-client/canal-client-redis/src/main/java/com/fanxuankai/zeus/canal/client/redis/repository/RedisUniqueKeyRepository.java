@@ -17,7 +17,7 @@ public interface RedisUniqueKeyRepository<T> {
      * 查询
      *
      * @param uniqueKey UniqueKey
-     * @return 有可能为empty
+     * @return 有可能为 empty
      */
     Optional<T> findOne(UniqueKey uniqueKey);
 
@@ -33,7 +33,7 @@ public interface RedisUniqueKeyRepository<T> {
      * 查询所有
      *
      * @param uniqueKeyPro UniqueKeyPro
-     * @return 有可能为empty
+     * @return 有可能为 empty
      */
     List<T> findAll(UniqueKeyPro uniqueKeyPro);
 
@@ -41,7 +41,15 @@ public interface RedisUniqueKeyRepository<T> {
      * 查询
      *
      * @param uniqueKey UniqueKey
-     * @return 有可能为null
+     * @return 无记录抛出 NullPointerException
      */
     T getOne(UniqueKey uniqueKey);
+
+    /**
+     * 查询所有
+     *
+     * @param uniqueKey uniqueKey name
+     * @return 有可能为 empty
+     */
+    List<T> findAll(String uniqueKey);
 }

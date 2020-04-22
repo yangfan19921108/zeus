@@ -48,7 +48,7 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
 
     @Override
     public Optional<Object> findById(Object id) {
-        return Optional.ofNullable(getOne(id));
+        return Optional.ofNullable(convert(redisTemplate.opsForHash().get(key(), id.toString())));
     }
 
     @Override
@@ -80,12 +80,16 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
 
     @Override
     public Object getOne(Object id) {
-        return convert(redisTemplate.opsForHash().get(key(), id.toString()));
+        Optional<Object> optional = findById(id);
+        if (optional.isEmpty()) {
+            throw new NullPointerException();
+        }
+        return optional.get();
     }
 
     @Override
     public Optional<Object> findOne(UniqueKey uniqueKey) {
-        return Optional.ofNullable(getOne(uniqueKey));
+        return Optional.ofNullable(convert(redisTemplate.opsForHash().get(key(), uniqueKey.getValue().toString())));
     }
 
     @Override
@@ -102,6 +106,15 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
         String hashKey = RedisUtils.combineHashKey(names, entries.stream().collect(Collectors.toMap(Entry::getName,
                 o -> o.getValue().toString())));
         return Optional.ofNullable(convert(redisTemplate.opsForHash().get(key, hashKey)));
+    }
+
+    @Override
+    public Object getOne(CombineKeyModel combineKeyModel) {
+        Optional<Object> optional = findOne(combineKeyModel);
+        if (optional.isEmpty()) {
+            throw new NullPointerException();
+        }
+        return optional.get();
     }
 
     @Override
@@ -123,7 +136,16 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
 
     @Override
     public Object getOne(UniqueKey uniqueKey) {
-        return convert(redisTemplate.opsForHash().get(key(), uniqueKey.getValue().toString()));
+        Optional<Object> optional = findOne(uniqueKey);
+        if (optional.isEmpty()) {
+            throw new NullPointerException();
+        }
+        return optional.get();
+    }
+
+    @Override
+    public List<Object> findAll(String uniqueKey) {
+        return convert(getAll(keyWithSuffix(uniqueKey)));
     }
 
     private List<Object> getAll(String key) {
