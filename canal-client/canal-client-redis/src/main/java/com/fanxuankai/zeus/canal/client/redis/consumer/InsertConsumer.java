@@ -7,6 +7,7 @@ import com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScann
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
 import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.util.CollectionUtils;
 
@@ -68,6 +69,9 @@ public class InsertConsumer extends AbstractRedisConsumer<Map<String, Map<String
             return;
         }
         HashOperations<String, Object, Object> opsForHash = redisTemplate.opsForHash();
-        hash.forEach(opsForHash::putAll);
+        redisTemplate.execute((RedisConnection rc) -> {
+            hash.forEach(opsForHash::putAll);
+            return null;
+        });
     }
 }

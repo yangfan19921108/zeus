@@ -16,5 +16,7 @@
         <module>common-xxl-mq</module>
         <module>common-spring-context</module>
         <module>common-util</module>
+        <module>common-aop-util</module>
+        <module>common-xxl-job</module>
     </modules>
 </project>

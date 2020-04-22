@@ -3,13 +3,13 @@ package com.fanxuankai.zeus.canal.client.core.protocol;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
-import com.fanxuankai.zeus.canal.client.core.enums.RedisKeyPrefix;
 import com.fanxuankai.zeus.canal.client.core.execption.HandleException;
 import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
 import com.fanxuankai.zeus.canal.client.core.util.ConsumeEntryLogger;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
+import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -72,22 +72,18 @@ public class MessageHandler implements Handler<MessageWrapper> {
     @SuppressWarnings("rawtypes unchecked")
     private void doHandle(List<EntryWrapper> entryWrapperList, long batchId) {
         for (EntryWrapper entryWrapper : entryWrapperList) {
-            if (existsLogfileOffset(entryWrapper, batchId)) {
-                continue;
-            }
             MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
-            if (consumer == null) {
-                notConsumer(entryWrapper, batchId);
+            if (consumer == null
+                    || !consumer.canProcess(entryWrapper)
+                    || existsLogfileOffset(entryWrapper, batchId)) {
                 continue;
             }
-            if (consumer.canProcess(entryWrapper)) {
-                Object process = consumer.process(entryWrapper);
-                if (ObjectUtils.isEmpty(process)) {
-                    continue;
-                }
-                long time = consume(consumer, process, entryWrapper);
-                logEntry(entryWrapper, batchId, time);
+            Object process = consumer.process(entryWrapper);
+            if (ObjectUtils.isEmpty(process)) {
+                continue;
             }
+            long time = consume(consumer, process, entryWrapper);
+            logEntry(entryWrapper, batchId, time);
         }
     }
 
@@ -100,26 +96,18 @@ public class MessageHandler implements Handler<MessageWrapper> {
         return time;
     }
 
-    private void notConsumer(EntryWrapper entryWrapper, long batchId) {
-        log.info("Not Consumer {} batchId: {} {}", entryWrapper.toString(), batchId,
-                consumerInfo.getApplicationInfo().uniqueString());
-    }
-
     @SuppressWarnings("rawtypes unchecked")
     private void doHandlePerformance(List<EntryWrapper> entryWrapperList, long batchId) throws Exception {
         // 异步处理
         List<Future<EntryWrapperProcess>> futureList = entryWrapperList.stream()
                 .map(entryWrapper -> ForkJoinPool.commonPool().submit(() -> {
                     MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
-                    if (consumer == null) {
-                        notConsumer(entryWrapper, batchId);
+                    if (consumer == null
+                            || !consumer.canProcess(entryWrapperList)
+                            || existsLogfileOffset(entryWrapper, batchId)) {
+                        return new EntryWrapperProcess(entryWrapper, null, null);
                     }
-                    Object process = null;
-                    if (consumer != null && !existsLogfileOffset(entryWrapper, batchId)
-                            && consumer.canProcess(entryWrapper)) {
-                        process = consumer.process(entryWrapper);
-                    }
-                    return new EntryWrapperProcess(entryWrapper, process, consumer);
+                    return new EntryWrapperProcess(entryWrapper, consumer.process(entryWrapper), consumer);
                 }))
                 .collect(Collectors.toList());
         // 顺序消费

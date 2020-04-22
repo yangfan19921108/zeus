@@ -83,7 +83,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
     private void filterEntryRowData(EntryWrapper entryWrapper) {
         MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
         // 如果不能处理, 置空, return
-        if (!consumer.canProcess(entryWrapper)) {
+        if (consumer == null || !consumer.canProcess(entryWrapper)) {
             entryWrapper.setAllRowDataList(Collections.emptyList());
             return;
         }

@@ -3,7 +3,7 @@ package com.fanxuankai.zeus.canal.client.core.config;
 import com.alibaba.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
-import com.fanxuankai.zeus.canal.client.core.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;

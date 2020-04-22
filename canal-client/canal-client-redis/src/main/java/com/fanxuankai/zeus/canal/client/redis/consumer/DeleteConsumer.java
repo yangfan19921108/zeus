@@ -7,6 +7,7 @@ import com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScann
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
 import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.util.CollectionUtils;
 
@@ -72,9 +73,12 @@ public class DeleteConsumer extends AbstractRedisConsumer<Map<String, List<Strin
     @Override
     public void consume(Map<String, List<String>> hash) {
         HashOperations<String, Object, Object> ops = redisTemplate.opsForHash();
-        hash.forEach((s, strings) -> {
-            Object[] objects = strings.toArray();
-            ops.delete(s, objects);
+        redisTemplate.execute((RedisConnection rc) -> {
+            hash.forEach((s, strings) -> {
+                Object[] objects = strings.toArray();
+                ops.delete(s, objects);
+            });
+            return null;
         });
     }
 }

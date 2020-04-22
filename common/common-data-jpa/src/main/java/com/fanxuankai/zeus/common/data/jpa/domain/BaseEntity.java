@@ -10,10 +10,11 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
- * 实体类
+ * 实体类 <br/>
+ * 日期暂时用 Date, LocalDateTime Aviator 不支持
  *
  * @author fanxuankai
  */
@@ -40,7 +41,7 @@ public class BaseEntity {
      * 创建日期
      */
     @CreatedDate
-    private Date createDate;
+    private LocalDateTime createDate;
 
     /**
      * 修改人
@@ -52,7 +53,7 @@ public class BaseEntity {
      * 修改时间
      */
     @LastModifiedDate
-    private Date lastModifiedDate;
+    private LocalDateTime lastModifiedDate;
 
     /**
      * 版本号

@@ -2,7 +2,8 @@ package com.fanxuankai.zeus.canal.client.rabbit.consumer;
 
 import com.fanxuankai.zeus.canal.client.mq.core.consumer.AbstractMqConsumer;
 import com.fanxuankai.zeus.canal.client.mq.core.model.MessageInfo;
-import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -14,11 +15,12 @@ import javax.annotation.Resource;
 public abstract class AbstractRabbitMqConsumer extends AbstractMqConsumer {
 
     @Resource
-    protected AmqpTemplate amqpTemplate;
+    private RabbitTemplate rabbitTemplate;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void consume(MessageInfo messageInfo) {
-        messageInfo.getMessages().forEach(s -> amqpTemplate.convertAndSend(messageInfo.getRoutingKey(), s));
+        messageInfo.getMessages().forEach(s -> rabbitTemplate.convertAndSend(messageInfo.getRoutingKey(), s));
     }
 
 }

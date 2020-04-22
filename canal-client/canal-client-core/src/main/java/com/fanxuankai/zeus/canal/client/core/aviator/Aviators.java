@@ -10,6 +10,9 @@ import org.reflections.ReflectionUtils;
 import org.springframework.core.convert.ConversionService;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,14 +75,22 @@ public class Aviators {
         Map<String, Object> map = new HashMap<>(columnMap.size());
         for (Map.Entry<String, String> entry : columnMap.entrySet()) {
             String name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, entry.getKey());
-            Class<?> fieldType = allFieldsType.get(name);
             Object convert = null;
             if (!StringUtils.isBlank(entry.getValue())) {
+                Class<?> fieldType = allFieldsType.get(name);
+                // 由于不支持 LocalDate 和 LocalDateTime 类型
+                // 直接把字符串当做 Date 来处理
+                fieldType = isLocalDateType(fieldType) ? Date.class : fieldType;
                 convert = CONVERSION_SERVICE.convert(entry.getValue(), fieldType);
             }
             map.put(name, convert);
         }
         return map;
+    }
+
+    private static boolean isLocalDateType(Class<?> fieldType) {
+        return LocalDate.class.isAssignableFrom(fieldType)
+                || LocalDateTime.class.isAssignableFrom(fieldType);
     }
 
     /**
