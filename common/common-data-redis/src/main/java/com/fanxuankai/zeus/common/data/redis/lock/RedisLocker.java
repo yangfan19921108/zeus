@@ -5,7 +5,6 @@ import com.fanxuankai.zeus.common.data.redis.execption.LockException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -23,8 +22,6 @@ public class RedisLocker implements DistributedLocker {
 
     @Resource
     private RedissonClient redissonClient;
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public <T> T lock(String resource, long waitTime, long releaseTime, Callable<T> callable) throws LockException {
