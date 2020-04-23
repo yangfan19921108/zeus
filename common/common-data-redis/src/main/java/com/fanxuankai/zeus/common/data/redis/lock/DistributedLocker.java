@@ -15,8 +15,8 @@ public interface DistributedLocker {
     long LEASE_TIME_MILLIS = 3000;
 
     /**
-     * 加分布式锁 <br/>
-     * 加锁成功执行回调函数, 执行完成或者 releaseTime 超时自动释放锁资源 <br/>
+     * 加分布式锁
+     * 加锁成功执行回调函数, 执行完成或者 releaseTime 超时自动释放锁资源
      * 执行失败会多次重试直至 waitTime 超时
      *
      * @param resource    锁资源
@@ -30,8 +30,8 @@ public interface DistributedLocker {
     <T> T lock(String resource, long waitTime, long releaseTime, Callable<T> callable) throws LockException;
 
     /**
-     * 加分布式锁 <br/>
-     * 加锁成功执行回调函数, 执行完成或者 releaseTime 超时自动释放锁资源 <br/>
+     * 加分布式锁
+     * 加锁成功执行回调函数, 执行完成或者 releaseTime 超时自动释放锁资源
      * 执行失败会多次重试直至 waitTime 超时
      *
      * @param resource 锁资源

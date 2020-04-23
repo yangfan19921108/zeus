@@ -13,7 +13,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * 实体类 <br/>
+ * 实体类
  * 日期暂时用 Date, LocalDateTime Aviator 不支持
  *
  * @author fanxuankai
