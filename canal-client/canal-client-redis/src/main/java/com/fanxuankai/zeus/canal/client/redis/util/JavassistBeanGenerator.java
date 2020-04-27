@@ -8,7 +8,7 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 
@@ -30,7 +30,7 @@ public class JavassistBeanGenerator {
             ConstPool constPool = classFile.getConstPool();
             AnnotationsAttribute classAttribute = new AnnotationsAttribute(constPool,
                     AnnotationsAttribute.visibleTag);
-            classAttribute.addAnnotation(new Annotation(Repository.class.getName(), constPool));
+            classAttribute.addAnnotation(new Annotation(Component.class.getName(), constPool));
             classFile.addAttribute(classAttribute);
             //添加构造函数
             CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, clazz);

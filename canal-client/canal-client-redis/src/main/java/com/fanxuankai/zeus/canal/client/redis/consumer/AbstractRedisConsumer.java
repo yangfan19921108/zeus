@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
 
-import static com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
 
 /**
  * Redis 抽象消费者

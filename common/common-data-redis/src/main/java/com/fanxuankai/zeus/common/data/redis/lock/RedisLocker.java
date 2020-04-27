@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.common.data.redis.lock;
 
 import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
-import com.fanxuankai.zeus.common.data.redis.execption.LockException;
+import com.fanxuankai.zeus.common.data.redis.execption.LockFailureException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -24,17 +24,16 @@ public class RedisLocker implements DistributedLocker {
     private RedissonClient redissonClient;
 
     @Override
-    public <T> T lock(String resource, long waitTime, long releaseTime, Callable<T> callable) throws LockException {
+    public <T> T lock(String key, long waitTime, long releaseTime, Callable<T> callable) throws LockFailureException {
         RLock lock = null;
         try {
-            String key = LOCKER_PREFIX + "." + resource;
+            key = LOCKER_PREFIX + "." + key;
             lock = redissonClient.getLock(key);
             if (lock.tryLock(waitTime, releaseTime, TimeUnit.MILLISECONDS)) {
                 return callable.call();
             }
-            throw new LockException("加锁失败");
         } catch (InterruptedException e) {
-            throw new LockException("等待锁被中断", e);
+            throw new LockFailureException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -42,10 +41,11 @@ public class RedisLocker implements DistributedLocker {
                 lock.unlock();
             }
         }
+        throw new LockFailureException();
     }
 
     @Override
-    public <T> T lock(String resource, Callable<T> callable) throws LockException {
-        return lock(resource, DistributedLocker.WAIT_TIME_MILLI, DistributedLocker.LEASE_TIME_MILLIS, callable);
+    public <T> T lock(String key, Callable<T> callable) throws LockFailureException {
+        return lock(key, DistributedLocker.WAIT_TIME_MILLI, DistributedLocker.LEASE_TIME_MILLIS, callable);
     }
 }

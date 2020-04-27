@@ -140,4 +140,6 @@ canal:
 - canal 不支持数据库 bit 格式
 - 同步到 Redis 时用组合键, 发现 mysql 与 Redis 数量不对
     - 原因是数据库排序规则不区分大小写, 导致 mysql 的数量比 Redis 少.
-    - 修改为 CHARSET=utf8mb4 COLLATE=utf8mb4_bin, 验证结果完全一致.  
+    - 修改为 CHARSET=utf8mb4 COLLATE=utf8mb4_bin, 验证结果完全一致.
+- 引入 spring-boot-devtools 导致无法注入
+    - 需要去掉此依赖, 否则会导致部分 bean 无法注入  

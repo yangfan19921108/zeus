@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
 
 /**
  * RedisRepository 实现类
@@ -89,7 +89,8 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
 
     @Override
     public Optional<Object> findOne(UniqueKey uniqueKey) {
-        return Optional.ofNullable(convert(redisTemplate.opsForHash().get(key(), uniqueKey.getValue().toString())));
+        return Optional.ofNullable(convert(redisTemplate.opsForHash().get(keyWithSuffix(uniqueKey.getName()),
+                uniqueKey.getValue().toString())));
     }
 
     @Override

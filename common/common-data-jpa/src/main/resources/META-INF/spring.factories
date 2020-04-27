@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.common.data.jpa.configuration.JpaAutoConfiguration
+  com.fanxuankai.zeus.common.data.jpa.config.JpaAutoConfiguration

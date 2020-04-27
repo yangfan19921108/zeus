@@ -10,8 +10,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum RedisKeyPrefix {
-    // 数据库缓存
-    DB_CACHE("zeus.canal.dbCache"),
+    // Canal 数据库缓存
+    CANAL_DB_CACHE("zeus.canalDbCache"),
     // 分布式锁
     LOCK("zeus.lock"),
     // 业务缓存

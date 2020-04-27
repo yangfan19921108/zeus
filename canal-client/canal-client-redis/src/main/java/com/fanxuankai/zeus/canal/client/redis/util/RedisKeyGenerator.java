@@ -5,7 +5,7 @@ import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.fanxuankai.zeus.canal.client.redis.configuration.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
 
 /**
  * @author fanxuankai

@@ -15,9 +15,16 @@ import java.lang.annotation.Target;
 public @interface Lock {
 
     /**
-     * 锁的资源
+     * 业务名
      *
      * @return 默认为前缀+类名+方法名
+     */
+    String business() default "";
+
+    /**
+     * 锁资源, 减小锁的粒度, 使用 spring 表达式, 比如 #user.id
+     *
+     * @return spring expression language
      */
     String resource() default "";
 

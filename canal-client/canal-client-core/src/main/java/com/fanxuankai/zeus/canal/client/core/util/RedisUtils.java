@@ -36,7 +36,7 @@ public class RedisUtils {
      */
     public static String key(String schema, String table, String suffix) {
         String key =
-                RedisKeyPrefix.DB_CACHE.getValue() + CommonConstants.SEPARATOR + schema + CommonConstants.SEPARATOR + table;
+                RedisKeyPrefix.CANAL_DB_CACHE.getValue() + CommonConstants.SEPARATOR + schema + CommonConstants.SEPARATOR + table;
         if (StringUtils.isNotEmpty(suffix)) {
             return key + CommonConstants.SEPARATOR + suffix;
         }
