@@ -5,20 +5,18 @@ import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.util.DomainConverter;
 import com.fanxuankai.zeus.canal.client.mq.core.consumer.MqConsumer;
 import com.fanxuankai.zeus.canal.client.mq.core.util.JavassistUtils;
-import com.google.common.base.CaseFormat;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
-import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 
@@ -35,12 +33,7 @@ public class JavassistBeanGenerator {
         try {
             ClassPool pool = ClassPool.getDefault();
             CtClass clazz = pool.makeClass(mqConsumer.getName() + "JavassistProxyRabbitMqConsumer");
-            ClassFile classFile = clazz.getClassFile();
-            ConstPool constPool = classFile.getConstPool();
-            AnnotationsAttribute classAttribute = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-            classAttribute.addAnnotation(new Annotation(Component.class.getName(), constPool));
-            classFile.addAttribute(classAttribute);
-            String fieldName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, mqConsumer.getSimpleName());
+            String fieldName = StringUtils.uncapitalize(mqConsumer.getSimpleName());
             JavassistUtils.injectionMqConsumer(clazz, mqConsumer, fieldName);
             addInsertMethod(clazz, fieldName, domainType, topic);
             addUpdateMethod(clazz, fieldName, domainType, topic);

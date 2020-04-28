@@ -34,8 +34,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public class CanalWorkerAutoConfiguration {
 
-    public static final String BEHAVIOR = "Redis";
-
+    private static final String BEHAVIOR = "Redis";
     private static final String CONSUMER_INFO_NAME = "redisConsumerInfo";
     private static final String MESSAGE_HANDLER_NAME = "redisMessageHandler";
     private static final String FLOW_OTTER_NAME = "redisFlowOtter";

@@ -4,11 +4,6 @@ import com.fanxuankai.zeus.canal.client.redis.repository.SimpleRedisRepository;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.annotation.Annotation;
-import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 
@@ -26,14 +21,8 @@ public class JavassistBeanGenerator {
                             "JavassistProxyImpl",
                     pool.getCtClass(SimpleRedisRepository.class.getName()));
             clazz.addInterface(pool.getCtClass(redisRepositoryInterface.getName()));
-            ClassFile classFile = clazz.getClassFile();
-            ConstPool constPool = classFile.getConstPool();
-            AnnotationsAttribute classAttribute = new AnnotationsAttribute(constPool,
-                    AnnotationsAttribute.visibleTag);
-            classAttribute.addAnnotation(new Annotation(Component.class.getName(), constPool));
-            classFile.addAttribute(classAttribute);
             //添加构造函数
-            CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, clazz);
+            CtConstructor ctConstructor = new CtConstructor(null, clazz);
             //为构造函数设置函数体
             ctConstructor.setBody(String.format("{setDomainType(%s.class);}", domainType.getName()));
             //把构造函数添加到新的类中

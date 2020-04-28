@@ -4,7 +4,6 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.mq.core.consumer.MqConsumer;
 import com.fanxuankai.zeus.canal.client.mq.core.util.JavassistUtils;
-import com.google.common.base.CaseFormat;
 import com.xxl.mq.client.consumer.IMqConsumer;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -15,6 +14,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileOutputStream;
 
@@ -29,7 +29,6 @@ public class JavassistBeanGenerator implements MqConsumer<String> {
     public static Class<?> generateXxlMqConsumer(Class<? extends MqConsumer> mqConsumer, Class<?> domainClass,
                                                  String topic, CanalEntry.EventType eventType) {
         try {
-            String mqConsumerFieldName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, mqConsumer.getSimpleName());
             ClassPool pool = ClassPool.getDefault();
             CtClass clazz = pool.makeClass(mqConsumer.getName() + "JavassistProxyXxlMqConsumer" + eventType);
             clazz.addInterface(pool.getCtClass(IMqConsumer.class.getName()));
@@ -44,6 +43,7 @@ public class JavassistBeanGenerator implements MqConsumer<String> {
                     new StringMemberValue(topic + CommonConstants.SEPARATOR + eventType, constPool));
             classAttribute.addAnnotation(mqConsumerAnnotation);
             classFile.addAttribute(classAttribute);
+            String mqConsumerFieldName = StringUtils.uncapitalize(mqConsumer.getSimpleName());
             JavassistUtils.injectionMqConsumer(clazz, mqConsumer, mqConsumerFieldName);
             addConsumeMethod(clazz, domainClass, eventType, mqConsumerFieldName);
             return clazz.toClass();

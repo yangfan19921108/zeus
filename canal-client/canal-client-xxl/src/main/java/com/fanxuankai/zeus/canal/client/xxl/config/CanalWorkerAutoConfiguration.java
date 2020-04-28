@@ -34,8 +34,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public class CanalWorkerAutoConfiguration {
 
-    public static final String BEHAVIOR = "XxlMQ";
-
+    private static final String BEHAVIOR = "XxlMQ";
     private static final String CONSUMER_INFO_NAME = "xxlConsumerInfo";
     private static final String MESSAGE_HANDLER_NAME = "xxlMessageHandler";
     private static final String FLOW_OTTER_NAME = "xxlFlowOtter";

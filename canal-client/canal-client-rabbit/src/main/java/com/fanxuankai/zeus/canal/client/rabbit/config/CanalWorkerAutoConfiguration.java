@@ -34,7 +34,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public class CanalWorkerAutoConfiguration {
 
-    public static final String BEHAVIOR = "RabbitMQ";
+    private static final String BEHAVIOR = "RabbitMQ";
     private static final String CONSUMER_INFO_NAME = "rabbitConsumerInfo";
     private static final String MESSAGE_HANDLER_NAME = "rabbitMessageHandler";
     private static final String FLOW_OTTER_NAME = "rabbitFlowOtter";
