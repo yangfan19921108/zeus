@@ -18,7 +18,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
-import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +29,6 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
 public class RedisTemplateAutoConfiguration {
-
-    @Resource
-    private RedisProperties redisProperties;
 
     @Bean
     @ConditionalOnMissingBean
@@ -62,7 +58,7 @@ public class RedisTemplateAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RedissonClient redissonClient() {
+    public RedissonClient redissonClient(RedisProperties redisProperties) {
         List<String> nodes = Optional.ofNullable(redisProperties.getCluster())
                 .map(RedisProperties.Cluster::getNodes)
                 .orElse(Collections.emptyList());
@@ -84,6 +80,7 @@ public class RedisTemplateAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public DistributedLocker distributedLocker() {
         return new RedisLocker();
     }

@@ -15,6 +15,7 @@ import java.util.Map;
 public class EnableCanalAttributes {
 
     private static final String BASE_PACKAGE = "basePackage";
+    private static boolean enabled;
     private static AnnotationAttributes attributes = new AnnotationAttributes();
 
     public static void from(AnnotationMetadata metadata) {
@@ -27,6 +28,7 @@ public class EnableCanalAttributes {
                     EnableCanal.class.getSimpleName(), metadata.getClassName()));
         }
         attributes.put(BASE_PACKAGE, ClassUtils.getPackageName(metadata.getClassName()));
+        enabled = true;
     }
 
     public static String getSchema() {
@@ -35,6 +37,10 @@ public class EnableCanalAttributes {
 
     public static String getBasePackage() {
         return attributes.getString(BASE_PACKAGE);
+    }
+
+    public static boolean isEnabled() {
+        return enabled;
     }
 
 }

@@ -29,8 +29,8 @@ import java.util.Map;
  */
 @Configuration
 @Import({InsertConsumer.class, UpdateConsumer.class, DeleteConsumer.class, EraseConsumer.class})
-@EnableConfigurationProperties(CanalRedisConfig.class)
-@ConditionalOnProperty(value = CanalRedisConfig.ENABLED, havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(CanalRedisProperties.class)
+@ConditionalOnProperty(value = CanalRedisProperties.ENABLED, havingValue = "true", matchIfMissing = true)
 @SuppressWarnings("rawtypes")
 public class CanalWorkerAutoConfiguration {
 
@@ -66,11 +66,11 @@ public class CanalWorkerAutoConfiguration {
     }
 
     @Bean(FLOW_OTTER_NAME)
-    public FlowOtter flowOtter(CanalRedisConfig canalRedisConfig) {
+    public FlowOtter flowOtter(CanalRedisProperties canalRedisProperties) {
         ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR);
         HandleSubscriber.Config config = new HandleSubscriber.Config(messageHandler,
                 applicationInfo, false);
-        ConnectConfig connectConfig = new ConnectConfig(canalRedisConfig.getInstance(),
+        ConnectConfig connectConfig = new ConnectConfig(canalRedisProperties.getInstance(),
                 RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
         return new FlowOtter(FlowOtter.Config.builder()
                 .canalConfig(canalConfig)

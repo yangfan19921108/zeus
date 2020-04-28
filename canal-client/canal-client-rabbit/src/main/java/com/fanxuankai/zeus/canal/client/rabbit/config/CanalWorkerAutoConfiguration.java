@@ -29,8 +29,8 @@ import java.util.Map;
  */
 @Configuration
 @Import({InsertConsumer.class, UpdateConsumer.class, DeleteConsumer.class})
-@EnableConfigurationProperties(CanalRabbitConfig.class)
-@ConditionalOnProperty(value = CanalRabbitConfig.ENABLE, havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(CanalRabbitProperties.class)
+@ConditionalOnProperty(value = CanalRabbitProperties.ENABLE, havingValue = "true", matchIfMissing = true)
 @SuppressWarnings("rawtypes")
 public class CanalWorkerAutoConfiguration {
 
@@ -65,7 +65,7 @@ public class CanalWorkerAutoConfiguration {
     }
 
     @Bean(FLOW_OTTER_NAME)
-    public FlowOtter flowOtter(CanalRabbitConfig canalRabbitConfig) {
+    public FlowOtter flowOtter(CanalRabbitProperties canalRabbitConfig) {
         ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR);
         HandleSubscriber.Config config = new HandleSubscriber.Config(messageHandler,
                 applicationInfo, canalRabbitConfig.getSkip());

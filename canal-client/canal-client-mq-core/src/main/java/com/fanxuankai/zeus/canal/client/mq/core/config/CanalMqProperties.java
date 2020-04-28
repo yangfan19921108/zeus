@@ -10,7 +10,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class CanalMqConfig {
+public class CanalMqProperties {
 
     protected static final String ENABLED = "enabled";
 
