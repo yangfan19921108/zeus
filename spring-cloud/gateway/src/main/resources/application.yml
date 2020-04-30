@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path= /admin/**
+          filters:
+            - StripPrefix=1
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        tags: version=1.0,author=fanxuankai
+        healthCheckInterval: 5s
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+  application:
+    name: gateway
+server:
+  port: 80

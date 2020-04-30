@@ -1,0 +1,27 @@
+spring:
+  cloud:
+    consul:
+      config:
+        # 配置文件示例: config/admin-service,test/data
+        # 激活
+        enabled: true
+        # yaml 格式, 共有四种 yaml、properties、files、key_value
+        format: yaml
+        # 前缀
+        prefix: config
+        # 服务名
+        default-context: admin-service
+        # 配置文件 key
+        data-key: data
+        # 环境分隔符
+        profile-separator: ","
+        # 观察机制
+        watch:
+          # 激活
+          enabled: true
+          # 刷新时间 ms
+          delay: 5000
+          # 等待时间 ms
+          wait-time: 55
+  profiles:
+    active: test

@@ -17,6 +17,7 @@
     <modules>
         <module>common</module>
         <module>canal-client</module>
+        <module>spring-cloud</module>
     </modules>
     <properties>
         <java.version>14</java.version>
