@@ -4,7 +4,6 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.aviator.Aviators;
 import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableCache;
 import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
-import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
@@ -18,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implements Flow.Subscriber<ContextWrapper> {
 
-    private final ConsumerInfo consumerInfo;
-    private Otter otter;
+    private final Otter otter;
+    private final Config config;
     private Flow.Subscription subscription;
 
-    public FilterSubscriber(Otter otter, ConsumerInfo consumerInfo) {
+    public FilterSubscriber(Otter otter, Config config) {
         this.otter = otter;
-        this.consumerInfo = consumerInfo;
+        this.config = config;
     }
 
     @Override
@@ -57,10 +57,12 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
                     .collect(Collectors.toList())
             );
             long l1 = System.currentTimeMillis() - l;
-            log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
-                    consumerInfo.getApplicationInfo().uniqueString(), batchId,
-                    messageWrapper.getRowDataCountBeforeFilter(),
-                    messageWrapper.getRowDataCountAfterFilter(), l1);
+            if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)) {
+                log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
+                        config.getConsumerInfo().getApplicationInfo().uniqueString(), batchId,
+                        messageWrapper.getRowDataCountBeforeFilter(),
+                        messageWrapper.getRowDataCountAfterFilter(), l1);
+            }
         }
         submit(item);
         subscription.request(1);
@@ -68,7 +70,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onError(Throwable throwable) {
-        log.error(String.format("%s %s", consumerInfo.getApplicationInfo().uniqueString(),
+        log.error(String.format("%s %s", config.getConsumerInfo().getApplicationInfo().uniqueString(),
                 throwable.getLocalizedMessage()), throwable);
         this.subscription.cancel();
         this.otter.stop();
@@ -76,12 +78,12 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onComplete() {
-        log.info("{} Done", consumerInfo.getApplicationInfo().uniqueString());
+        log.info("{} Done", config.getConsumerInfo().getApplicationInfo().uniqueString());
     }
 
     @SuppressWarnings("unchecked rawtypes")
     private void filterEntryRowData(EntryWrapper entryWrapper) {
-        MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
+        MessageConsumer consumer = config.getConsumerInfo().getConsumerMap().get(entryWrapper.getEventType());
         // 如果不能处理, 置空, return
         if (consumer == null || !consumer.canProcess(entryWrapper)) {
             entryWrapper.setAllRowDataList(Collections.emptyList());

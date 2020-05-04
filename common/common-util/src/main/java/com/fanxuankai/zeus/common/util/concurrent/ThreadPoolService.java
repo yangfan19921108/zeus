@@ -1,6 +1,7 @@
-package com.fanxuankai.zeus.canal.client.core.util;
+package com.fanxuankai.zeus.common.util.concurrent;
 
-import com.alibaba.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.fanxuankai.zeus.common.util.SystemProperties;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
@@ -15,6 +16,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class ThreadPoolService {
+
+    private static final String PROPERTY_PREFIX = "com.fanxuankai.zeus";
+    private static final String PROPERTY_CPS = PROPERTY_PREFIX + ".corePoolSize";
+    private static final String PROPERTY_KAT = PROPERTY_PREFIX + ".keepAliveTime";
 
     private ThreadPoolService() {
     }
@@ -38,8 +43,14 @@ public class ThreadPoolService {
         }
 
         private ThreadPoolExecutor threadPoolExecutor() {
-            return new ThreadPoolExecutor(20, 90, 0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("canal-%d").build());
+            int corePoolSize = SystemProperties.getInteger(PROPERTY_CPS)
+                    .orElse(Runtime.getRuntime().availableProcessors() * 2);
+            return new ThreadPoolExecutor(corePoolSize, corePoolSize * 2,
+                    SystemProperties.getLong(PROPERTY_KAT).orElse(60L), TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>(),
+                    new ThreadFactoryBuilder().setNameFormat("ZeusThreadPool-worker-%d").build());
         }
+
     }
+
 }

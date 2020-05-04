@@ -10,6 +10,7 @@ import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
 import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.common.util.concurrent.ThreadPoolService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,6 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -100,10 +100,10 @@ public class MessageHandler implements Handler<MessageWrapper> {
     private void doHandlePerformance(List<EntryWrapper> entryWrapperList, long batchId) throws Exception {
         // 异步处理
         List<Future<EntryWrapperProcess>> futureList = entryWrapperList.stream()
-                .map(entryWrapper -> ForkJoinPool.commonPool().submit(() -> {
+                .map(entryWrapper -> ThreadPoolService.getInstance().submit(() -> {
                     MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
                     if (consumer == null
-                            || !consumer.canProcess(entryWrapperList)
+                            || !consumer.canProcess(entryWrapper)
                             || existsLogfileOffset(entryWrapper, batchId)) {
                         return new EntryWrapperProcess(entryWrapper, null, null);
                     }
@@ -135,7 +135,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
     }
 
     private void logEntry(EntryWrapper entryWrapper, long batchId, long time) {
-        if (Objects.equals(canalConfig.getShowLog(), Boolean.TRUE)) {
+        if (Objects.equals(canalConfig.getShowEntryLog(), Boolean.TRUE)) {
             ConsumeEntryLogger.asyncLog(ConsumeEntryLogger.LogInfo
                     .builder()
                     .canalConfig(canalConfig)

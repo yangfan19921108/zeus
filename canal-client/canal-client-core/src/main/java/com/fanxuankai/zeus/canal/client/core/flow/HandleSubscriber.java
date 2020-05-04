@@ -1,14 +1,10 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
-import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
-import com.fanxuankai.zeus.canal.client.core.protocol.Handler;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
-import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 
@@ -20,6 +16,7 @@ import java.util.concurrent.SubmissionPublisher;
 @Slf4j
 public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implements Flow.Processor<ContextWrapper,
         ContextWrapper> {
+
     private final Otter otter;
     private final Config config;
     private Flow.Subscription subscription;
@@ -37,12 +34,13 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onNext(ContextWrapper item) {
-        if (!config.skip) {
+        if (!config.isSkip()) {
             long l = System.currentTimeMillis();
-            config.handler.handle(item.getMessageWrapper());
+            config.getHandler().handle(item.getMessageWrapper());
             long l1 = System.currentTimeMillis();
-            if (!item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
-                log.info("{} Handle batchId: {} time: {}ms", config.applicationInfo.uniqueString(),
+            if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)
+                    && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
+                log.info("{} Handle batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                         item.getMessageWrapper().getBatchId(), l1 - l);
             }
         }
@@ -52,7 +50,7 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onError(Throwable throwable) {
-        log.error(String.format("%s %s", config.applicationInfo.uniqueString(), throwable.getLocalizedMessage()),
+        log.error(String.format("%s %s", config.getApplicationInfo().uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
         this.subscription.cancel();
         this.otter.stop();
@@ -60,16 +58,6 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onComplete() {
-        log.info("{} Done", config.applicationInfo.uniqueString());
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class Config {
-        // 消息处理器
-        private final Handler<MessageWrapper> handler;
-        private final ApplicationInfo applicationInfo;
-        // 是否跳过而不处理
-        private final boolean skip;
+        log.info("{} Done", config.getApplicationInfo().uniqueString());
     }
 }

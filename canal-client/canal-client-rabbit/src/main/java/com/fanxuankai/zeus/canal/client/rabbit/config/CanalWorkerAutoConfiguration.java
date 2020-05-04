@@ -3,8 +3,8 @@ package com.fanxuankai.zeus.canal.client.rabbit.config;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.config.CanalWorker;
+import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.flow.FlowOtter;
-import com.fanxuankai.zeus.canal.client.core.flow.HandleSubscriber;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
@@ -14,20 +14,19 @@ import com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.DeleteConsumer;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.InsertConsumer;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.UpdateConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author fanxuankai
  */
-@Configuration
 @Import({InsertConsumer.class, UpdateConsumer.class, DeleteConsumer.class})
 @EnableConfigurationProperties(CanalRabbitProperties.class)
 @ConditionalOnProperty(value = CanalRabbitProperties.ENABLE, havingValue = "true", matchIfMissing = true)
@@ -39,14 +38,11 @@ public class CanalWorkerAutoConfiguration {
     private static final String MESSAGE_HANDLER_NAME = "rabbitMessageHandler";
     private static final String FLOW_OTTER_NAME = "rabbitFlowOtter";
 
-    @Resource
-    private CanalConfig canalConfig;
-    @Resource(name = CONSUMER_INFO_NAME)
-    private ConsumerInfo consumerInfo;
-    @Resource(name = MESSAGE_HANDLER_NAME)
-    private MessageHandler messageHandler;
-    @Resource(name = FLOW_OTTER_NAME)
-    private FlowOtter flowOtter;
+    private final CanalConfig canalConfig;
+
+    public CanalWorkerAutoConfiguration(CanalConfig canalConfig) {
+        this.canalConfig = canalConfig;
+    }
 
     @Bean(CONSUMER_INFO_NAME)
     public ConsumerInfo consumerInfo(InsertConsumer insertConsumer,
@@ -60,27 +56,29 @@ public class CanalWorkerAutoConfiguration {
     }
 
     @Bean(MESSAGE_HANDLER_NAME)
-    public MessageHandler messageHandler() {
+    public MessageHandler messageHandler(@Autowired @Qualifier(CONSUMER_INFO_NAME) ConsumerInfo consumerInfo) {
         return new MessageHandler(consumerInfo);
     }
 
     @Bean(FLOW_OTTER_NAME)
-    public FlowOtter flowOtter(CanalRabbitProperties canalRabbitConfig) {
+    public FlowOtter flowOtter(CanalRabbitProperties canalRabbitConfig,
+                               @Autowired @Qualifier(MESSAGE_HANDLER_NAME) MessageHandler messageHandler,
+                               @Autowired @Qualifier(CONSUMER_INFO_NAME) ConsumerInfo consumerInfo) {
         ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR);
-        HandleSubscriber.Config config = new HandleSubscriber.Config(messageHandler,
-                applicationInfo, canalRabbitConfig.getSkip());
         ConnectConfig connectConfig = new ConnectConfig(canalRabbitConfig.getInstance(),
                 MqConsumerScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
-        return new FlowOtter(FlowOtter.Config.builder()
+        return new FlowOtter(Config.builder()
+                .applicationInfo(applicationInfo)
                 .canalConfig(canalConfig)
                 .connectConfig(connectConfig)
                 .consumerInfo(consumerInfo)
-                .hsConfig(config)
+                .handler(messageHandler)
+                .skip(canalRabbitConfig.getSkip())
                 .build());
     }
 
     @Bean("rabbitCanalWorker")
-    public CanalWorker canalWorker() {
+    public CanalWorker canalWorker(@Autowired @Qualifier(FLOW_OTTER_NAME) FlowOtter flowOtter) {
         CanalWorker.Config config = new CanalWorker.Config(flowOtter,
                 new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR));
         return new CanalWorker(config);

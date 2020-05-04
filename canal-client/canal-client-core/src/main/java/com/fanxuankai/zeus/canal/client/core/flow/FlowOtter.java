@@ -1,12 +1,7 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
-import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
-import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
 import com.fanxuankai.zeus.canal.client.core.model.Context;
 import com.fanxuankai.zeus.canal.client.core.protocol.AbstractOtter;
-import lombok.Builder;
-import lombok.Getter;
 
 import java.util.concurrent.SubmissionPublisher;
 
@@ -25,20 +20,19 @@ public class FlowOtter extends AbstractOtter {
         // 构建 Flow
 
         // 流转换订阅者
-        ConvertProcessor convertProcessor = new ConvertProcessor(new ConvertProcessor.Config(this,
-                config.getCanalConfig(), config.hsConfig.getApplicationInfo()));
+        ConvertProcessor convertProcessor = new ConvertProcessor(this, config);
         publisher.subscribe(convertProcessor);
 
         // 过滤器订阅者
-        FilterSubscriber filterSubscriber = new FilterSubscriber(this, config.consumerInfo);
+        FilterSubscriber filterSubscriber = new FilterSubscriber(this, config);
         convertProcessor.subscribe(filterSubscriber);
 
         // 流处理订阅者
-        HandleSubscriber handleSubscriber = new HandleSubscriber(this, config.hsConfig);
+        HandleSubscriber handleSubscriber = new HandleSubscriber(this, config);
         filterSubscriber.subscribe(handleSubscriber);
 
         // 流确认订阅者
-        ConfirmSubscriber confirmSubscriber = new ConfirmSubscriber(this, config.hsConfig.getApplicationInfo());
+        ConfirmSubscriber confirmSubscriber = new ConfirmSubscriber(this, config);
         handleSubscriber.subscribe(confirmSubscriber);
     }
 
@@ -53,12 +47,4 @@ public class FlowOtter extends AbstractOtter {
         publisher.close();
     }
 
-    @Builder
-    @Getter
-    public static class Config {
-        private final ConnectConfig connectConfig;
-        private final HandleSubscriber.Config hsConfig;
-        private final ConsumerInfo consumerInfo;
-        private final CanalConfig canalConfig;
-    }
 }

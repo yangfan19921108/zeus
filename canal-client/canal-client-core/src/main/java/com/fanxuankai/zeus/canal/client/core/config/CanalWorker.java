@@ -7,6 +7,7 @@ import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.common.util.concurrent.ThreadPoolService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Canal 工作者
@@ -74,7 +78,7 @@ public class CanalWorker implements ApplicationRunner {
         }
         log.info("{} Running...", key);
         shouldClearTagWhenExit = true;
-        ForkJoinPool.commonPool().execute(config.otter::start);
+        ThreadPoolService.getInstance().execute(config.otter::start);
         log.info("{} Start", key);
         return true;
     }

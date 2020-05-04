@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,8 @@ public abstract class AbstractOtter implements Otter {
                     message.setEntries(filter(message.getEntries()));
                     long batchId = message.getId();
                     if (batchId != -1) {
-                        if (!message.getEntries().isEmpty()) {
+                        if (Objects.equals(canalConfig.getShowEventLog(), Boolean.TRUE)
+                                && !message.getEntries().isEmpty()) {
                             log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId, l1 - l);
                         }
                         process(new Context(canalConnector, message));
@@ -94,6 +96,13 @@ public abstract class AbstractOtter implements Otter {
             log.info("{} Stop get data", subscriberName);
         }
     }
+
+    /**
+     * 处理
+     *
+     * @param context 上下文
+     */
+    protected abstract void process(Context context);
 
     /**
      * 只消费增、删、改、删表事件，其它事件暂不支持且会被忽略

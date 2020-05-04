@@ -4,14 +4,13 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author fanxuankai
  */
-public class EntryWrapper implements Serializable {
+public class EntryWrapper {
     private final CanalEntry.Entry raw;
     /**
      * RowChange 所有数据, 可变集合, 支持数据过滤

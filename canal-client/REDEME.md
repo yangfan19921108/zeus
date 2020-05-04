@@ -67,8 +67,10 @@ canal:
   #一般情况下是不需要的, 会造成阻塞
   #数据量大的时候, 可调此值减少 IO 次数
   # timeout-millis:
-  # 打印日志
-  #show-log: false
+  # 打印事件日志
+  #show-event-log: false
+  # 打印 Entry 日志
+  #show-entry-log: false
   # 打印数据明细日志
   #show-row-change: false
   # 格式化数据明细日志

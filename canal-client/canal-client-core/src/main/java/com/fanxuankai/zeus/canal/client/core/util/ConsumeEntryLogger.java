@@ -5,6 +5,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
+import com.fanxuankai.zeus.common.util.concurrent.ThreadPoolService;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.*;
@@ -25,7 +25,7 @@ import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.*;
 public class ConsumeEntryLogger {
 
     public static void asyncLog(LogInfo logInfo) {
-        ForkJoinPool.commonPool().execute(() -> {
+        ThreadPoolService.getInstance().execute(() -> {
             EntryWrapper entryWrapper = logInfo.entryWrapper;
             LogRowChange logRowChange = new LogRowChange(logInfo.applicationInfo.uniqueString(), logInfo.batchId,
                     logInfo.time, entryWrapper);

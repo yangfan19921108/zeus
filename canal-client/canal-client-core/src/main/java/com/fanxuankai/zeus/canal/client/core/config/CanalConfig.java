@@ -59,9 +59,14 @@ public class CanalConfig {
     private Long timeoutMillis;
 
     /**
-     * 打印日志
+     * 打印事件日志
      */
-    private Boolean showLog = Boolean.FALSE;
+    private Boolean showEventLog = Boolean.FALSE;
+
+    /**
+     * 打印 Entry 日志
+     */
+    private Boolean showEntryLog = Boolean.FALSE;
 
     /**
      * 显示数据变动的日志
