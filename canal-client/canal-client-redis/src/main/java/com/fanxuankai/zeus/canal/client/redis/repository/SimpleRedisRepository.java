@@ -81,7 +81,7 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
     @Override
     public Object getOne(Object id) {
         Optional<Object> optional = findById(id);
-        if (optional.isEmpty()) {
+        if (!optional.isPresent()) {
             throw new NullPointerException();
         }
         return optional.get();
@@ -112,7 +112,7 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
     @Override
     public Object getOne(CombineKeyModel combineKeyModel) {
         Optional<Object> optional = findOne(combineKeyModel);
-        if (optional.isEmpty()) {
+        if (!optional.isPresent()) {
             throw new NullPointerException();
         }
         return optional.get();
@@ -138,7 +138,7 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
     @Override
     public Object getOne(UniqueKey uniqueKey) {
         Optional<Object> optional = findOne(uniqueKey);
-        if (optional.isEmpty()) {
+        if (!optional.isPresent()) {
             throw new NullPointerException();
         }
         return optional.get();

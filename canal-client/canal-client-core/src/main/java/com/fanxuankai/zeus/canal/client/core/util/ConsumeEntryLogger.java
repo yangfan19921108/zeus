@@ -5,7 +5,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
-import com.fanxuankai.zeus.common.util.concurrent.ThreadPoolService;
+import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

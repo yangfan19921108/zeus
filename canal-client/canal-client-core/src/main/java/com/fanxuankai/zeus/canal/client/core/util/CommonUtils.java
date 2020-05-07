@@ -13,11 +13,24 @@ import java.util.stream.Collectors;
  * @author fanxuankai
  */
 public class CommonUtils {
+
+    /**
+     * 所有数据列转为 Map
+     *
+     * @param columnList 每一列
+     * @return HashMap
+     */
     public static Map<String, String> toMap(List<CanalEntry.Column> columnList) {
         return columnList.stream()
                 .collect(Collectors.toMap(CanalEntry.Column::getName, CanalEntry.Column::getValue));
     }
 
+    /**
+     * 所有数据列转为 Map
+     *
+     * @param columnList 每一列
+     * @return HashMap
+     */
     public static Map<String, CanalEntry.Column> toColumnMap(List<CanalEntry.Column> columnList) {
         return columnList.stream()
                 .collect(Collectors.toMap(CanalEntry.Column::getName, o -> o));

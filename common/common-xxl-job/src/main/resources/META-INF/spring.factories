@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.common.xxl.job.config.XxlJobAutoConfiguration
+  com.fanxuankai.zeus.xxl.job.config.XxlJobAutoConfiguration

@@ -1,5 +1,6 @@
 package com.fanxuankai.zeus.canal.client.xxl.consumer;
 
+import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.mq.core.consumer.UpdateProcessable;
 
 /**
@@ -9,4 +10,7 @@ import com.fanxuankai.zeus.canal.client.mq.core.consumer.UpdateProcessable;
  */
 public class UpdateConsumer extends AbstractXxlMqConsumer implements UpdateProcessable {
 
+    public UpdateConsumer(ApplicationInfo applicationInfo) {
+        super(applicationInfo);
+    }
 }

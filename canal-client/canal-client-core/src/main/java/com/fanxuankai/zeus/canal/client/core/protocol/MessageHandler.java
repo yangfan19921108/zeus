@@ -3,14 +3,14 @@ package com.fanxuankai.zeus.canal.client.core.protocol;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
-import com.fanxuankai.zeus.canal.client.core.execption.HandleException;
 import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
 import com.fanxuankai.zeus.canal.client.core.util.ConsumeEntryLogger;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
-import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
-import com.fanxuankai.zeus.common.util.concurrent.ThreadPoolService;
+import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
+import com.google.common.base.Stopwatch;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +66,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
                 doHandle(entryWrapperList, messageWrapper.getBatchId());
             }
         } catch (Exception e) {
-            throw new HandleException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -89,9 +90,10 @@ public class MessageHandler implements Handler<MessageWrapper> {
 
     @SuppressWarnings("rawtypes unchecked")
     private long consume(MessageConsumer consumer, Object process, EntryWrapper entryWrapper) {
-        long ll = System.currentTimeMillis();
+        Stopwatch sw = Stopwatch.createStarted();
         consumer.consume(process);
-        long time = System.currentTimeMillis() - ll;
+        sw.stop();
+        long time = sw.elapsed(TimeUnit.MILLISECONDS);
         putOffset(entryWrapper.getLogfileName(), entryWrapper.getLogfileOffset());
         return time;
     }
@@ -123,7 +125,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
         }
     }
 
-    private boolean existsLogfileOffset(EntryWrapper entryWrapper, long batchId) throws HandleException {
+    private boolean existsLogfileOffset(EntryWrapper entryWrapper, long batchId) {
         String logfileName = entryWrapper.getLogfileName();
         long logfileOffset = entryWrapper.getLogfileOffset();
         if (existsLogfileOffset(logfileName, logfileOffset)) {

@@ -19,7 +19,7 @@ https://www.processon.com/view/link/5e7d8f28e4b08e4e24428c6c
 
 ### 环境
 - Canal 服务
-- JDK 14
+- JDK 8
 - Redis
 
 ### 核心注解

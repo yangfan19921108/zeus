@@ -17,4 +17,5 @@ public interface Processable extends MessageConsumer<MessageInfo> {
      */
     @Override
     MessageInfo process(EntryWrapper entryWrapper);
+
 }

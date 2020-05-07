@@ -8,6 +8,7 @@ import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import com.fanxuankai.zeus.canal.client.core.model.Context;
 import com.fanxuankai.zeus.canal.client.core.util.CanalConnectorHolder;
+import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -62,7 +63,7 @@ public abstract class AbstractOtter implements Otter {
                 try {
                     // 获取指定数量的数据
                     CanalConnector canalConnector = CanalConnectorHolder.get();
-                    long l = System.currentTimeMillis();
+                    Stopwatch sw = Stopwatch.createStarted();
                     Message message;
                     if (canalConfig.getTimeoutMillis() == null) {
                         message = canalConnector.getWithoutAck(canalConfig.getBatchSize());
@@ -70,13 +71,14 @@ public abstract class AbstractOtter implements Otter {
                         message = canalConnector.getWithoutAck(canalConfig.getBatchSize(),
                                 canalConfig.getTimeoutMillis(), TimeUnit.MILLISECONDS);
                     }
-                    long l1 = System.currentTimeMillis();
+                    sw.stop();
                     message.setEntries(filter(message.getEntries()));
                     long batchId = message.getId();
                     if (batchId != -1) {
                         if (Objects.equals(canalConfig.getShowEventLog(), Boolean.TRUE)
                                 && !message.getEntries().isEmpty()) {
-                            log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId, l1 - l);
+                            log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId,
+                                    sw.elapsed(TimeUnit.MILLISECONDS));
                         }
                         process(new Context(canalConnector, message));
                     }

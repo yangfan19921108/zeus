@@ -23,7 +23,12 @@ public interface DeleteProcessable extends Processable {
         return new MessageInfo(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.DELETE),
                 entryWrapper.getAllRowDataList()
                         .stream()
-                        .map(rowData -> MqUtils.json(rowData.getBeforeColumnsList()))
+                        .map(rowData -> {
+                            MessageInfo.Message message = new MessageInfo.Message();
+                            message.setMd5(MqUtils.md5(rowData.getBeforeColumnsList()));
+                            message.setData(MqUtils.json(rowData.getBeforeColumnsList()));
+                            return message;
+                        })
                         .collect(Collectors.toList()));
     }
 }

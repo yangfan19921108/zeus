@@ -10,6 +10,9 @@ import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
+import com.fanxuankai.zeus.util.concurrent.Flow;
+import com.fanxuankai.zeus.util.concurrent.SubmissionPublisher;
+import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -18,8 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +34,6 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     private final Otter otter;
     private final Config config;
-    private Flow.Subscription subscription;
 
     public FilterSubscriber(Otter otter, Config config) {
         this.otter = otter;
@@ -40,45 +41,34 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
     }
 
     @Override
-    public void onSubscribe(Flow.Subscription subscription) {
-        this.subscription = subscription;
-        subscription.request(1);
-    }
-
-    @Override
     public void onNext(ContextWrapper item) {
         MessageWrapper messageWrapper = item.getMessageWrapper();
         if (!messageWrapper.getEntryWrapperList().isEmpty()) {
             long batchId = messageWrapper.getBatchId();
-            long l = System.currentTimeMillis();
-            messageWrapper.setEntryWrapperList(messageWrapper.getEntryWrapperList()
-                    .stream()
-                    .peek(this::filterEntryRowData)
-                    .collect(Collectors.toList())
-            );
-            long l1 = System.currentTimeMillis() - l;
+            Stopwatch sw = Stopwatch.createStarted();
+            messageWrapper.getEntryWrapperList().forEach(this::filterEntryRowData);
+            sw.stop();
             if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)) {
                 log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
                         config.getConsumerInfo().getApplicationInfo().uniqueString(), batchId,
                         messageWrapper.getRowDataCountBeforeFilter(),
-                        messageWrapper.getRowDataCountAfterFilter(), l1);
+                        messageWrapper.getRowDataCountAfterFilter(), sw.elapsed(TimeUnit.MILLISECONDS));
             }
         }
         submit(item);
-        subscription.request(1);
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-        log.error(String.format("%s %s", config.getConsumerInfo().getApplicationInfo().uniqueString(),
-                throwable.getLocalizedMessage()), throwable);
-        this.subscription.cancel();
-        this.otter.stop();
     }
 
     @Override
     public void onComplete() {
-        log.info("{} Done", config.getConsumerInfo().getApplicationInfo().uniqueString());
+        stop();
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+        log.error(String.format("%s %s", config.getApplicationInfo().uniqueString(), throwable.getLocalizedMessage()),
+                throwable);
+        onComplete();
+        this.otter.stop();
     }
 
     @SuppressWarnings("unchecked rawtypes")
@@ -136,5 +126,4 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
         }
         return true;
     }
-
 }

@@ -34,6 +34,7 @@ import java.util.Map;
 public class CanalWorkerAutoConfiguration {
 
     private static final String BEHAVIOR = "XxlMQ";
+    private static final String APPLICATION_INFO_NAME = "xxlApplicationInfo";
     private static final String CONSUMER_INFO_NAME = "xxlConsumerInfo";
     private static final String MESSAGE_HANDLER_NAME = "xxlMessageHandler";
     private static final String FLOW_OTTER_NAME = "xxlFlowOtter";
@@ -44,14 +45,35 @@ public class CanalWorkerAutoConfiguration {
         this.canalConfig = canalConfig;
     }
 
+    @Bean(APPLICATION_INFO_NAME)
+    public ApplicationInfo applicationInfo() {
+        return new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR);
+    }
+
+    @Bean
+    public InsertConsumer insertConsumer(@Autowired @Qualifier(APPLICATION_INFO_NAME) ApplicationInfo applicationInfo) {
+        return new InsertConsumer(applicationInfo);
+    }
+
+    @Bean
+    public UpdateConsumer updateConsumer(@Autowired @Qualifier(APPLICATION_INFO_NAME) ApplicationInfo applicationInfo) {
+        return new UpdateConsumer(applicationInfo);
+    }
+
+    @Bean
+    public DeleteConsumer deleteConsumer(@Autowired @Qualifier(APPLICATION_INFO_NAME) ApplicationInfo applicationInfo) {
+        return new DeleteConsumer(applicationInfo);
+    }
+
     @Bean(CONSUMER_INFO_NAME)
     public ConsumerInfo consumerInfo(InsertConsumer insertConsumer, UpdateConsumer updateConsumer,
-                                     DeleteConsumer deleteConsumer) {
+                                     DeleteConsumer deleteConsumer,
+                                     @Autowired @Qualifier(APPLICATION_INFO_NAME) ApplicationInfo applicationInfo) {
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(3);
         consumerMap.put(CanalEntry.EventType.INSERT, insertConsumer);
         consumerMap.put(CanalEntry.EventType.UPDATE, updateConsumer);
         consumerMap.put(CanalEntry.EventType.DELETE, deleteConsumer);
-        return new ConsumerInfo(consumerMap, new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR));
+        return new ConsumerInfo(consumerMap, applicationInfo);
     }
 
     @Bean(MESSAGE_HANDLER_NAME)
@@ -62,8 +84,8 @@ public class CanalWorkerAutoConfiguration {
     @Bean(FLOW_OTTER_NAME)
     public FlowOtter flowOtter(CanalXxlProperties canalXxlConfig,
                                @Autowired @Qualifier(CONSUMER_INFO_NAME) ConsumerInfo consumerInfo,
-                               @Autowired @Qualifier(MESSAGE_HANDLER_NAME) MessageHandler messageHandler) {
-        ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR);
+                               @Autowired @Qualifier(MESSAGE_HANDLER_NAME) MessageHandler messageHandler,
+                               @Autowired @Qualifier(APPLICATION_INFO_NAME) ApplicationInfo applicationInfo) {
         ConnectConfig connectConfig = new ConnectConfig(canalXxlConfig.getInstance(),
                 MqConsumerScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
         return new FlowOtter(Config.builder()
@@ -77,9 +99,9 @@ public class CanalWorkerAutoConfiguration {
     }
 
     @Bean("xxlCanalWorker")
-    public CanalWorker canalWorker(@Autowired @Qualifier(FLOW_OTTER_NAME) FlowOtter flowOtter) {
-        CanalWorker.Config config = new CanalWorker.Config(flowOtter,
-                new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR));
+    public CanalWorker canalWorker(@Autowired @Qualifier(FLOW_OTTER_NAME) FlowOtter flowOtter,
+                                   @Autowired @Qualifier(APPLICATION_INFO_NAME) ApplicationInfo applicationInfo) {
+        CanalWorker.Config config = new CanalWorker.Config(flowOtter, applicationInfo);
         return new CanalWorker(config);
     }
 

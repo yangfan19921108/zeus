@@ -23,7 +23,13 @@ public interface UpdateProcessable extends Processable {
         return new MessageInfo(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.UPDATE),
                 entryWrapper.getAllRowDataList()
                         .stream()
-                        .map(rowData -> MqUtils.json(rowData.getBeforeColumnsList(), rowData.getAfterColumnsList()))
+                        .map(rowData -> {
+                            MessageInfo.Message message = new MessageInfo.Message();
+                            message.setMd5(MqUtils.md5(rowData.getAfterColumnsList()));
+                            message.setData(MqUtils.json(rowData.getBeforeColumnsList(),
+                                    rowData.getAfterColumnsList()));
+                            return message;
+                        })
                         .collect(Collectors.toList()));
     }
 

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.fanxuankai.zeus</groupId>
         <artifactId>common</artifactId>
-        <version>0.0.5</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>common-data-redis</artifactId>
     <dependencies>
@@ -25,6 +25,10 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
     </dependencies>
 </project>

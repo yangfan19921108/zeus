@@ -2,12 +2,14 @@ package com.fanxuankai.zeus.canal.client.mq.core.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableMetadata;
 import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.util.QueueNameUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.mq.core.metadata.CanalToMqMetadata;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -20,6 +22,14 @@ import static com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner.
  * @author fanxuankai
  */
 public class MqUtils {
+
+    public static String md5(List<CanalEntry.Column> columns) {
+        JSONObject jsonObject = new JSONObject(columns.size(), true);
+        columns.forEach(column -> jsonObject.put(column.getName(), column.getValue()));
+        String jsonString = jsonObject.toString();
+        return DigestUtils.md5Hex(jsonString);
+    }
+
     /**
      * 生成消息主题
      *

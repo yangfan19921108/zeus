@@ -5,6 +5,7 @@ import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableCache;
 import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableMetadata;
 import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -22,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -81,10 +83,11 @@ public class InterfaceBeanScanner<I, A extends Annotation, M> {
                         .forPackages(EnableCanalAttributes.getBasePackage())
                         .setScanners(new SubTypesScanner())
                 );
-        long l = System.currentTimeMillis();
+        Stopwatch sw = Stopwatch.createStarted();
         Set<Class<? extends I>> interfaceBeanClasses = r.getSubTypesOf(iClass);
+        sw.stop();
         log.info("Finished {} scanning in {}ms. Found {} {} interfaces.", iClass.getSimpleName(),
-                System.currentTimeMillis() - l, interfaceBeanClasses.size(), iClass.getSimpleName());
+                sw.elapsed(TimeUnit.MILLISECONDS), interfaceBeanClasses.size(), iClass.getSimpleName());
         List<Bean> beans = Lists.newArrayList();
         for (Class<? extends I> interfaceBeanClass : interfaceBeanClasses) {
             if (!iPredicate.test(interfaceBeanClass)) {
