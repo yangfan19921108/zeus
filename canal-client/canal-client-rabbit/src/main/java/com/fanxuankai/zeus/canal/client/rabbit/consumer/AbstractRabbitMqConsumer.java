@@ -20,7 +20,8 @@ public abstract class AbstractRabbitMqConsumer extends AbstractMqConsumer {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void consume(MessageInfo messageInfo) {
-        messageInfo.getMessages().forEach(s -> rabbitTemplate.convertAndSend(messageInfo.getRoutingKey(), s));
+        messageInfo.getMessages().forEach(message ->
+                rabbitTemplate.convertAndSend(messageInfo.getRoutingKey(), message.getData()));
     }
 
 }
