@@ -20,9 +20,16 @@ public @interface Filter {
     String aviatorExpression() default "";
 
     /**
-     * 指定需要值发生变化的属性名
+     * 属性值发生变化
      *
-     * @return 类属性名
+     * @return 属性名
      */
     String[] updatedFields() default {};
+
+    /**
+     * 任一属性的值发生变化
+     *
+     * @return 默认为 false
+     */
+    boolean anyFieldMatch() default false;
 }
