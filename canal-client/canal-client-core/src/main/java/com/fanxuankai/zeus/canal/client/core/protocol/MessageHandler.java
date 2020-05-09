@@ -9,8 +9,8 @@ import com.fanxuankai.zeus.canal.client.core.util.ConsumeEntryLogger;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
-import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
-import com.fanxuankai.zeus.common.util.concurrent.ThreadPoolService;
+import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +21,7 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -99,8 +100,9 @@ public class MessageHandler implements Handler<MessageWrapper> {
     @SuppressWarnings("rawtypes unchecked")
     private void doHandlePerformance(List<EntryWrapper> entryWrapperList, long batchId) throws Exception {
         // 异步处理
+        ExecutorService executorService = ThreadPoolService.getInstance();
         List<Future<EntryWrapperProcess>> futureList = entryWrapperList.stream()
-                .map(entryWrapper -> ThreadPoolService.getInstance().submit(() -> {
+                .map(entryWrapper -> executorService.submit(() -> {
                     MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
                     if (consumer == null
                             || !consumer.canProcess(entryWrapper)

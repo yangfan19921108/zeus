@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.common.xxl.mq.config.XxlMqAutoConfiguration
+  com.fanxuankai.zeus.xxl.mq.config.XxlMqAutoConfiguration

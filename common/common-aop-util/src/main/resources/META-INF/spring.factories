@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.common.aop.util.config.LogAutoConfiguration
+  com.fanxuankai.zeus.aop.util.config.LogAutoConfiguration

@@ -1,8 +1,8 @@
 package com.fanxuankai.zeus.spring.cloud.admin.web;
 
-import com.fanxuankai.zeus.common.aop.util.annotation.Log;
-import com.fanxuankai.zeus.common.util.concurrent.Threads;
+import com.fanxuankai.zeus.aop.util.annotation.Log;
 import com.fanxuankai.zeus.spring.cloud.admin.config.AdminProperties;
+import com.fanxuankai.zeus.util.concurrent.Threads;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

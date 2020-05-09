@@ -1,3 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.common.data.redis.config.RedisTemplateAutoConfiguration,\
-  com.fanxuankai.zeus.common.data.redis.config.LockAutoConfiguration
+  com.fanxuankai.zeus.data.redis.config.RedisTemplateAutoConfiguration,\
+  com.fanxuankai.zeus.data.redis.config.LockAutoConfiguration

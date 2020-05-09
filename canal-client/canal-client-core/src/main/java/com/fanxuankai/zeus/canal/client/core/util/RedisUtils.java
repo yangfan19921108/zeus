@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.canal.client.core.util;
 
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
-import com.fanxuankai.zeus.common.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
