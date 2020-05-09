@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
  *
  * @author fanxuankai
  */
-public class JavassistBeanGenerator implements MqConsumer<String> {
+public class JavassistBeanGenerator {
 
     @SuppressWarnings("rawtypes")
     public static Class<?> generateXxlMqConsumer(Class<? extends MqConsumer> mqConsumer, Class<?> domainClass,

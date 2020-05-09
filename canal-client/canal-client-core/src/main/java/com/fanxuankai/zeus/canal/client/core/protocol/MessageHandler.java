@@ -101,8 +101,9 @@ public class MessageHandler implements Handler<MessageWrapper> {
     @SuppressWarnings("rawtypes unchecked")
     private void doHandlePerformance(List<EntryWrapper> entryWrapperList, long batchId) throws Exception {
         // 异步处理
+        ExecutorService executorService = ThreadPoolService.getInstance();
         List<Future<EntryWrapperProcess>> futureList = entryWrapperList.stream()
-                .map(entryWrapper -> ThreadPoolService.getInstance().submit(() -> {
+                .map(entryWrapper -> executorService.submit(() -> {
                     MessageConsumer consumer = consumerInfo.getConsumerMap().get(entryWrapper.getEventType());
                     if (consumer == null
                             || !consumer.canProcess(entryWrapper)
