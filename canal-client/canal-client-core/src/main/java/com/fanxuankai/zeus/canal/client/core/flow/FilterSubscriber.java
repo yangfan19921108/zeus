@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 过滤订阅者
@@ -95,22 +97,8 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
     private boolean filterRowData(CanalEntry.RowData rowData, FilterMetadata filterMetadata, Class<?> domainType) {
         Map<String, CanalEntry.Column> beforeColumnMap = CommonUtils.toColumnMap(rowData.getBeforeColumnsList());
         Map<String, CanalEntry.Column> afterColumnMap = CommonUtils.toColumnMap(rowData.getAfterColumnsList());
-        List<String> updatedFields = filterMetadata.getUpdatedFields();
-        if (!CollectionUtils.isEmpty(updatedFields)) {
-            // 新增或者修改
-            if (!CollectionUtils.isEmpty(afterColumnMap)) {
-                boolean allMatch = afterColumnMap.entrySet()
-                        .stream()
-                        .filter(entry -> updatedFields.contains(entry.getKey()))
-                        .allMatch(entry -> {
-                            CanalEntry.Column oldColumn = beforeColumnMap.get(entry.getKey());
-                            return oldColumn == null || entry.getValue().getUpdated();
-                        });
-                if (!allMatch) {
-                    return false;
-                }
-            }
-            // 删除默认为已全部修改
+        if (!filterRowDataWithUpdatedFields(beforeColumnMap, afterColumnMap, filterMetadata)) {
+            return false;
         }
         String aviatorExpression = filterMetadata.getAviatorExpression();
         if (StringUtils.isNotBlank(aviatorExpression)) {
@@ -122,6 +110,29 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             if (!CollectionUtils.isEmpty(beforeColumnMap)) {
                 return Aviators.exec(CommonUtils.toMap(rowData.getBeforeColumnsList()), aviatorExpression,
                         domainType);
+            }
+        }
+        return true;
+    }
+
+    private boolean filterRowDataWithUpdatedFields(Map<String, CanalEntry.Column> beforeColumnMap,
+                                                   Map<String, CanalEntry.Column> afterColumnMap,
+                                                   FilterMetadata filterMetadata) {
+        List<String> updatedFields = filterMetadata.getUpdatedFields();
+        if (!CollectionUtils.isEmpty(updatedFields)) {
+            // 只考虑新增或者修改, 删除默认为已全部修改
+            if (!CollectionUtils.isEmpty(afterColumnMap)) {
+                Stream<Map.Entry<String, CanalEntry.Column>> stream = afterColumnMap.entrySet()
+                        .parallelStream()
+                        .filter(entry -> updatedFields.contains(entry.getKey()));
+                Predicate<Map.Entry<String, CanalEntry.Column>> predicate = entry -> {
+                    CanalEntry.Column oldColumn = beforeColumnMap.get(entry.getKey());
+                    return oldColumn == null || entry.getValue().getUpdated();
+                };
+                if (filterMetadata.isAnyFieldMatch()) {
+                    return stream.anyMatch(predicate);
+                }
+                return stream.allMatch(predicate);
             }
         }
         return true;

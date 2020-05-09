@@ -20,12 +20,14 @@ import java.util.stream.Collectors;
 public class FilterMetadata {
     private String aviatorExpression = "";
     private List<String> updatedFields = Collections.emptyList();
+    private boolean anyFieldMatch;
 
     public FilterMetadata(Filter filter) {
         this.aviatorExpression = filter.aviatorExpression();
         this.updatedFields = Arrays.stream(filter.updatedFields())
                 .map(s -> CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, s))
                 .collect(Collectors.toList());
+        this.anyFieldMatch = filter.anyFieldMatch();
     }
 
     public FilterMetadata() {
