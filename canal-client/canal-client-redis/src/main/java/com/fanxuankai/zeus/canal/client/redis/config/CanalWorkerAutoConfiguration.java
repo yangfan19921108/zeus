@@ -14,12 +14,9 @@ import com.fanxuankai.zeus.canal.client.redis.consumer.DeleteConsumer;
 import com.fanxuankai.zeus.canal.client.redis.consumer.EraseConsumer;
 import com.fanxuankai.zeus.canal.client.redis.consumer.InsertConsumer;
 import com.fanxuankai.zeus.canal.client.redis.consumer.UpdateConsumer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,61 +24,32 @@ import java.util.Map;
 /**
  * @author fanxuankai
  */
-@Import({InsertConsumer.class, UpdateConsumer.class, DeleteConsumer.class, EraseConsumer.class})
 @EnableConfigurationProperties(CanalRedisProperties.class)
 @ConditionalOnProperty(value = CanalRedisProperties.ENABLED, havingValue = "true", matchIfMissing = true)
 @SuppressWarnings("rawtypes")
 public class CanalWorkerAutoConfiguration {
 
-    private static final String BEHAVIOR = "Redis";
-    private static final String CONSUMER_INFO_NAME = "redisConsumerInfo";
-    private static final String MESSAGE_HANDLER_NAME = "redisMessageHandler";
-    private static final String FLOW_OTTER_NAME = "redisFlowOtter";
-
-    private final CanalConfig canalConfig;
-
-    public CanalWorkerAutoConfiguration(CanalConfig canalConfig) {
-        this.canalConfig = canalConfig;
-    }
-
-    @Bean(CONSUMER_INFO_NAME)
-    public ConsumerInfo consumerInfo(InsertConsumer insertConsumer, UpdateConsumer updateConsumer,
-                                     DeleteConsumer deleteConsumer, EraseConsumer eraseConsumer) {
+    @Bean("redisCanalWorker")
+    public CanalWorker canalWorker(CanalConfig canalConfig, CanalRedisProperties canalRedisProperties) {
+        ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), "Redis");
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(4);
+        InsertConsumer insertConsumer = new InsertConsumer();
+        DeleteConsumer deleteConsumer = new DeleteConsumer();
         consumerMap.put(CanalEntry.EventType.INSERT, insertConsumer);
-        consumerMap.put(CanalEntry.EventType.UPDATE, updateConsumer);
+        consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(insertConsumer, deleteConsumer));
         consumerMap.put(CanalEntry.EventType.DELETE, deleteConsumer);
-        consumerMap.put(CanalEntry.EventType.ERASE, eraseConsumer);
-        return new ConsumerInfo(consumerMap, new ApplicationInfo(canalConfig.getApplicationName(),
-                BEHAVIOR));
-    }
-
-    @Bean(MESSAGE_HANDLER_NAME)
-    public MessageHandler messageHandler(@Autowired @Qualifier(CONSUMER_INFO_NAME) ConsumerInfo consumerInfo) {
-        return new MessageHandler(consumerInfo);
-    }
-
-    @Bean(FLOW_OTTER_NAME)
-    public FlowOtter flowOtter(CanalRedisProperties canalRedisProperties,
-                               @Autowired @Qualifier(MESSAGE_HANDLER_NAME) MessageHandler messageHandler,
-                               @Autowired @Qualifier(CONSUMER_INFO_NAME) ConsumerInfo consumerInfo) {
-        ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR);
-        ConnectConfig connectConfig = new ConnectConfig(canalRedisProperties.getInstance(),
-                RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
-        return new FlowOtter(Config.builder()
+        consumerMap.put(CanalEntry.EventType.ERASE, new EraseConsumer());
+        ConsumerInfo consumerInfo = new ConsumerInfo(consumerMap, applicationInfo);
+        MessageHandler messageHandler = new MessageHandler(consumerInfo);
+        FlowOtter otter = new FlowOtter(Config.builder()
                 .applicationInfo(applicationInfo)
                 .canalConfig(canalConfig)
-                .connectConfig(connectConfig)
+                .connectConfig(new ConnectConfig(canalRedisProperties.getInstance(),
+                        RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo))
                 .consumerInfo(consumerInfo)
                 .handler(messageHandler)
                 .skip(Boolean.FALSE)
                 .build());
-    }
-
-    @Bean("redisCanalWorker")
-    public CanalWorker canalWorker(@Autowired @Qualifier(FLOW_OTTER_NAME) FlowOtter flowOtter) {
-        CanalWorker.Config config = new CanalWorker.Config(flowOtter,
-                new ApplicationInfo(canalConfig.getApplicationName(), BEHAVIOR));
-        return new CanalWorker(config);
+        return new CanalWorker(new CanalWorker.Config(otter, applicationInfo));
     }
 }

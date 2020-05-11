@@ -1,12 +1,6 @@
 server:
   port: 6766
 spring:
-  cloud:
-    config:
-      discovery:
-        service-id: config
-        enabled: true
-      name: admin-service
   application:
     name: admin-service
   datasource:
@@ -42,14 +36,6 @@ spring:
           max-attempts: 3
           max-interval: 5000
         default-requeue-rejected: false
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-# 开启Feign对Hystrix的支持
-feign:
-  hystrix:
-    enabled: true
 xxl:
   mq:
     admin:
@@ -69,10 +55,5 @@ canal:
   performance-threshold: 10000
   redis:
     instance: canal_client_example_redis
-    enabled: false
   rabbit:
     instance: canal_client_example_rabbit
-    # enabled: false
-  xxl:
-    instance: canal_client_example_xxl
-    enabled: false

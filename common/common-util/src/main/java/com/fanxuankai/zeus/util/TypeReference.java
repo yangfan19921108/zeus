@@ -1,11 +1,10 @@
-package com.fanxuankai.zeus.spring.context;
-
-import com.fanxuankai.zeus.util.GenericTypeUtils;
+package com.fanxuankai.zeus.util;
 
 /**
  * @author fanxuankai
  */
 public class TypeReference<T> {
+
     protected final Class<T> type;
 
     protected TypeReference() {

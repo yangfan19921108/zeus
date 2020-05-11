@@ -7,16 +7,15 @@ import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,10 +32,7 @@ public class CanalWorker implements ApplicationRunner {
 
     private final Config config;
     private final ScheduledExecutorService scheduledExecutor;
-    @Resource
-    private CanalConfig canalConfig;
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+
     /**
      * 应用退出时应清除 canal running 标记
      */
@@ -58,7 +54,7 @@ public class CanalWorker implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         key = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 config.applicationInfo.uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
-
+        CanalConfig canalConfig = ApplicationContexts.getBean(CanalConfig.class);
         if (Objects.equals(canalConfig.getRetryStart(), Boolean.TRUE)) {
             scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
                 if (retryStart()) {
@@ -72,7 +68,7 @@ public class CanalWorker implements ApplicationRunner {
     }
 
     private boolean retryStart() {
-        if (!Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, true))) {
+        if (!Boolean.TRUE.equals(RedisUtils.redisTemplate().opsForValue().setIfAbsent(key, true))) {
             log.info("{} Exists", key);
             return false;
         }
@@ -87,7 +83,7 @@ public class CanalWorker implements ApplicationRunner {
     public void preDestroy() {
         config.otter.stop();
         if (shouldClearTagWhenExit) {
-            redisTemplate.delete(key);
+            RedisUtils.redisTemplate().delete(key);
             log.info("{} Canal stop", key);
         }
     }

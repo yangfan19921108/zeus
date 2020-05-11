@@ -27,6 +27,5 @@ public class CanalMqProperties {
     /**
      * 是否激活
      */
-    private boolean enabled = Boolean.TRUE;
-
+    private Boolean enabled = Boolean.TRUE;
 }

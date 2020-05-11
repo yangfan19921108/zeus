@@ -14,10 +14,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ApplicationInfo {
-    private final String name;
-    private final String behavior;
+    private final String serviceName;
+    private final String consumerName;
 
     public String uniqueString() {
-        return name + CommonConstants.SEPARATOR + behavior;
+        return serviceName + CommonConstants.SEPARATOR + consumerName;
     }
 }

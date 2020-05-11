@@ -19,7 +19,7 @@ public class RedisConstants {
      */
     public static final String CANAL_RUNNING_TAG = "CanalRunning";
     /**
-     * xxl mq 防重标记
+     * mq 防重标记
      */
-    public static final String XXL_MQ_CONSUME = "XxlMqConsume";
+    public static final String MQ_CONSUME = "MqConsume";
 }

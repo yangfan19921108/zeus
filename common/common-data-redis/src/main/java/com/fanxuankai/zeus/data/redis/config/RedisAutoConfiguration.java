@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
-public class RedisTemplateAutoConfiguration {
+public class RedisAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

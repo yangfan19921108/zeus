@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 
 import static com.fanxuankai.zeus.util.concurrent.Flow.DEFAULT_BUFFER_SIZE;
 
@@ -18,7 +17,7 @@ public class SubmissionPublisher<T> implements Flow.Publisher<T>, AutoCloseable 
     private final int maxBufferCapacity;
 
     public SubmissionPublisher() {
-        this(ForkJoinPool.commonPool(), DEFAULT_BUFFER_SIZE);
+        this(ThreadPoolService.getInstance(), DEFAULT_BUFFER_SIZE);
     }
 
     public SubmissionPublisher(Executor executor, int maxBufferCapacity) {
@@ -82,7 +81,9 @@ public class SubmissionPublisher<T> implements Flow.Publisher<T>, AutoCloseable 
 
         @Override
         public void cancel() {
+            this.items.clear();
             this.requests.clear();
+            stop();
         }
 
         private void consume() {

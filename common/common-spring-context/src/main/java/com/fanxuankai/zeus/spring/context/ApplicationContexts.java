@@ -1,5 +1,6 @@
 package com.fanxuankai.zeus.spring.context;
 
+import com.fanxuankai.zeus.util.TypeReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
@@ -17,6 +18,10 @@ public class ApplicationContexts implements ApplicationContextAware {
 
     public static <T> T getBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
+    }
+
+    public static <T> T getBean(TypeReference<T> type) {
+        return applicationContext.getBean(type.getType());
     }
 
     public static Resource getResource(String location) {
