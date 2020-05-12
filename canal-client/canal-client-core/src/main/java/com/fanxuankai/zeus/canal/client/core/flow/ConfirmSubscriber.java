@@ -19,10 +19,17 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
 
     private final Otter otter;
     private final Config config;
+    private Flow.Subscription subscription;
 
     public ConfirmSubscriber(Otter otter, Config config) {
         this.otter = otter;
         this.config = config;
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(1);
     }
 
     @Override
@@ -35,12 +42,19 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
             log.info("{} Confirm batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                     item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));
         }
+        subscription.request(1);
     }
 
     @Override
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", config.getApplicationInfo().uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
+        this.subscription.cancel();
         this.otter.stop();
+    }
+
+    @Override
+    public void onComplete() {
+        log.info("{} Done", config.getApplicationInfo().uniqueString());
     }
 }

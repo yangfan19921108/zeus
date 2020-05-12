@@ -17,7 +17,7 @@ public class FlowOtter extends AbstractOtter {
     private final Config config;
 
     public FlowOtter(Config config) {
-        super(config.getConnectConfig());
+        super(config.getConnectConfig(), config.getCanalConfig());
         this.config = config;
         publisher = new SubmissionPublisher<>();
     }

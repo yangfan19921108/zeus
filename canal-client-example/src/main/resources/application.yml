@@ -1,0 +1,59 @@
+server:
+  port: 6766
+spring:
+  application:
+    name: admin-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/canal_client_example?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: HzB!OPxxE$5CwJIZ
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 5000
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+  # redis:
+  #   cluster:
+  #     nodes: localhost:7001,localhost:7002,localhost:7003,localhost:7004,localhost:7005,localhost:7006
+  rabbitmq:
+    username: simba
+    password: Fpv2L*K56ZLchIbH
+    host: localhost
+    port: 5672
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          max-interval: 5000
+        default-requeue-rejected: false
+xxl:
+  mq:
+    admin:
+      address: http://localhost:8080/xxl-mq-admin
+# logging:
+#   level:
+#     org:
+#       hibernate:
+#         SQL: debug
+#         type: trace
+canal:
+  batch-size: 100000
+  interval-millis: 100
+  retry-start-interval-seconds: 300
+  application-name: admin-service
+  show-event-log: true
+  performance-threshold: 10000
+  redis:
+    instance: canal_client_example_redis
+  rabbit:
+    instance: canal_client_example_rabbit

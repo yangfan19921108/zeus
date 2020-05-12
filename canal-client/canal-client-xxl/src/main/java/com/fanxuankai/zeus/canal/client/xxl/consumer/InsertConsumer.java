@@ -9,7 +9,6 @@ import com.fanxuankai.zeus.canal.client.mq.core.consumer.InsertProcessable;
  * @author fanxuankai
  */
 public class InsertConsumer extends AbstractXxlMqConsumer implements InsertProcessable {
-
     public InsertConsumer(ApplicationInfo applicationInfo) {
         super(applicationInfo);
     }

@@ -22,7 +22,7 @@ public interface InsertProcessable extends Processable {
     default MessageInfo process(EntryWrapper entryWrapper) {
         return new MessageInfo(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.INSERT),
                 entryWrapper.getAllRowDataList()
-                        .stream()
+                        .parallelStream()
                         .map(rowData -> {
                             MessageInfo.Message message = new MessageInfo.Message();
                             message.setMd5(MqUtils.md5(rowData.getAfterColumnsList()));

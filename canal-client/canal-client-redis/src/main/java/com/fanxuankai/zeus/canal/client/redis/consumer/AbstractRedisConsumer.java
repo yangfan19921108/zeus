@@ -2,10 +2,9 @@ package com.fanxuankai.zeus.canal.client.redis.consumer;
 
 import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
+import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import javax.annotation.Resource;
 
 import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
 
@@ -16,8 +15,7 @@ import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScann
  */
 public abstract class AbstractRedisConsumer<R> implements MessageConsumer<R> {
 
-    @Resource
-    protected RedisTemplate<String, Object> redisTemplate;
+    protected RedisTemplate<String, Object> redisTemplate = RedisUtils.redisTemplate();
 
     @Override
     public boolean canProcess(EntryWrapper entryWrapper) {

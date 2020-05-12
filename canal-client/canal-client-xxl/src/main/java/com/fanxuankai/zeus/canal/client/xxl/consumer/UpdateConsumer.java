@@ -9,7 +9,6 @@ import com.fanxuankai.zeus.canal.client.mq.core.consumer.UpdateProcessable;
  * @author fanxuankai
  */
 public class UpdateConsumer extends AbstractXxlMqConsumer implements UpdateProcessable {
-
     public UpdateConsumer(ApplicationInfo applicationInfo) {
         super(applicationInfo);
     }

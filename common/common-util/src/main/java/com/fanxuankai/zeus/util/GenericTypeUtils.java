@@ -2,6 +2,7 @@ package com.fanxuankai.zeus.util;
 
 import org.springframework.core.GenericTypeResolver;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,9 @@ public class GenericTypeUtils {
      * @return 泛型的具体类型
      * @throws IndexOutOfBoundsException index 越界
      */
-    @SuppressWarnings("unchecked")
     public static <T> Class<T> getGenericType(Class<?> clazz, Class<?> genericDeclaration, int index) {
         List<Type> allTypes = getAllTypes(clazz, genericDeclaration);
-        return (Class<T>) allTypes.get(index);
+        return getGenericClass(allTypes.get(index));
     }
 
     /**
@@ -39,9 +39,27 @@ public class GenericTypeUtils {
      * @param <T>                泛型类型
      * @return 泛型的具体类型
      */
-    @SuppressWarnings("unchecked")
     public static <T> Class<T> getGenericType(Class<?> clazz, Class<?> genericDeclaration, String name) {
-        return (Class<T>) getAllTypeMap(clazz, genericDeclaration).get(name);
+        Type type = getAllTypeMap(clazz, genericDeclaration).get(name);
+        return getGenericClass(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<T> getGenericClass(Type type) {
+        if (type instanceof Class<?>) {
+            return (Class<T>) type;
+        }
+
+        if (type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            if (rawType instanceof Class<?>) {
+                return (Class<T>) rawType;
+            } else {
+                return getGenericClass(rawType);
+            }
+        }
+
+        throw new ClassCastException();
     }
 
     private static List<Type> getAllTypes(Class<?> clazz, Class<?> genericDeclaration) {

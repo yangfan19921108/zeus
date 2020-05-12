@@ -17,15 +17,22 @@ import java.util.concurrent.TimeUnit;
  * @author fanxuankai
  */
 @Slf4j
-public class ConvertProcessor extends SubmissionPublisher<ContextWrapper> implements Flow.Processor<Context,
-        ContextWrapper> {
+public class ConvertProcessor extends SubmissionPublisher<ContextWrapper>
+        implements Flow.Processor<Context, ContextWrapper> {
 
     private final Otter otter;
     private final Config config;
+    private Flow.Subscription subscription;
 
     public ConvertProcessor(Otter otter, Config config) {
         this.otter = otter;
         this.config = config;
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(1);
     }
 
     @Override
@@ -39,18 +46,19 @@ public class ConvertProcessor extends SubmissionPublisher<ContextWrapper> implem
                     item.getMessage().getId(), sw.elapsed(TimeUnit.MILLISECONDS));
         }
         submit(wrapper);
-    }
-
-    @Override
-    public void onComplete() {
-        stop();
+        subscription.request(1);
     }
 
     @Override
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", config.getApplicationInfo().uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
-        onComplete();
+        this.subscription.cancel();
         this.otter.stop();
+    }
+
+    @Override
+    public void onComplete() {
+        log.info("{} Done", config.getApplicationInfo().uniqueString());
     }
 }

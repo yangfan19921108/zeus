@@ -5,10 +5,17 @@ package com.fanxuankai.zeus.util.concurrent;
  */
 public class Flow {
 
+    static final int DEFAULT_BUFFER_SIZE = 256;
+
+    public static int defaultBufferSize() {
+        return DEFAULT_BUFFER_SIZE;
+    }
+
     public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {
 
     }
 
+    @FunctionalInterface
     public interface Publisher<T> {
         /**
          * 订阅
@@ -18,7 +25,29 @@ public class Flow {
         void subscribe(Subscriber<? super T> subscriber);
     }
 
+    public interface Subscription {
+        /**
+         * 请求
+         *
+         * @param n 次数
+         */
+        void request(long n);
+
+        /**
+         * 取消
+         */
+        void cancel();
+    }
+
     public interface Subscriber<T> {
+
+        /**
+         * on subscribe
+         *
+         * @param subscription Subscription
+         */
+        void onSubscribe(Subscription subscription);
+
         /**
          * on next
          *
@@ -27,17 +56,15 @@ public class Flow {
         void onNext(T item);
 
         /**
-         * on complete
-         */
-        default void onComplete() {
-
-        }
-
-        /**
          * on error
          *
          * @param throwable the throwable
          */
         void onError(Throwable throwable);
+
+        /**
+         * on complete
+         */
+        void onComplete();
     }
 }

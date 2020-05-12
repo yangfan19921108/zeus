@@ -36,10 +36,17 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     private final Otter otter;
     private final Config config;
+    private Flow.Subscription subscription;
 
     public FilterSubscriber(Otter otter, Config config) {
         this.otter = otter;
         this.config = config;
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(1);
     }
 
     @Override
@@ -52,25 +59,26 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             sw.stop();
             if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)) {
                 log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
-                        config.getConsumerInfo().getApplicationInfo().uniqueString(), batchId,
+                        config.getApplicationInfo().uniqueString(), batchId,
                         messageWrapper.getRowDataCountBeforeFilter(),
                         messageWrapper.getRowDataCountAfterFilter(), sw.elapsed(TimeUnit.MILLISECONDS));
             }
         }
         submit(item);
-    }
-
-    @Override
-    public void onComplete() {
-        stop();
+        subscription.request(1);
     }
 
     @Override
     public void onError(Throwable throwable) {
         log.error(String.format("%s %s", config.getApplicationInfo().uniqueString(), throwable.getLocalizedMessage()),
                 throwable);
-        onComplete();
+        this.subscription.cancel();
         this.otter.stop();
+    }
+
+    @Override
+    public void onComplete() {
+        log.info("{} Done", config.getApplicationInfo().uniqueString());
     }
 
     @SuppressWarnings("unchecked rawtypes")

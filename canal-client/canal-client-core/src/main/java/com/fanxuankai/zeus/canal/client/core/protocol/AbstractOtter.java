@@ -12,7 +12,6 @@ import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,13 +34,12 @@ public abstract class AbstractOtter implements Otter {
      */
     private static final List<CanalEntry.EventType> EVENT_TYPES = Arrays.asList(INSERT, DELETE, UPDATE, ERASE);
     private final ConnectConfig connectConfig;
+    private final CanalConfig canalConfig;
     private volatile boolean running;
 
-    @Resource
-    private CanalConfig canalConfig;
-
-    public AbstractOtter(ConnectConfig connectConfig) {
+    public AbstractOtter(ConnectConfig connectConfig, CanalConfig canalConfig) {
         this.connectConfig = connectConfig;
+        this.canalConfig = canalConfig;
     }
 
     @Override

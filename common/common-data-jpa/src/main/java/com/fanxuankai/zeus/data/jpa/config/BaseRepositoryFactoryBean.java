@@ -55,8 +55,7 @@ public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T, I exten
                                                                         @Nonnull EntityManager entityManager) {
             Class<T> domainClass = (Class<T>) information.getDomainType();
             if (BooleanLogicDeleteEntity.class.isAssignableFrom(domainClass)) {
-                return new BooleanLogicDeleteRepositoryImpl(domainClass,
-                        entityManager);
+                return new BooleanLogicDeleteRepositoryImpl(domainClass, entityManager);
             }
             if (IntegerLogicDeleteEntity.class.isAssignableFrom(domainClass)) {
                 return new IntegerLogicDeleteRepositoryImpl(domainClass, entityManager);

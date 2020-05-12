@@ -4,7 +4,6 @@ import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +16,13 @@ import java.util.Map;
  */
 public class UpdateConsumer extends AbstractRedisConsumer<UpdateConsumer.ProcessData> {
 
-    @Resource
-    private InsertConsumer insertConsumer;
-    @Resource
-    private DeleteConsumer deleteConsumer;
+    private final InsertConsumer insertConsumer;
+    private final DeleteConsumer deleteConsumer;
+
+    public UpdateConsumer(InsertConsumer insertConsumer, DeleteConsumer deleteConsumer) {
+        this.insertConsumer = insertConsumer;
+        this.deleteConsumer = deleteConsumer;
+    }
 
     @Override
     public ProcessData process(EntryWrapper entryWrapper) {
