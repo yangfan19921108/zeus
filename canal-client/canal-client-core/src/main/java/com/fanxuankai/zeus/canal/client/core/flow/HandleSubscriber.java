@@ -20,11 +20,13 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     private final Otter otter;
     private final Config config;
+    private final MessageHandler messageHandler;
     private Flow.Subscription subscription;
 
     public HandleSubscriber(Otter otter, Config config) {
         this.otter = otter;
         this.config = config;
+        messageHandler = new MessageHandler(config);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
     public void onNext(ContextWrapper item) {
         if (!config.isSkip()) {
             Stopwatch sw = Stopwatch.createStarted();
-            config.getHandler().handle(item.getMessageWrapper());
+            messageHandler.handle(item.getMessageWrapper());
             sw.stop();
             if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)
                     && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {

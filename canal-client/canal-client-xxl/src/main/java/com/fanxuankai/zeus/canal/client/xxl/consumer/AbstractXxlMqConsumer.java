@@ -5,6 +5,7 @@ import com.fanxuankai.zeus.canal.client.mq.core.consumer.AbstractMqConsumer;
 import com.xxl.mq.client.message.XxlMqMessage;
 import com.xxl.mq.client.producer.XxlMqProducer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * XXL-MQ 抽象消费者
@@ -13,8 +14,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractXxlMqConsumer extends AbstractMqConsumer {
-    public AbstractXxlMqConsumer(ApplicationInfo applicationInfo) {
-        super(applicationInfo);
+
+    public AbstractXxlMqConsumer(ApplicationInfo applicationInfo, RedisTemplate<Object, Object> redisTemplate) {
+        super(applicationInfo, redisTemplate);
     }
 
     @Override

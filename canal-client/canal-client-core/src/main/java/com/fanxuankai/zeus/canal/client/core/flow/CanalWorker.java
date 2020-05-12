@@ -1,20 +1,16 @@
-package com.fanxuankai.zeus.canal.client.core.config;
+package com.fanxuankai.zeus.canal.client.core.flow;
 
 import com.alibaba.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
-import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
-import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.PreDestroy;
 import java.util.Objects;
@@ -33,7 +29,7 @@ public class CanalWorker implements ApplicationRunner {
 
     private final Config config;
     private final ScheduledExecutorService scheduledExecutor;
-
+    private final Otter otter;
     /**
      * 应用退出时应清除 canal running 标记
      */
@@ -48,14 +44,15 @@ public class CanalWorker implements ApplicationRunner {
         this.config = config;
         scheduledExecutor = new ScheduledThreadPoolExecutor(1,
                 new ThreadFactoryBuilder().setNameFormat(CanalWorker.class.getSimpleName()
-                        + " " + config.applicationInfo.uniqueString()).build());
+                        + " " + config.getApplicationInfo().uniqueString()).build());
+        otter = new FlowOtter(config);
     }
 
     @Override
     public void run(ApplicationArguments args) {
         key = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
-                config.applicationInfo.uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
-        CanalConfig canalConfig = ApplicationContexts.getBean(CanalConfig.class);
+                config.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
+        CanalConfig canalConfig = config.getCanalConfig();
         if (Objects.equals(canalConfig.getRetryStart(), Boolean.TRUE)) {
             scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
                 if (retryStart()) {
@@ -69,31 +66,23 @@ public class CanalWorker implements ApplicationRunner {
     }
 
     private boolean retryStart() {
-        if (!Boolean.TRUE.equals(config.redisTemplate.opsForValue().setIfAbsent(key, true))) {
+        if (!Boolean.TRUE.equals(config.getRedisTemplate().opsForValue().setIfAbsent(key, true))) {
             log.info("{} Exists", key);
             return false;
         }
         log.info("{} Running...", key);
         shouldClearTagWhenExit = true;
-        ThreadPoolService.getInstance().execute(config.otter::start);
+        ThreadPoolService.getInstance().execute(otter::start);
         log.info("{} Start", key);
         return true;
     }
 
     @PreDestroy
     public void preDestroy() {
-        config.otter.stop();
+        otter.stop();
         if (shouldClearTagWhenExit) {
-            config.redisTemplate.delete(key);
+            config.getRedisTemplate().delete(key);
             log.info("{} Canal stop", key);
         }
-    }
-
-    @Builder
-    @Getter
-    public static class Config {
-        private final Otter otter;
-        private final ApplicationInfo applicationInfo;
-        private RedisTemplate<Object, Object> redisTemplate;
     }
 }

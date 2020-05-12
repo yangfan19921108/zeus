@@ -2,9 +2,7 @@ package com.fanxuankai.zeus.canal.client.core.util;
 
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
-import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -16,14 +14,6 @@ import java.util.stream.Collectors;
  * @author fanxuankai
  */
 public class RedisUtils {
-
-    @SuppressWarnings("unchecked")
-    public static final RedisTemplate<String, Object> REDIS_TEMPLATE =
-            (RedisTemplate<String, Object>) ApplicationContexts.getBean("redisTemplate");
-
-    public static RedisTemplate<String, Object> redisTemplate() {
-        return REDIS_TEMPLATE;
-    }
 
     /**
      * 生成 key

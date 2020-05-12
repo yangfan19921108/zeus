@@ -83,7 +83,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @SuppressWarnings("unchecked rawtypes")
     private void filterEntryRowData(EntryWrapper entryWrapper) {
-        MessageConsumer consumer = config.getConsumerInfo().getConsumerMap().get(entryWrapper.getEventType());
+        MessageConsumer consumer = config.getConsumerMap().get(entryWrapper.getEventType());
         // 如果不能处理, 置空, return
         if (consumer == null || !consumer.canProcess(entryWrapper)) {
             entryWrapper.setAllRowDataList(Collections.emptyList());

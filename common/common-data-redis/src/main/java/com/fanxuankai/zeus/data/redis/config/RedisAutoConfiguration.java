@@ -2,9 +2,6 @@ package com.fanxuankai.zeus.data.redis.config;
 
 import com.fanxuankai.zeus.data.redis.lock.DistributedLocker;
 import com.fanxuankai.zeus.data.redis.lock.RedisLocker;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -16,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,32 +24,19 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
-public class RedisTemplateAutoConfiguration {
+public class RedisAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
-
-        RedisSerializer<String> string = RedisSerializer.string();
-        template.setKeySerializer(string);
-        template.setHashKeySerializer(string);
-
-        //使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值（默认使用JDK的序列化方式）
-        Jackson2JsonRedisSerializer<?> json = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-
-        json.setObjectMapper(mapper);
-
-        template.setValueSerializer(json);
-        template.setHashValueSerializer(json);
-
+        Jackson2JsonRedisSerializer<?> jsonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        template.setKeySerializer(jsonSerializer);
+        template.setHashKeySerializer(jsonSerializer);
+        template.setValueSerializer(jsonSerializer);
+        template.setHashValueSerializer(jsonSerializer);
         template.afterPropertiesSet();
-
         return template;
     }
 

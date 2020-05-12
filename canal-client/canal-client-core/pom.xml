@@ -5,7 +5,7 @@
     <parent>
         <artifactId>canal-client</artifactId>
         <groupId>com.fanxuankai.zeus</groupId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>canal-client-core</artifactId>
@@ -35,11 +35,6 @@
         <dependency>
             <groupId>com.fanxuankai.zeus</groupId>
             <artifactId>common-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fanxuankai.zeus</groupId>
-            <artifactId>common-spring-context</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

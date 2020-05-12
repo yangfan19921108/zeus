@@ -3,6 +3,7 @@ package com.fanxuankai.zeus.canal.client.redis.consumer;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,9 @@ public class UpdateConsumer extends AbstractRedisConsumer<UpdateConsumer.Process
     private final InsertConsumer insertConsumer;
     private final DeleteConsumer deleteConsumer;
 
-    public UpdateConsumer(InsertConsumer insertConsumer, DeleteConsumer deleteConsumer) {
+    public UpdateConsumer(RedisTemplate<Object, Object> redisTemplate, InsertConsumer insertConsumer,
+                          DeleteConsumer deleteConsumer) {
+        super(redisTemplate);
         this.insertConsumer = insertConsumer;
         this.deleteConsumer = deleteConsumer;
     }
