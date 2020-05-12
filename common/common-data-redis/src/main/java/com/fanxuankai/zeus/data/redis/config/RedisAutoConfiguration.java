@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
-public class RedisAutoConfiguration {
+public class RedisTemplateAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
@@ -46,6 +46,7 @@ public class RedisAutoConfiguration {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+
         json.setObjectMapper(mapper);
 
         template.setValueSerializer(json);

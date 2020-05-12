@@ -3,7 +3,7 @@ package com.fanxuankai.zeus.canal.client.core.protocol;
 import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
-import com.fanxuankai.zeus.canal.client.core.model.ConsumerInfo;
+import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.util.ConsumeEntryLogger;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
@@ -36,13 +36,13 @@ public class MessageHandler implements Handler<MessageWrapper> {
     /**
      * 消费者信息
      */
-    private final ConsumerInfo consumerInfo;
+    private final Config config;
     /**
      * logfile offset 消费标记
      */
     private final String logFileOffsetTag;
 
-    public MessageHandler(ConsumerInfo consumerInfo) {
+    public MessageHandler(Config config) {
         this.consumerInfo = consumerInfo;
         this.logFileOffsetTag = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 consumerInfo.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.LOGFILE_OFFSET);
