@@ -7,7 +7,7 @@ import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
-import com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner;
+import com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.DeleteConsumer;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.InsertConsumer;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.UpdateConsumer;
@@ -42,7 +42,7 @@ public class CanalWorkerAutoConfiguration {
         consumerMap.put(CanalEntry.EventType.DELETE, new DeleteConsumer(applicationInfo, redisTemplate,
                 rabbitTemplate));
         ConnectConfig connectConfig = new ConnectConfig(canalRabbitProperties.getInstance(),
-                MqConsumerScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
+                CanalToMqScanner.CONSUME_CONFIGURATION.getFilter(), applicationInfo);
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
                 .canalConfig(canalConfig)

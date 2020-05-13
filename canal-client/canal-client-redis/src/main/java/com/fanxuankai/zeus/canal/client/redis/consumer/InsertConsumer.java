@@ -3,7 +3,6 @@ package com.fanxuankai.zeus.canal.client.redis.consumer;
 import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
-import com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner;
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
 import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
@@ -28,8 +27,8 @@ public class InsertConsumer extends AbstractRedisConsumer<Map<String, Map<String
 
     @Override
     public Map<String, Map<String, Object>> process(EntryWrapper entryWrapper) {
-        CanalToRedisMetadata canalToRedisMetadata =
-                RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
+        CanalToRedisMetadata canalToRedisMetadata = getMetadata(entryWrapper);
+        assert canalToRedisMetadata != null;
         List<String> keys = canalToRedisMetadata.getKeys();
         boolean idAsHashKey = canalToRedisMetadata.isIdAsHashKey();
         List<List<String>> combineKeys = canalToRedisMetadata.getCombineKeys();

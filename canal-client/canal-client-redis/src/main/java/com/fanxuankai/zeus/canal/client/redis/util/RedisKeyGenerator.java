@@ -5,7 +5,7 @@ import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.redis.config.CanalToRedisScanner.CONSUME_CONFIGURATION;
 
 /**
  * @author fanxuankai
@@ -19,8 +19,8 @@ public class RedisKeyGenerator {
      * @return prefix.schema.table
      */
     public static String keyOf(EntryWrapper entryWrapper) {
-        CanalToRedisMetadata canalToRedisMetadata = INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
-        if (StringUtils.isNotBlank(canalToRedisMetadata.getKey())) {
+        CanalToRedisMetadata canalToRedisMetadata = CONSUME_CONFIGURATION.getMetadata(entryWrapper);
+        if (canalToRedisMetadata != null && StringUtils.isNotBlank(canalToRedisMetadata.getKey())) {
             return canalToRedisMetadata.getKey();
         }
         return RedisUtils.key(entryWrapper.getSchemaName(), entryWrapper.getTableName());
@@ -34,8 +34,8 @@ public class RedisKeyGenerator {
      * @return prefix.schema.table.suffix
      */
     public static String keyOf(EntryWrapper entryWrapper, String suffix) {
-        CanalToRedisMetadata canalToRedisMetadata = INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
-        if (StringUtils.isNotBlank(canalToRedisMetadata.getKey())) {
+        CanalToRedisMetadata canalToRedisMetadata = CONSUME_CONFIGURATION.getMetadata(entryWrapper);
+        if (canalToRedisMetadata != null && StringUtils.isNotBlank(canalToRedisMetadata.getKey())) {
             return RedisUtils.customKey(canalToRedisMetadata.getKey(), suffix);
         }
         return RedisUtils.key(entryWrapper.getSchemaName(), entryWrapper.getTableName(), suffix);

@@ -43,7 +43,7 @@ public class CanalWorkerAutoConfiguration {
                 .applicationInfo(applicationInfo)
                 .canalConfig(canalConfig)
                 .connectConfig(new ConnectConfig(canalRedisProperties.getInstance(),
-                        RedisRepositoryScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo))
+                        CanalToRedisScanner.CONSUME_CONFIGURATION.getFilter(), applicationInfo))
                 .consumerMap(consumerMap)
                 .redisTemplate(redisTemplate)
                 .skip(Boolean.FALSE)

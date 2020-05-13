@@ -11,6 +11,7 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
+import static com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner.CONSUME_CONFIGURATION;
 import static com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner.INTERFACE_BEAN_SCANNER;
 
 /**
@@ -27,15 +28,15 @@ public class BeanRegistry {
      * @param registry      BeanDefinitionRegistry
      */
     public static void registerWith(BeanDefinitionRegistry registry, BeanGenerator beanGenerator) {
-        INTERFACE_BEAN_SCANNER.ALL_INTERFACE_BEAN_CLASSES
+        INTERFACE_BEAN_SCANNER.interfaceBeanSet
                 .parallelStream()
                 .forEach(mqConsumerClass -> {
                     Class<?> domainType = INTERFACE_BEAN_SCANNER.getDomainType(mqConsumerClass);
-                    CanalTableMetadata tableMetadata = INTERFACE_BEAN_SCANNER.getCanalTableMetadata(domainType);
-                    CanalToMqMetadata mqMetadata = INTERFACE_BEAN_SCANNER.getMetadata(tableMetadata.getSchema(),
+                    CanalTableMetadata tableMetadata = CONSUME_CONFIGURATION.getCanalTableMetadata(domainType, true);
+                    CanalToMqMetadata mqMetadata = CONSUME_CONFIGURATION.getMetadata(tableMetadata.getSchema(),
                             tableMetadata.getName());
                     String topic;
-                    if (StringUtils.isNotBlank(mqMetadata.getName())) {
+                    if (mqMetadata != null && StringUtils.isNotBlank(mqMetadata.getName())) {
                         topic = QueueNameUtils.customName(mqMetadata.getName());
                     } else {
                         topic = QueueNameUtils.name(tableMetadata.getSchema(), tableMetadata.getName());

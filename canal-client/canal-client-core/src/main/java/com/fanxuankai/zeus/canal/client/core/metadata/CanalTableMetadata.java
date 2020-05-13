@@ -19,7 +19,8 @@ public class CanalTableMetadata {
     private final String name;
     private final Class<?> domainType;
 
-    public CanalTableMetadata(CanalTable canalTable, Class<?> domainType) {
+    public CanalTableMetadata(Class<?> domainType) {
+        CanalTable canalTable = domainType.getAnnotation(CanalTable.class);
         String schema = Optional.ofNullable(canalTable).map(CanalTable::schema).orElse("");
         Optional<TableAttributes> optionalTableAttributes = TableAttributes.from(domainType);
         if (StringUtils.isBlank(schema)) {

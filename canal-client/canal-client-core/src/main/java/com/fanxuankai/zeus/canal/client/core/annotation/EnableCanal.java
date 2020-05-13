@@ -17,10 +17,10 @@ import java.lang.annotation.Target;
 public @interface EnableCanal {
 
     /**
-     * 获取数据库名称的步骤, 先后顺序如下:
-     * CanalTable.schema()
-     * javax.persistence.Table.schema()
-     * EnableCanal.schema()
+     * 获取数据库名称的步骤, 先后顺序如下:<p>
+     * CanalTable.schema()<p>
+     * javax.persistence.Table.schema()<p>
+     * EnableCanal.schema()<p>
      * 若始终无法获取到数据库名称, 程序终止, 抛出异常
      *
      * @return 默认的数据库名称

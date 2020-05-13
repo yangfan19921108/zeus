@@ -3,9 +3,10 @@ package com.fanxuankai.zeus.canal.client.redis.consumer;
 import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
+import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.redis.config.CanalToRedisScanner.CONSUME_CONFIGURATION;
 
 /**
  * Redis 抽象消费者
@@ -22,12 +23,18 @@ public abstract class AbstractRedisConsumer<R> implements MessageConsumer<R> {
 
     @Override
     public boolean canProcess(EntryWrapper entryWrapper) {
-        return INTERFACE_BEAN_SCANNER.getInterfaceBeanClass(entryWrapper) != null;
+        return CONSUME_CONFIGURATION.getAnnotation(entryWrapper) != null;
     }
 
     @Override
     public FilterMetadata filter(EntryWrapper entryWrapper) {
-        return INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper).getFilterMetadata();
+        return getMetadata(entryWrapper).getFilterMetadata();
+    }
+
+    protected CanalToRedisMetadata getMetadata(EntryWrapper entryWrapper) {
+        CanalToRedisMetadata canalToRedisMetadata = CONSUME_CONFIGURATION.getMetadata(entryWrapper);
+        assert canalToRedisMetadata != null;
+        return canalToRedisMetadata;
     }
 
 }

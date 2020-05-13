@@ -7,7 +7,6 @@ import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
-import com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner;
 import com.fanxuankai.zeus.canal.client.xxl.consumer.DeleteConsumer;
 import com.fanxuankai.zeus.canal.client.xxl.consumer.InsertConsumer;
 import com.fanxuankai.zeus.canal.client.xxl.consumer.UpdateConsumer;
@@ -18,6 +17,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner.CONSUME_CONFIGURATION;
 
 /**
  * @author fanxuankai
@@ -37,7 +38,7 @@ public class CanalWorkerAutoConfiguration {
         consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(applicationInfo, redisTemplate));
         consumerMap.put(CanalEntry.EventType.DELETE, new DeleteConsumer(applicationInfo, redisTemplate));
         ConnectConfig connectConfig = new ConnectConfig(canalXxlProperties.getInstance(),
-                MqConsumerScanner.INTERFACE_BEAN_SCANNER.getFilter(), applicationInfo);
+                CONSUME_CONFIGURATION.getFilter(), applicationInfo);
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
                 .connectConfig(connectConfig)

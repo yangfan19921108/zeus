@@ -22,7 +22,7 @@ public class BeanRegistry {
      * @param registry BeanDefinitionRegistry
      */
     public static void registerWith(BeanDefinitionRegistry registry) {
-        INTERFACE_BEAN_SCANNER.ALL_INTERFACE_BEAN_CLASSES
+        INTERFACE_BEAN_SCANNER.interfaceBeanSet
                 .parallelStream()
                 .map(redisRepositoryClass -> {
                     BeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(

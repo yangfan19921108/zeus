@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner.CONSUME_CONFIGURATION;
 
 /**
  * @author fanxuankai
@@ -38,13 +38,12 @@ public class MqUtils {
      * @return prefix.schema.table.eventType
      */
     public static String routingKey(EntryWrapper entryWrapper, CanalEntry.EventType eventType) {
-        CanalToMqMetadata metadata = INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
-        if (StringUtils.isNotBlank(metadata.getName())) {
+        CanalToMqMetadata metadata = CONSUME_CONFIGURATION.getMetadata(entryWrapper);
+        if (metadata != null && StringUtils.isNotBlank(metadata.getName())) {
             return QueueNameUtils.customName(metadata.getName(), eventType);
         }
-        Class<?> domainType =
-                INTERFACE_BEAN_SCANNER.getDomainType(INTERFACE_BEAN_SCANNER.getInterfaceBeanClass(entryWrapper));
-        CanalTableMetadata tableMetadata = INTERFACE_BEAN_SCANNER.getCanalTableMetadata(domainType);
+        Class<?> domainType = CONSUME_CONFIGURATION.getDomain(entryWrapper);
+        CanalTableMetadata tableMetadata = CONSUME_CONFIGURATION.getCanalTableMetadata(domainType, true);
         return QueueNameUtils.name(tableMetadata.getSchema(), tableMetadata.getName(), eventType);
     }
 

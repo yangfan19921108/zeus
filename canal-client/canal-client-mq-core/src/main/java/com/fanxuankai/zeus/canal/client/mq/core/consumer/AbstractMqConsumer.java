@@ -16,7 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Objects;
 
-import static com.fanxuankai.zeus.canal.client.mq.core.config.MqConsumerScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner.CONSUME_CONFIGURATION;
 
 /**
  * MQ 抽象消费者
@@ -39,16 +39,16 @@ public abstract class AbstractMqConsumer implements MessageConsumer<MessageInfo>
 
     @Override
     public boolean canProcess(EntryWrapper entryWrapper) {
-        if (INTERFACE_BEAN_SCANNER.getInterfaceBeanClass(entryWrapper) == null) {
+        if (CONSUME_CONFIGURATION.getAnnotation(entryWrapper) == null) {
             return false;
         }
-        CanalToMqMetadata metadata = INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper);
+        CanalToMqMetadata metadata = CONSUME_CONFIGURATION.getMetadata(entryWrapper);
         return metadata == null || metadata.getEventTypes().contains(entryWrapper.getEventType());
     }
 
     @Override
     public FilterMetadata filter(EntryWrapper entryWrapper) {
-        return INTERFACE_BEAN_SCANNER.getMetadata(entryWrapper).getFilterMetadata();
+        return Objects.requireNonNull(CONSUME_CONFIGURATION.getMetadata(entryWrapper)).getFilterMetadata();
     }
 
     @Override

@@ -14,11 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.fanxuankai.zeus.canal.client.redis.config.RedisRepositoryScanner.INTERFACE_BEAN_SCANNER;
+import static com.fanxuankai.zeus.canal.client.redis.config.CanalToRedisScanner.CONSUME_CONFIGURATION;
 
 /**
  * RedisRepository 实现类
@@ -31,6 +32,7 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
     private RedisTemplate<String, Object> redisTemplate;
     private Class<Object> domainType;
     private CanalTableMetadata canalTableMetadata;
+    @Nullable
     private CanalToRedisMetadata canalToRedisMetadata;
 
     /**
@@ -41,8 +43,8 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
      */
     protected void setDomainType(Class<Object> domainType) {
         this.domainType = domainType;
-        this.canalTableMetadata = INTERFACE_BEAN_SCANNER.getCanalTableMetadata(domainType);
-        this.canalToRedisMetadata = INTERFACE_BEAN_SCANNER.getMetadata(canalTableMetadata.getSchema(),
+        this.canalTableMetadata = CONSUME_CONFIGURATION.getCanalTableMetadata(domainType, true);
+        this.canalToRedisMetadata = CONSUME_CONFIGURATION.getMetadata(canalTableMetadata.getSchema(),
                 canalTableMetadata.getName());
     }
 
@@ -173,14 +175,14 @@ public class SimpleRedisRepository implements RedisRepository<Object> {
     }
 
     private String key() {
-        if (!StringUtils.isBlank(canalToRedisMetadata.getKey())) {
+        if (canalToRedisMetadata != null && !StringUtils.isBlank(canalToRedisMetadata.getKey())) {
             return canalToRedisMetadata.getKey();
         }
         return RedisUtils.key(schema(), tableName());
     }
 
     private String keyWithSuffix(String suffix) {
-        if (!StringUtils.isBlank(canalToRedisMetadata.getKey())) {
+        if (canalToRedisMetadata != null && !StringUtils.isBlank(canalToRedisMetadata.getKey())) {
             return RedisUtils.customKey(canalToRedisMetadata.getKey(), suffix);
         }
         return RedisUtils.key(schema(), tableName(), suffix);
