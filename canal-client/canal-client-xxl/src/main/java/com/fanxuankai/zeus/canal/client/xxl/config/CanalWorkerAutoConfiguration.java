@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.canal.client.xxl.config;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.flow.CanalWorker;
 import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
@@ -29,10 +29,10 @@ import static com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner.C
 public class CanalWorkerAutoConfiguration {
 
     @Bean("xxlMQCanalWorker")
-    public CanalWorker canalWorker(CanalConfig canalConfig,
+    public CanalWorker canalWorker(CanalProperties canalProperties,
                                    CanalXxlProperties canalXxlProperties,
                                    RedisTemplate<Object, Object> redisTemplate) {
-        ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), "XxlMQ");
+        ApplicationInfo applicationInfo = new ApplicationInfo(canalProperties.getApplicationName(), "XxlMQ");
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(3);
         consumerMap.put(CanalEntry.EventType.INSERT, new InsertConsumer(applicationInfo, redisTemplate));
         consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(applicationInfo, redisTemplate));
@@ -41,6 +41,7 @@ public class CanalWorkerAutoConfiguration {
                 CONSUME_CONFIGURATION.getFilter(), applicationInfo);
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
+                .canalProperties(canalProperties)
                 .connectConfig(connectConfig)
                 .consumerMap(consumerMap)
                 .redisTemplate(redisTemplate)

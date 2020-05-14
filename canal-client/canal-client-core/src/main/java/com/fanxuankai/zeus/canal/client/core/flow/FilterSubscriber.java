@@ -57,7 +57,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             Stopwatch sw = Stopwatch.createStarted();
             messageWrapper.getEntryWrapperList().forEach(this::filterEntryRowData);
             sw.stop();
-            if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)) {
+            if (Objects.equals(config.getCanalProperties().getShowEventLog(), Boolean.TRUE)) {
                 log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
                         config.getApplicationInfo().uniqueString(), batchId,
                         messageWrapper.getRowDataCountBeforeFilter(),

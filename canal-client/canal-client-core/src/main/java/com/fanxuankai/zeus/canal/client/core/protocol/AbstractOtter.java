@@ -4,7 +4,7 @@ import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import com.fanxuankai.zeus.canal.client.core.model.Context;
 import com.fanxuankai.zeus.canal.client.core.util.CanalConnectorHolder;
@@ -34,12 +34,12 @@ public abstract class AbstractOtter implements Otter {
      */
     private static final List<CanalEntry.EventType> EVENT_TYPES = Arrays.asList(INSERT, DELETE, UPDATE, ERASE);
     private final ConnectConfig connectConfig;
-    private final CanalConfig canalConfig;
+    private final CanalProperties canalProperties;
     private volatile boolean running;
 
-    public AbstractOtter(ConnectConfig connectConfig, CanalConfig canalConfig) {
+    public AbstractOtter(ConnectConfig connectConfig, CanalProperties canalProperties) {
         this.connectConfig = connectConfig;
-        this.canalConfig = canalConfig;
+        this.canalProperties = canalProperties;
     }
 
     @Override
@@ -56,24 +56,24 @@ public abstract class AbstractOtter implements Otter {
         // CanalConnector 传给 subscriber 消费后再提交
         String subscriberName = connectConfig.getApplicationInfo().uniqueString();
         try {
-            CanalConnectorHolder.connect(connectConfig, canalConfig);
+            CanalConnectorHolder.connect(connectConfig, canalProperties);
             while (running) {
                 try {
                     // 获取指定数量的数据
                     CanalConnector canalConnector = CanalConnectorHolder.get();
                     Stopwatch sw = Stopwatch.createStarted();
                     Message message;
-                    if (canalConfig.getTimeoutMillis() == null) {
-                        message = canalConnector.getWithoutAck(canalConfig.getBatchSize());
+                    if (canalProperties.getTimeoutMillis() == null) {
+                        message = canalConnector.getWithoutAck(canalProperties.getBatchSize());
                     } else {
-                        message = canalConnector.getWithoutAck(canalConfig.getBatchSize(),
-                                canalConfig.getTimeoutMillis(), TimeUnit.MILLISECONDS);
+                        message = canalConnector.getWithoutAck(canalProperties.getBatchSize(),
+                                canalProperties.getTimeoutMillis(), TimeUnit.MILLISECONDS);
                     }
                     sw.stop();
                     message.setEntries(filter(message.getEntries()));
                     long batchId = message.getId();
                     if (batchId != -1) {
-                        if (Objects.equals(canalConfig.getShowEventLog(), Boolean.TRUE)
+                        if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
                                 && !message.getEntries().isEmpty()) {
                             log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId,
                                     sw.elapsed(TimeUnit.MILLISECONDS));
@@ -82,11 +82,11 @@ public abstract class AbstractOtter implements Otter {
                     }
                 } catch (CanalClientException e) {
                     log.error(String.format("%s Stop get data %s", subscriberName, e.getLocalizedMessage()), e);
-                    CanalConnectorHolder.reconnect(connectConfig, canalConfig);
+                    CanalConnectorHolder.reconnect(connectConfig, canalProperties);
                     log.info("{} Start get data", subscriberName);
                 }
                 try {
-                    TimeUnit.MILLISECONDS.sleep(canalConfig.getIntervalMillis());
+                    TimeUnit.MILLISECONDS.sleep(canalProperties.getIntervalMillis());
                 } catch (InterruptedException e) {
                     log.error(e.getLocalizedMessage(), e);
                 }

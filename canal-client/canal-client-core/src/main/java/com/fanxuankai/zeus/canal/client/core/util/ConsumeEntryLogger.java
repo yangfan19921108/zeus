@@ -2,7 +2,7 @@ package com.fanxuankai.zeus.canal.client.core.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
@@ -29,13 +29,13 @@ public class ConsumeEntryLogger {
             EntryWrapper entryWrapper = logInfo.entryWrapper;
             LogRowChange logRowChange = new LogRowChange(logInfo.applicationInfo.uniqueString(), logInfo.batchId,
                     logInfo.time, entryWrapper);
-            CanalConfig canalConfig = logInfo.getCanalConfig();
-            if (Objects.equals(canalConfig.getShowRowChange(), Boolean.TRUE)) {
+            CanalProperties canalProperties = logInfo.getCanalProperties();
+            if (Objects.equals(canalProperties.getShowRowChange(), Boolean.TRUE)) {
                 List<List<LogColumn>> list = entryWrapper.getAllRowDataList().stream()
                         .map(o -> logColumns(o, entryWrapper.getEventType()))
                         .collect(Collectors.toList());
                 log.info("{}\n{}", logRowChange.toString(), JSON.toJSONString(list,
-                        Objects.equals(canalConfig.getFormatRowChangeLog(), Boolean.TRUE)));
+                        Objects.equals(canalProperties.getFormatRowChangeLog(), Boolean.TRUE)));
             } else {
                 log.info("{}", logRowChange.toString());
             }
@@ -67,7 +67,7 @@ public class ConsumeEntryLogger {
     @Builder
     @Getter
     public static class LogInfo {
-        private final CanalConfig canalConfig;
+        private final CanalProperties canalProperties;
         private final ApplicationInfo applicationInfo;
         private final EntryWrapper entryWrapper;
         private final long batchId;

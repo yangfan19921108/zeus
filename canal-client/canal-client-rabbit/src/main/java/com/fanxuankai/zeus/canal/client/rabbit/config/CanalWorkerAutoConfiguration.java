@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.canal.client.rabbit.config;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.flow.CanalWorker;
 import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
@@ -11,7 +11,7 @@ import com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.DeleteConsumer;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.InsertConsumer;
 import com.fanxuankai.zeus.canal.client.rabbit.consumer.UpdateConsumer;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,23 +29,23 @@ import java.util.Map;
 public class CanalWorkerAutoConfiguration {
 
     @Bean("rabbitMQCanalWorker")
-    public CanalWorker canalWorker(CanalConfig canalConfig,
+    public CanalWorker canalWorker(CanalProperties canalProperties,
                                    CanalRabbitProperties canalRabbitProperties,
                                    RedisTemplate<Object, Object> redisTemplate,
-                                   RabbitTemplate rabbitTemplate) {
-        ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), "RabbitMQ");
+                                   AmqpTemplate amqpTemplate) {
+        ApplicationInfo applicationInfo = new ApplicationInfo(canalProperties.getApplicationName(), "RabbitMQ");
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(3);
         consumerMap.put(CanalEntry.EventType.INSERT, new InsertConsumer(applicationInfo, redisTemplate,
-                rabbitTemplate));
+                amqpTemplate));
         consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(applicationInfo, redisTemplate,
-                rabbitTemplate));
+                amqpTemplate));
         consumerMap.put(CanalEntry.EventType.DELETE, new DeleteConsumer(applicationInfo, redisTemplate,
-                rabbitTemplate));
+                amqpTemplate));
         ConnectConfig connectConfig = new ConnectConfig(canalRabbitProperties.getInstance(),
                 CanalToMqScanner.CONSUME_CONFIGURATION.getFilter(), applicationInfo);
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
-                .canalConfig(canalConfig)
+                .canalProperties(canalProperties)
                 .connectConfig(connectConfig)
                 .consumerMap(consumerMap)
                 .redisTemplate(redisTemplate)

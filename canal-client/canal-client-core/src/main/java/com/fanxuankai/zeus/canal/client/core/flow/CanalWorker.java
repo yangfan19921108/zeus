@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
 import com.alibaba.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
@@ -52,14 +52,14 @@ public class CanalWorker implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         key = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 config.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
-        CanalConfig canalConfig = config.getCanalConfig();
-        if (Objects.equals(canalConfig.getRetryStart(), Boolean.TRUE)) {
+        CanalProperties canalProperties = config.getCanalProperties();
+        if (Objects.equals(canalProperties.getRetryStart(), Boolean.TRUE)) {
             scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
                 if (retryStart()) {
                     scheduledFuture.cancel(true);
                     scheduledExecutor.shutdown();
                 }
-            }, 0, canalConfig.getRetryStartIntervalSeconds(), TimeUnit.SECONDS);
+            }, 0, canalProperties.getRetryStartIntervalSeconds(), TimeUnit.SECONDS);
         } else {
             retryStart();
         }

@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
  * @author fanxuankai
  */
 @Configuration
-@ConfigurationProperties(prefix = CanalConfig.PREFIX)
+@ConfigurationProperties(prefix = CanalProperties.PREFIX)
 @Getter
 @Setter
-public class CanalConfig {
+public class CanalProperties {
 
     public static final String PREFIX = "canal";
 

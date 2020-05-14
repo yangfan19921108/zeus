@@ -40,7 +40,7 @@ public class ConvertProcessor extends SubmissionPublisher<ContextWrapper>
         Stopwatch sw = Stopwatch.createStarted();
         ContextWrapper wrapper = new ContextWrapper(item);
         sw.stop();
-        if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)
+        if (Objects.equals(config.getCanalProperties().getShowEventLog(), Boolean.TRUE)
                 && !item.getMessage().getEntries().isEmpty()) {
             log.info("{} Convert batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                     item.getMessage().getId(), sw.elapsed(TimeUnit.MILLISECONDS));

@@ -1,4 +1,4 @@
-package com.fanxuankai.zeus.canal.example.repository;
+package com.fanxuankai.zeus.canal.example.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.fanxuankai.zeus.canal.client.redis.model.CombineKeyModel;
@@ -6,7 +6,6 @@ import com.fanxuankai.zeus.canal.client.redis.model.Entry;
 import com.fanxuankai.zeus.canal.client.redis.model.UniqueKey;
 import com.fanxuankai.zeus.canal.client.redis.model.UniqueKeyPro;
 import com.fanxuankai.zeus.canal.example.domain.User;
-import com.fanxuankai.zeus.canal.example.repository.redis.UserRedisRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,6 @@ public class UserRedisRepositoryTest {
         System.out.println(userRedisRepository.findAll()
                 .stream()
                 .allMatch(user -> Objects.equals(user.getDeleted(), 1)));
-
         System.out.println(userRedisRepository.findOne(new UniqueKey("phone", "458361630032396291")));
 
     }

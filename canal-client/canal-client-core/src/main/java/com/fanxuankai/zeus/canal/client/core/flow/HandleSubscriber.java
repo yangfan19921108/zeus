@@ -41,7 +41,7 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
             Stopwatch sw = Stopwatch.createStarted();
             messageHandler.handle(item.getMessageWrapper());
             sw.stop();
-            if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)
+            if (Objects.equals(config.getCanalProperties().getShowEventLog(), Boolean.TRUE)
                     && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
                 log.info("{} Handle batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                         item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));

@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.canal.client.redis.config;
 
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class CanalRedisProperties {
 
-    public static final String PREFIX = CanalConfig.PREFIX + ".redis";
+    public static final String PREFIX = CanalProperties.PREFIX + ".redis";
     public static final String ENABLED = PREFIX + ".enabled";
 
     /**

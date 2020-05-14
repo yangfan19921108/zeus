@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.constants.CommonConstants;
 import com.fanxuankai.zeus.canal.client.core.constants.RedisConstants;
 import com.fanxuankai.zeus.canal.client.core.protocol.Handler;
@@ -55,7 +55,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
             return;
         }
         try {
-            if (messageWrapper.getRowDataCountAfterFilter() >= config.getCanalConfig().getPerformanceThreshold()) {
+            if (messageWrapper.getRowDataCountAfterFilter() >= config.getCanalProperties().getPerformanceThreshold()) {
                 doHandlePerformance(entryWrapperList, messageWrapper.getBatchId());
             } else {
                 doHandle(entryWrapperList, messageWrapper.getBatchId());
@@ -133,11 +133,11 @@ public class MessageHandler implements Handler<MessageWrapper> {
     }
 
     private void logEntry(EntryWrapper entryWrapper, long batchId, long time) {
-        CanalConfig canalConfig = config.getCanalConfig();
-        if (Objects.equals(canalConfig.getShowEntryLog(), Boolean.TRUE)) {
+        CanalProperties canalProperties = config.getCanalProperties();
+        if (Objects.equals(canalProperties.getShowEntryLog(), Boolean.TRUE)) {
             ConsumeEntryLogger.asyncLog(ConsumeEntryLogger.LogInfo
                     .builder()
-                    .canalConfig(canalConfig)
+                    .canalProperties(canalProperties)
                     .applicationInfo(config.getApplicationInfo())
                     .entryWrapper(entryWrapper)
                     .batchId(batchId)

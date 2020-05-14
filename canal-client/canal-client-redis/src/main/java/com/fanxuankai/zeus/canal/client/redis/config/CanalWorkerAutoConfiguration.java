@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.canal.client.redis.config;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.flow.CanalWorker;
 import com.fanxuankai.zeus.canal.client.core.flow.Config;
 import com.fanxuankai.zeus.canal.client.core.model.ApplicationInfo;
@@ -28,10 +28,10 @@ import java.util.Map;
 public class CanalWorkerAutoConfiguration {
 
     @Bean("redisCanalWorker")
-    public CanalWorker canalWorker(CanalConfig canalConfig,
+    public CanalWorker canalWorker(CanalProperties canalProperties,
                                    CanalRedisProperties canalRedisProperties,
                                    RedisTemplate<Object, Object> redisTemplate) {
-        ApplicationInfo applicationInfo = new ApplicationInfo(canalConfig.getApplicationName(), "Redis");
+        ApplicationInfo applicationInfo = new ApplicationInfo(canalProperties.getApplicationName(), "Redis");
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(4);
         InsertConsumer insertConsumer = new InsertConsumer(redisTemplate);
         DeleteConsumer deleteConsumer = new DeleteConsumer(redisTemplate);
@@ -41,7 +41,7 @@ public class CanalWorkerAutoConfiguration {
         consumerMap.put(CanalEntry.EventType.ERASE, new EraseConsumer(redisTemplate));
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
-                .canalConfig(canalConfig)
+                .canalProperties(canalProperties)
                 .connectConfig(new ConnectConfig(canalRedisProperties.getInstance(),
                         CanalToRedisScanner.CONSUME_CONFIGURATION.getFilter(), applicationInfo))
                 .consumerMap(consumerMap)

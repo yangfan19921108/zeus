@@ -3,7 +3,7 @@ package com.fanxuankai.zeus.canal.client.core.util;
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
-import com.fanxuankai.zeus.canal.client.core.config.CanalConfig;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -31,23 +31,23 @@ public class CanalConnectorHolder {
     /**
      * 创建链接
      *
-     * @param connectConfig 链接配置参数
-     * @param canalConfig   Canal 配置参数
+     * @param connectConfig   链接配置参数
+     * @param canalProperties Canal 配置参数
      */
-    public static void connect(ConnectConfig connectConfig, CanalConfig canalConfig) {
+    public static void connect(ConnectConfig connectConfig, CanalProperties canalProperties) {
         CanalConnector canalConnector = CONNECTOR_THREAD_LOCAL.get();
         if (canalConnector == null) {
             String instance = connectConfig.getInstance();
-            if (canalConfig.getCluster() != null && !StringUtils.isEmpty(canalConfig.getCluster().getNodes())) {
-                canalConnector = CanalConnectors.newClusterConnector(canalConfig.getCluster().getNodes(),
-                        instance, canalConfig.getUsername(), canalConfig.getPassword());
+            if (canalProperties.getCluster() != null && !StringUtils.isEmpty(canalProperties.getCluster().getNodes())) {
+                canalConnector = CanalConnectors.newClusterConnector(canalProperties.getCluster().getNodes(),
+                        instance, canalProperties.getUsername(), canalProperties.getPassword());
             } else {
                 canalConnector =
                         CanalConnectors.newSingleConnector(
-                                new InetSocketAddress(canalConfig.getSingleNode().getHostname(),
-                                        canalConfig.getSingleNode().getPort()), instance,
-                                canalConfig.getUsername(),
-                                canalConfig.getPassword());
+                                new InetSocketAddress(canalProperties.getSingleNode().getHostname(),
+                                        canalProperties.getSingleNode().getPort()), instance,
+                                canalProperties.getUsername(),
+                                canalProperties.getPassword());
             }
             canalConnector.connect();
             int retry = 0;
@@ -77,9 +77,9 @@ public class CanalConnectorHolder {
         }
     }
 
-    public static void reconnect(ConnectConfig connectConfig, CanalConfig canalConfig) {
+    public static void reconnect(ConnectConfig connectConfig, CanalProperties canalProperties) {
         CONNECTOR_THREAD_LOCAL.remove();
-        connect(connectConfig, canalConfig);
+        connect(connectConfig, canalProperties);
     }
 
     public static void disconnect() {

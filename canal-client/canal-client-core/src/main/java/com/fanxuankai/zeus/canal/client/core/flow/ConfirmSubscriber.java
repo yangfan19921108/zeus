@@ -37,7 +37,7 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
         Stopwatch sw = Stopwatch.createStarted();
         item.confirm();
         sw.stop();
-        if (Objects.equals(config.getCanalConfig().getShowEventLog(), Boolean.TRUE)
+        if (Objects.equals(config.getCanalProperties().getShowEventLog(), Boolean.TRUE)
                 && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
             log.info("{} Confirm batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                     item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));

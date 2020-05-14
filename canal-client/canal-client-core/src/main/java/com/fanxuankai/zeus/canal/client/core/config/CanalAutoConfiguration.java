@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
  * @author fanxuankai
  */
 @Configuration
-@EnableConfigurationProperties(CanalConfig.class)
+@EnableConfigurationProperties(CanalProperties.class)
 public class CanalAutoConfiguration {
 
 }
