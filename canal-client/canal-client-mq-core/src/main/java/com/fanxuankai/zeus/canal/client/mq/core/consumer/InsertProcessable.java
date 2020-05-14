@@ -20,17 +20,19 @@ public interface InsertProcessable extends Processable {
      */
     @Override
     default MessageInfo process(EntryWrapper entryWrapper) {
-        return new MessageInfo(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.INSERT),
-                entryWrapper.getAllRowDataList()
-                        .parallelStream()
+        return MessageInfo.builder()
+                .raw(entryWrapper)
+                .routingKey(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.INSERT))
+                .messages(entryWrapper.getAllRowDataList()
+                        .stream()
                         .map(rowData -> {
                             MessageInfo.Message message = new MessageInfo.Message();
                             message.setMd5(MqUtils.md5(rowData.getAfterColumnsList()));
                             message.setData(MqUtils.json(rowData.getAfterColumnsList()));
                             return message;
                         })
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()))
+                .build();
     }
 
 }

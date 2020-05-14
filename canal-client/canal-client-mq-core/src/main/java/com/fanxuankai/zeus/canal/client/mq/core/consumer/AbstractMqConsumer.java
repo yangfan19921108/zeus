@@ -53,7 +53,8 @@ public abstract class AbstractMqConsumer implements MessageConsumer<MessageInfo>
 
     @Override
     public void consume(MessageInfo messageInfo) {
-        if (messageInfo.getMessages().size() > 1) {
+        if (messageInfo.getMessages().size() > 1
+                && !Objects.requireNonNull(CONSUME_CONFIGURATION.getMetadata(messageInfo.getRaw())).isRepeatableConsumption()) {
             HashOperations<Object, Object, Object> opsForHash = redisTemplate.opsForHash();
             // 考虑部分失败的情况, 需要做防重
             // 采用 MD5 消息摘要实现防重

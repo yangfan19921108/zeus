@@ -20,15 +20,18 @@ public interface DeleteProcessable extends Processable {
      */
     @Override
     default MessageInfo process(EntryWrapper entryWrapper) {
-        return new MessageInfo(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.DELETE),
-                entryWrapper.getAllRowDataList()
-                        .parallelStream()
+        return MessageInfo.builder()
+                .raw(entryWrapper)
+                .routingKey(MqUtils.routingKey(entryWrapper, CanalEntry.EventType.DELETE))
+                .messages(entryWrapper.getAllRowDataList()
+                        .stream()
                         .map(rowData -> {
                             MessageInfo.Message message = new MessageInfo.Message();
                             message.setMd5(MqUtils.md5(rowData.getBeforeColumnsList()));
                             message.setData(MqUtils.json(rowData.getBeforeColumnsList()));
                             return message;
                         })
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

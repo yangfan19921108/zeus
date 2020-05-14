@@ -27,7 +27,7 @@ public @interface CanalToMq {
     String name() default "";
 
     /**
-     * 要消费的事件类型，默认为增、删、改
+     * 要消费的事件类型, 默认为增、删、改
      *
      * @return 事件类型
      */
@@ -39,4 +39,11 @@ public @interface CanalToMq {
      * @return Filter
      */
     Filter filter() default @Filter;
+
+    /**
+     * 如果消费者具有幂等性, 建议开启可重复消费, MQ 吞吐量会有大大提升.
+     *
+     * @return true or false
+     */
+    boolean repeatableConsumption() default false;
 }

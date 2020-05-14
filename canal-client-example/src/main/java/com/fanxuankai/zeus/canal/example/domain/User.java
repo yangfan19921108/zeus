@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @CanalToRedis
-@CanalToMq
+@CanalToMq(repeatableConsumption = true)
 public class User extends IntegerLogicDeleteEntity {
     private String phone;
     private String username;

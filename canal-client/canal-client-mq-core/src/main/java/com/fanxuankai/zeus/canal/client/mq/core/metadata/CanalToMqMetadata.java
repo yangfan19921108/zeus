@@ -20,12 +20,14 @@ public class CanalToMqMetadata {
     private String name = "";
     private List<CanalEntry.EventType> eventTypes = Arrays.asList(INSERT, DELETE, UPDATE);
     private FilterMetadata filterMetadata = new FilterMetadata();
+    private boolean repeatableConsumption;
 
     public CanalToMqMetadata(CanalToMq canalToMq) {
         if (canalToMq != null) {
             this.name = canalToMq.name();
             this.eventTypes = Arrays.asList(canalToMq.eventTypes());
             this.filterMetadata = new FilterMetadata(canalToMq.filter());
+            this.repeatableConsumption = canalToMq.repeatableConsumption();
         }
     }
 }

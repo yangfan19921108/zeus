@@ -9,7 +9,6 @@ import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
 import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
@@ -51,10 +50,6 @@ public class CanalWorker implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        String filter = config.getConnectConfig().getFilter();
-        if (StringUtils.isBlank(filter)) {
-            return;
-        }
         key = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 config.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
         CanalConfig canalConfig = config.getCanalConfig();

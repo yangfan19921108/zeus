@@ -1,6 +1,7 @@
 package com.fanxuankai.zeus.canal.client.mq.core.model;
 
-import lombok.AllArgsConstructor;
+import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
@@ -11,9 +12,10 @@ import java.util.List;
  *
  * @author fanxuankai
  */
-@AllArgsConstructor
+@Builder
 @Getter
 public class MessageInfo {
+    private final EntryWrapper raw;
     private final String routingKey;
     private final List<Message> messages;
 

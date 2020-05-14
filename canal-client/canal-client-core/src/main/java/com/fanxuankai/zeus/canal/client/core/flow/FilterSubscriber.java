@@ -131,7 +131,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             // 只考虑新增或者修改, 删除默认为已全部修改
             if (!CollectionUtils.isEmpty(afterColumnMap)) {
                 Stream<Map.Entry<String, CanalEntry.Column>> stream = afterColumnMap.entrySet()
-                        .parallelStream()
+                        .stream()
                         .filter(entry -> updatedFields.contains(entry.getKey()));
                 Predicate<Map.Entry<String, CanalEntry.Column>> predicate = entry -> {
                     CanalEntry.Column oldColumn = beforeColumnMap.get(entry.getKey());
