@@ -81,9 +81,9 @@ public abstract class AbstractOtter implements Otter {
                         process(new Context(canalConnector, message));
                     }
                 } catch (CanalClientException e) {
-                    log.error(String.format("%s Stop get data %s", subscriberName, e.getLocalizedMessage()), e);
+                    log.error(String.format("%s Stop Get Data %s", subscriberName, e.getLocalizedMessage()), e);
                     CanalConnectorHolder.reconnect(connectConfig, canalProperties);
-                    log.info("{} Start get data", subscriberName);
+                    log.info("{} Start Get Data", subscriberName);
                 }
                 try {
                     TimeUnit.MILLISECONDS.sleep(canalProperties.getIntervalMillis());

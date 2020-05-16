@@ -1,6 +1,5 @@
 package com.fanxuankai.zeus.canal.client.core.config;
 
-import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableCache;
 import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableMetadata;
 import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
 import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
@@ -8,6 +7,7 @@ import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
@@ -34,6 +34,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class ConsumeConfiguration<A extends Annotation, M> {
+    /**
+     * 所有实体类
+     */
+    @Getter
+    private final Set<Class<?>> domainClasses = Sets.newHashSet();
     /**
      * 所有 @CanalTable 元数据
      */
@@ -71,10 +76,10 @@ public class ConsumeConfiguration<A extends Annotation, M> {
         sw.stop();
         log.info("Finished {} scanning in {}ms, Found {}.", annotationClass.getSimpleName(),
                 sw.elapsed(TimeUnit.MILLISECONDS), domainClasses.size());
+        this.domainClasses.addAll(domainClasses);
         for (Class<?> domainClass : domainClasses) {
             A annotation = domainClass.getAnnotation(annotationClass);
             CanalTableMetadata canalTableMetadata = new CanalTableMetadata(domainClass);
-            CanalTableCache.put(canalTableMetadata);
             canalTableMetadataSet.add(canalTableMetadata);
             canalTableMetadataByDomain.put(domainClass, canalTableMetadata);
             String fullTableName = CommonUtils.fullTableName(canalTableMetadata.getSchema(),

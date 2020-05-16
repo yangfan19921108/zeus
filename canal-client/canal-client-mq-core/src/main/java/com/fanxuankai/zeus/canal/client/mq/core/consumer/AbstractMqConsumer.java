@@ -52,6 +52,11 @@ public abstract class AbstractMqConsumer implements MessageConsumer<MessageInfo>
     }
 
     @Override
+    public Class<?> domainClass(EntryWrapper entryWrapper) {
+        return CONSUME_CONFIGURATION.getDomain(entryWrapper);
+    }
+
+    @Override
     public void consume(MessageInfo messageInfo) {
         if (messageInfo.getMessages().size() > 1
                 && !Objects.requireNonNull(CONSUME_CONFIGURATION.getMetadata(messageInfo.getRaw())).isRepeatableConsumption()) {

@@ -18,4 +18,12 @@ public interface MessageConsumer<R> extends Consumer<EntryWrapper, R> {
      */
     FilterMetadata filter(EntryWrapper entryWrapper);
 
+    /**
+     * 实体类
+     *
+     * @param entryWrapper 数据
+     * @return 数据库实体类
+     */
+    Class<?> domainClass(EntryWrapper entryWrapper);
+
 }

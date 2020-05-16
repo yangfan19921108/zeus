@@ -2,7 +2,6 @@ package com.fanxuankai.zeus.canal.client.core.flow;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.aviator.Aviators;
-import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableCache;
 import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
@@ -94,7 +93,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             return;
         }
         FilterMetadata filterMetadata = consumer.filter(entryWrapper);
-        Class<?> domainType = CanalTableCache.getMetadata(entryWrapper).getDomainType();
+        Class<?> domainType = consumer.domainClass(entryWrapper);
         List<CanalEntry.RowData> rowDataList = entryWrapper.getAllRowDataList()
                 .stream()
                 .filter(rowData -> filterRowData(rowData, filterMetadata, domainType))

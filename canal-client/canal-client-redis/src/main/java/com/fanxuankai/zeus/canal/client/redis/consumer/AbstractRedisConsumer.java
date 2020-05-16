@@ -31,6 +31,11 @@ public abstract class AbstractRedisConsumer<R> implements MessageConsumer<R> {
         return getMetadata(entryWrapper).getFilterMetadata();
     }
 
+    @Override
+    public Class<?> domainClass(EntryWrapper entryWrapper) {
+        return CONSUME_CONFIGURATION.getDomain(entryWrapper);
+    }
+
     protected CanalToRedisMetadata getMetadata(EntryWrapper entryWrapper) {
         CanalToRedisMetadata canalToRedisMetadata = CONSUME_CONFIGURATION.getMetadata(entryWrapper);
         assert canalToRedisMetadata != null;

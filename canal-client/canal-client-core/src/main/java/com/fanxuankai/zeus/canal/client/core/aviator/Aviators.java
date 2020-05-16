@@ -60,7 +60,7 @@ public class Aviators {
      * @return key: 字段名 value: 字段值
      */
     private static Map<String, Object> env(Map<String, String> columnMap, Class<?> javaType) {
-        return toActualType(columnMap, javaType);
+        return toActualType(columnMap, javaType, true);
     }
 
     /**
@@ -70,7 +70,8 @@ public class Aviators {
      * @param javaType  Java 类型
      * @return key: 字段名 value: 字段值
      */
-    private static Map<String, Object> toActualType(Map<String, String> columnMap, Class<?> javaType) {
+    public static Map<String, Object> toActualType(Map<String, String> columnMap, Class<?> javaType,
+                                                   boolean localToDate) {
         Map<String, Class<?>> allFieldsType = getAllFieldsType(javaType);
         Map<String, Object> map = new HashMap<>(columnMap.size());
         for (Map.Entry<String, String> entry : columnMap.entrySet()) {
@@ -78,9 +79,11 @@ public class Aviators {
             Object convert = null;
             if (!StringUtils.isBlank(entry.getValue())) {
                 Class<?> fieldType = allFieldsType.get(name);
-                // 由于不支持 LocalDate 和 LocalDateTime 类型
-                // 直接把字符串当做 Date 来处理
-                fieldType = isLocalDateType(fieldType) ? Date.class : fieldType;
+                if (localToDate) {
+                    // Aviator 不支持 LocalDate 和 LocalDateTime 类型
+                    // 直接把字符串当做 Date 来处理
+                    fieldType = isLocalDateType(fieldType) ? Date.class : fieldType;
+                }
                 convert = CONVERSION_SERVICE.convert(entry.getValue(), fieldType);
             }
             map.put(name, convert);

@@ -1,6 +1,7 @@
 package com.fanxuankai.zeus.canal.client.mq.core.consumer;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.mq.core.model.MessageInfo;
 import com.fanxuankai.zeus.canal.client.mq.core.util.MqUtils;
@@ -27,8 +28,8 @@ public interface DeleteProcessable extends Processable {
                         .stream()
                         .map(rowData -> {
                             MessageInfo.Message message = new MessageInfo.Message();
-                            message.setMd5(MqUtils.md5(rowData.getBeforeColumnsList()));
-                            message.setData(MqUtils.json(rowData.getBeforeColumnsList()));
+                            message.setMd5(CommonUtils.md5(rowData.getBeforeColumnsList()));
+                            message.setData(CommonUtils.json(rowData.getBeforeColumnsList()));
                             return message;
                         })
                         .collect(Collectors.toList()))

@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.fanxuankai.zeus</groupId>
         <artifactId>zeus-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
     <artifactId>canal-client-example</artifactId>
 
@@ -18,6 +18,11 @@
         <dependency>
             <groupId>com.fanxuankai.zeus</groupId>
             <artifactId>canal-client-rabbit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fanxuankai.zeus</groupId>
+            <artifactId>canal-client-es</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

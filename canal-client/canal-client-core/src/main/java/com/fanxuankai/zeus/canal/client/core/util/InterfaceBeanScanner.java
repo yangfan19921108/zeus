@@ -1,7 +1,5 @@
 package com.fanxuankai.zeus.canal.client.core.util;
 
-import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableCache;
-import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableMetadata;
 import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
@@ -79,8 +77,6 @@ public class InterfaceBeanScanner<I> {
             if (domainType == null) {
                 continue;
             }
-            CanalTableMetadata canalTableMetadata = new CanalTableMetadata(domainType);
-            CanalTableCache.put(canalTableMetadata);
             domainByInterfaceBean.put(interfaceBeanClass, domainType);
             interfaceBeanSet.add(interfaceBeanClass);
         }

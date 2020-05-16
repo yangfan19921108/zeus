@@ -1,12 +1,13 @@
 package com.fanxuankai.zeus.canal.client.core.aviator;
 
-import com.alibaba.fastjson.JSON;
-import lombok.Data;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import javax.annotation.Nonnull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -28,26 +29,50 @@ public class Conversions {
                 if (cs == null) {
                     cs = new DefaultConversionService();
                     cs.addConverter(new StringToDateConverter());
+                    cs.addConverter(new StringToLocalDateConverter());
+                    cs.addConverter(new StringToLocalDateTimeConverter());
                 }
             }
         }
         return cs;
     }
 
-    /**
-     * 字符串转日期
-     */
-    private static class StringToDateConverter implements Converter<String, Date> {
+    private static class StringToDateConverter extends FastJsonConverter<Date> {
 
-        @Override
-        public Date convert(@Nonnull String source) {
-            return JSON.parseObject(String.format("{\"date\":\"%s\"}", source),
-                    TempClass.class).date;
+        public StringToDateConverter() {
+            super(Date.class);
+        }
+    }
+
+    private static class StringToLocalDateConverter extends FastJsonConverter<LocalDate> {
+
+        public StringToLocalDateConverter() {
+            super(LocalDate.class);
+        }
+    }
+
+    private static class StringToLocalDateTimeConverter extends FastJsonConverter<LocalDateTime> {
+
+        public StringToLocalDateTimeConverter() {
+            super(LocalDateTime.class);
+        }
+    }
+
+    private static class FastJsonConverter<T> implements Converter<String, T> {
+        private final JSONObject jsonObject = new JSONObject();
+        private final Class<T> type;
+
+        public FastJsonConverter(Class<T> type) {
+            this.type = type;
         }
 
-        @Data
-        private static class TempClass {
-            private Date date;
+        @Override
+        public T convert(@Nonnull String s) {
+            synchronized (this) {
+                String key = "value";
+                jsonObject.put(key, s);
+                return jsonObject.getObject(key, type);
+            }
         }
     }
 }

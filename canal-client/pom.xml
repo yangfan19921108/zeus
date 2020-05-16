@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.fanxuankai.zeus</groupId>
         <artifactId>zeus-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>canal-client</artifactId>
@@ -17,6 +17,7 @@
         <module>canal-client-rabbit</module>
         <module>canal-client-redis</module>
         <module>canal-client-xxl</module>
+        <module>canal-client-es</module>
     </modules>
 
 </project>

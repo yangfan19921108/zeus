@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.fanxuankai.zeus</groupId>
     <artifactId>zeus-parent</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>zeus-parent</name>
     <description>Parent for Zeus</description>
     <packaging>pom</packaging>

@@ -10,7 +10,6 @@ import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.redis.consumer.DeleteConsumer;
 import com.fanxuankai.zeus.canal.client.redis.consumer.EraseConsumer;
 import com.fanxuankai.zeus.canal.client.redis.consumer.InsertConsumer;
-import com.fanxuankai.zeus.canal.client.redis.consumer.UpdateConsumer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +35,7 @@ public class CanalWorkerAutoConfiguration {
         InsertConsumer insertConsumer = new InsertConsumer(redisTemplate);
         DeleteConsumer deleteConsumer = new DeleteConsumer(redisTemplate);
         consumerMap.put(CanalEntry.EventType.INSERT, insertConsumer);
-        consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(redisTemplate, insertConsumer, deleteConsumer));
+        consumerMap.put(CanalEntry.EventType.UPDATE, insertConsumer);
         consumerMap.put(CanalEntry.EventType.DELETE, deleteConsumer);
         consumerMap.put(CanalEntry.EventType.ERASE, new EraseConsumer(redisTemplate));
         Config config = Config.builder()

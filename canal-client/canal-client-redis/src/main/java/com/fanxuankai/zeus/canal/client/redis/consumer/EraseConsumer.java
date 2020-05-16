@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * 删除事件消费者
+ * 删表事件消费者
  *
  * @author fanxuankai
  */
