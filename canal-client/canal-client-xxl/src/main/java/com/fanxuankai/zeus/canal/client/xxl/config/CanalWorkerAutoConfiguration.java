@@ -13,7 +13,6 @@ import com.fanxuankai.zeus.canal.client.xxl.consumer.UpdateConsumer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,21 +29,18 @@ public class CanalWorkerAutoConfiguration {
 
     @Bean("xxlMQCanalWorker")
     public CanalWorker canalWorker(CanalProperties canalProperties,
-                                   CanalXxlProperties canalXxlProperties,
-                                   RedisTemplate<Object, Object> redisTemplate) {
+                                   CanalXxlProperties canalXxlProperties) {
         ApplicationInfo applicationInfo = new ApplicationInfo(canalProperties.getApplicationName(), "XxlMQ");
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(3);
-        consumerMap.put(CanalEntry.EventType.INSERT, new InsertConsumer(applicationInfo, redisTemplate));
-        consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(applicationInfo, redisTemplate));
-        consumerMap.put(CanalEntry.EventType.DELETE, new DeleteConsumer(applicationInfo, redisTemplate));
+        consumerMap.put(CanalEntry.EventType.INSERT, new InsertConsumer(applicationInfo));
+        consumerMap.put(CanalEntry.EventType.UPDATE, new UpdateConsumer(applicationInfo));
+        consumerMap.put(CanalEntry.EventType.DELETE, new DeleteConsumer(applicationInfo));
         ConnectConfig connectConfig = new ConnectConfig(canalXxlProperties.getInstance(),
                 CONSUME_CONFIGURATION.getFilter(), applicationInfo);
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
-                .canalProperties(canalProperties)
                 .connectConfig(connectConfig)
                 .consumerMap(consumerMap)
-                .redisTemplate(redisTemplate)
                 .skip(canalXxlProperties.getSkip())
                 .build();
         return new CanalWorker(config);

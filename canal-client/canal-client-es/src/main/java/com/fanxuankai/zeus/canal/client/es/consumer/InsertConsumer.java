@@ -6,7 +6,6 @@ import com.fanxuankai.zeus.canal.client.core.util.DomainConverter;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.es.config.CanalToEsScanner;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
 
 import java.util.List;
@@ -18,10 +17,6 @@ import java.util.stream.Collectors;
  * @author fanxuankai
  */
 public class InsertConsumer extends AbstractEsConsumer<List<IndexQuery>> {
-
-    public InsertConsumer(ElasticsearchTemplate elasticsearchTemplate) {
-        super(elasticsearchTemplate);
-    }
 
     @Override
     public List<IndexQuery> process(EntryWrapper entryWrapper) {

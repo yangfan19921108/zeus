@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.collections.CollectionUtils;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.DeleteQuery;
 
 import java.util.Objects;
@@ -20,10 +19,6 @@ import java.util.stream.Collectors;
  * @author fanxuankai
  */
 public class DeleteConsumer extends AbstractEsConsumer<DeleteConsumer.ProcessData> {
-
-    public DeleteConsumer(ElasticsearchTemplate elasticsearchTemplate) {
-        super(elasticsearchTemplate);
-    }
 
     @Override
     public ProcessData process(EntryWrapper entryWrapper) {

@@ -2,6 +2,7 @@ package com.fanxuankai.zeus.canal.client.core.flow;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.fanxuankai.zeus.canal.client.core.aviator.Aviators;
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
@@ -9,6 +10,7 @@ import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import com.fanxuankai.zeus.util.concurrent.Flow;
 import com.fanxuankai.zeus.util.concurrent.SubmissionPublisher;
 import com.google.common.base.Stopwatch;
@@ -35,11 +37,13 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     private final Otter otter;
     private final Config config;
+    private final CanalProperties canalProperties;
     private Flow.Subscription subscription;
 
     public FilterSubscriber(Otter otter, Config config) {
         this.otter = otter;
         this.config = config;
+        this.canalProperties = ApplicationContexts.getBean(CanalProperties.class);
     }
 
     @Override
@@ -56,7 +60,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             Stopwatch sw = Stopwatch.createStarted();
             messageWrapper.getEntryWrapperList().forEach(this::filterEntryRowData);
             sw.stop();
-            if (Objects.equals(config.getCanalProperties().getShowEventLog(), Boolean.TRUE)) {
+            if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)) {
                 log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
                         config.getApplicationInfo().uniqueString(), batchId,
                         messageWrapper.getRowDataCountBeforeFilter(),

@@ -12,6 +12,10 @@ import org.springframework.lang.NonNull;
 public class ApplicationContexts implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
+    public static Resource getResource(String location) {
+        return applicationContext.getResource(location);
+    }
+
     public static Object getBean(String name) {
         return applicationContext.getBean(name);
     }
@@ -24,13 +28,8 @@ public class ApplicationContexts implements ApplicationContextAware {
         return applicationContext.getBean(type.getType());
     }
 
-    public static Resource getResource(String location) {
-        return applicationContext.getResource(location);
-    }
-
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
         ApplicationContexts.applicationContext = applicationContext;
     }
-
 }

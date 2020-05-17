@@ -8,7 +8,6 @@ import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -21,10 +20,6 @@ import java.util.Map;
  * @author fanxuankai
  */
 public class DeleteConsumer extends AbstractRedisConsumer<Map<String, List<String>>> {
-
-    public DeleteConsumer(RedisTemplate<Object, Object> redisTemplate) {
-        super(redisTemplate);
-    }
 
     @Override
     public Map<String, List<String>> process(EntryWrapper entryWrapper) {

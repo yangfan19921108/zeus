@@ -12,8 +12,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +33,10 @@ public class CanalWorker implements ApplicationRunner {
     private final Config config;
     private final ScheduledExecutorService scheduledExecutor;
     private final Otter otter;
+    @Resource
+    private CanalProperties canalProperties;
+    @Resource
+    private RedisTemplate<Object, Object> redisTemplate;
     /**
      * 应用退出时应清除 canal running 标记
      */
@@ -55,7 +61,6 @@ public class CanalWorker implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         key = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 config.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
-        CanalProperties canalProperties = config.getCanalProperties();
         if (Objects.equals(canalProperties.getRetryStart(), Boolean.TRUE)) {
             scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
                 if (retryStart()) {
@@ -69,7 +74,7 @@ public class CanalWorker implements ApplicationRunner {
     }
 
     private boolean retryStart() {
-        if (!Boolean.TRUE.equals(config.getRedisTemplate().opsForValue().setIfAbsent(key, true))) {
+        if (!Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, true))) {
             log.info("{} Exists", key);
             return false;
         }
@@ -88,7 +93,7 @@ public class CanalWorker implements ApplicationRunner {
     public void preDestroy() {
         otter.stop();
         if (shouldClearTagWhenExit) {
-            config.getRedisTemplate().delete(key);
+            redisTemplate.delete(key);
             log.info("{} Canal stop", key);
         }
     }

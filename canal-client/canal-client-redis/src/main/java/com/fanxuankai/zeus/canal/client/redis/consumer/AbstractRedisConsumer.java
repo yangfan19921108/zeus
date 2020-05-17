@@ -4,7 +4,8 @@ import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.redis.metadata.CanalToRedisMetadata;
-import org.springframework.data.redis.core.RedisTemplate;
+import com.fanxuankai.zeus.data.redis.ObjectRedisTemplate;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 
 import static com.fanxuankai.zeus.canal.client.redis.config.CanalToRedisScanner.CONSUME_CONFIGURATION;
 
@@ -15,10 +16,10 @@ import static com.fanxuankai.zeus.canal.client.redis.config.CanalToRedisScanner.
  */
 public abstract class AbstractRedisConsumer<R> implements MessageConsumer<R> {
 
-    protected final RedisTemplate<Object, Object> redisTemplate;
+    protected final ObjectRedisTemplate redisTemplate;
 
-    public AbstractRedisConsumer(RedisTemplate<Object, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public AbstractRedisConsumer() {
+        this.redisTemplate = ApplicationContexts.getBean(ObjectRedisTemplate.class);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.model.ConnectConfig;
 import com.fanxuankai.zeus.canal.client.core.model.Context;
 import com.fanxuankai.zeus.canal.client.core.util.CanalConnectorHolder;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -37,9 +38,9 @@ public abstract class AbstractOtter implements Otter {
     private final CanalProperties canalProperties;
     private volatile boolean running;
 
-    public AbstractOtter(ConnectConfig connectConfig, CanalProperties canalProperties) {
+    public AbstractOtter(ConnectConfig connectConfig) {
         this.connectConfig = connectConfig;
-        this.canalProperties = canalProperties;
+        this.canalProperties = ApplicationContexts.getBean(CanalProperties.class);
     }
 
     @Override

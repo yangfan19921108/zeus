@@ -1,7 +1,9 @@
 package com.fanxuankai.zeus.canal.client.core.flow;
 
+import com.fanxuankai.zeus.canal.client.core.config.CanalProperties;
 import com.fanxuankai.zeus.canal.client.core.protocol.Otter;
 import com.fanxuankai.zeus.canal.client.core.wrapper.ContextWrapper;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import com.fanxuankai.zeus.util.concurrent.Flow;
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,13 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
 
     private final Otter otter;
     private final Config config;
+    private final CanalProperties canalProperties;
     private Flow.Subscription subscription;
 
     public ConfirmSubscriber(Otter otter, Config config) {
         this.otter = otter;
         this.config = config;
+        this.canalProperties = ApplicationContexts.getBean(CanalProperties.class);
     }
 
     @Override
@@ -37,7 +41,7 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
         Stopwatch sw = Stopwatch.createStarted();
         item.confirm();
         sw.stop();
-        if (Objects.equals(config.getCanalProperties().getShowEventLog(), Boolean.TRUE)
+        if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
                 && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
             log.info("{} Confirm batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                     item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));

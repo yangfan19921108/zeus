@@ -8,7 +8,6 @@ import com.fanxuankai.zeus.canal.client.redis.util.RedisKeyGenerator;
 import com.google.common.collect.Maps;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -20,10 +19,6 @@ import java.util.Map;
  * @author fanxuankai
  */
 public class InsertConsumer extends AbstractRedisConsumer<Map<String, Map<String, Object>>> {
-
-    public InsertConsumer(RedisTemplate<Object, Object> redisTemplate) {
-        super(redisTemplate);
-    }
 
     @Override
     public Map<String, Map<String, Object>> process(EntryWrapper entryWrapper) {

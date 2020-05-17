@@ -9,10 +9,11 @@ import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.mq.core.metadata.CanalToMqMetadata;
 import com.fanxuankai.zeus.canal.client.mq.core.model.MessageInfo;
+import com.fanxuankai.zeus.data.redis.ObjectRedisTemplate;
 import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Objects;
 
@@ -27,14 +28,14 @@ import static com.fanxuankai.zeus.canal.client.mq.core.config.CanalToMqScanner.C
 public abstract class AbstractMqConsumer implements MessageConsumer<MessageInfo> {
 
     private final ApplicationInfo applicationInfo;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final ObjectRedisTemplate redisTemplate;
     private final String consumeTag;
 
-    public AbstractMqConsumer(ApplicationInfo applicationInfo, RedisTemplate<Object, Object> redisTemplate) {
+    public AbstractMqConsumer(ApplicationInfo applicationInfo) {
         this.applicationInfo = applicationInfo;
-        this.redisTemplate = redisTemplate;
-        consumeTag = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
+        this.consumeTag = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 applicationInfo.uniqueString() + CommonConstants.SEPARATOR + RedisConstants.MQ_CONSUME);
+        this.redisTemplate = ApplicationContexts.getBean(ObjectRedisTemplate.class);
     }
 
     @Override

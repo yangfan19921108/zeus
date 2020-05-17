@@ -13,7 +13,6 @@ import com.fanxuankai.zeus.canal.client.redis.consumer.InsertConsumer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,23 +27,20 @@ public class CanalWorkerAutoConfiguration {
 
     @Bean("redisCanalWorker")
     public CanalWorker canalWorker(CanalProperties canalProperties,
-                                   CanalRedisProperties canalRedisProperties,
-                                   RedisTemplate<Object, Object> redisTemplate) {
+                                   CanalRedisProperties canalRedisProperties) {
         ApplicationInfo applicationInfo = new ApplicationInfo(canalProperties.getApplicationName(), "Redis");
         Map<CanalEntry.EventType, MessageConsumer> consumerMap = new HashMap<>(4);
-        InsertConsumer insertConsumer = new InsertConsumer(redisTemplate);
-        DeleteConsumer deleteConsumer = new DeleteConsumer(redisTemplate);
+        InsertConsumer insertConsumer = new InsertConsumer();
+        DeleteConsumer deleteConsumer = new DeleteConsumer();
         consumerMap.put(CanalEntry.EventType.INSERT, insertConsumer);
         consumerMap.put(CanalEntry.EventType.UPDATE, insertConsumer);
         consumerMap.put(CanalEntry.EventType.DELETE, deleteConsumer);
-        consumerMap.put(CanalEntry.EventType.ERASE, new EraseConsumer(redisTemplate));
+        consumerMap.put(CanalEntry.EventType.ERASE, new EraseConsumer());
         Config config = Config.builder()
                 .applicationInfo(applicationInfo)
-                .canalProperties(canalProperties)
                 .connectConfig(new ConnectConfig(canalRedisProperties.getInstance(),
                         CanalToRedisScanner.CONSUME_CONFIGURATION.getFilter(), applicationInfo))
                 .consumerMap(consumerMap)
-                .redisTemplate(redisTemplate)
                 .skip(Boolean.FALSE)
                 .build();
         return new CanalWorker(config);

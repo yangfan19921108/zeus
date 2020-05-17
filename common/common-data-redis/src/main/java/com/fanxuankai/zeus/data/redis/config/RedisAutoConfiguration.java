@@ -1,5 +1,6 @@
 package com.fanxuankai.zeus.data.redis.config;
 
+import com.fanxuankai.zeus.data.redis.ObjectRedisTemplate;
 import com.fanxuankai.zeus.data.redis.lock.DistributedLocker;
 import com.fanxuankai.zeus.data.redis.lock.RedisLocker;
 import org.redisson.Redisson;
@@ -12,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,17 +27,9 @@ import java.util.stream.Collectors;
 public class RedisAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
-    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        Jackson2JsonRedisSerializer<?> jsonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        template.setKeySerializer(jsonSerializer);
-        template.setHashKeySerializer(jsonSerializer);
-        template.setValueSerializer(jsonSerializer);
-        template.setHashValueSerializer(jsonSerializer);
-        template.afterPropertiesSet();
-        return template;
+    @ConditionalOnMissingBean(RedisTemplate.class)
+    public ObjectRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return new ObjectRedisTemplate(redisConnectionFactory);
     }
 
     @Bean

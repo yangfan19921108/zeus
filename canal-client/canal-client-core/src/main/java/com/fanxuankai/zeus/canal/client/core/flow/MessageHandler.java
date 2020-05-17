@@ -9,7 +9,9 @@ import com.fanxuankai.zeus.canal.client.core.util.ConsumeEntryLogger;
 import com.fanxuankai.zeus.canal.client.core.util.RedisUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.core.wrapper.MessageWrapper;
+import com.fanxuankai.zeus.data.redis.ObjectRedisTemplate;
 import com.fanxuankai.zeus.data.redis.enums.RedisKeyPrefix;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import com.fanxuankai.zeus.util.concurrent.ThreadPoolService;
 import com.google.common.base.Stopwatch;
 import lombok.AllArgsConstructor;
@@ -41,11 +43,15 @@ public class MessageHandler implements Handler<MessageWrapper> {
      * logfile offset 消费标记
      */
     private final String logFileOffsetTag;
+    private final CanalProperties canalProperties;
+    private final ObjectRedisTemplate redisTemplate;
 
     public MessageHandler(Config config) {
         this.config = config;
         this.logFileOffsetTag = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 config.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.LOGFILE_OFFSET);
+        this.canalProperties = ApplicationContexts.getBean(CanalProperties.class);
+        this.redisTemplate = ApplicationContexts.getBean(ObjectRedisTemplate.class);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
             return;
         }
         try {
-            if (messageWrapper.getRowDataCountAfterFilter() >= config.getCanalProperties().getPerformanceThreshold()) {
+            if (messageWrapper.getRowDataCountAfterFilter() >= canalProperties.getPerformanceThreshold()) {
                 doHandlePerformance(entryWrapperList, messageWrapper.getBatchId());
             } else {
                 doHandle(entryWrapperList, messageWrapper.getBatchId());
@@ -133,7 +139,6 @@ public class MessageHandler implements Handler<MessageWrapper> {
     }
 
     private void logEntry(EntryWrapper entryWrapper, long batchId, long time) {
-        CanalProperties canalProperties = config.getCanalProperties();
         if (Objects.equals(canalProperties.getShowEntryLog(), Boolean.TRUE)) {
             ConsumeEntryLogger.asyncLog(ConsumeEntryLogger.LogInfo
                     .builder()
@@ -147,7 +152,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
     }
 
     private boolean existsLogfileOffset(String logfileName, long offset) {
-        Object value = config.getRedisTemplate().opsForHash().get(logFileOffsetTag, logfileName);
+        Object value = redisTemplate.opsForHash().get(logFileOffsetTag, logfileName);
         if (value == null) {
             return false;
         }
@@ -155,7 +160,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
     }
 
     private void putOffset(String logfileName, long offset) {
-        config.getRedisTemplate().opsForHash().put(logFileOffsetTag, logfileName, offset);
+        redisTemplate.opsForHash().put(logFileOffsetTag, logfileName, offset);
     }
 
     @AllArgsConstructor

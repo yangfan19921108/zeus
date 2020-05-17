@@ -37,6 +37,11 @@
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fanxuankai.zeus</groupId>
+            <artifactId>common-spring-context</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -4,6 +4,7 @@ import com.fanxuankai.zeus.canal.client.core.metadata.FilterMetadata;
 import com.fanxuankai.zeus.canal.client.core.protocol.MessageConsumer;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.fanxuankai.zeus.canal.client.es.metadata.CanalToEsMetadata;
+import com.fanxuankai.zeus.spring.context.ApplicationContexts;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 
 import static com.fanxuankai.zeus.canal.client.es.config.CanalToEsScanner.CONSUME_CONFIGURATION;
@@ -17,8 +18,8 @@ public abstract class AbstractEsConsumer<R> implements MessageConsumer<R> {
 
     protected final ElasticsearchTemplate elasticsearchTemplate;
 
-    public AbstractEsConsumer(ElasticsearchTemplate elasticsearchTemplate) {
-        this.elasticsearchTemplate = elasticsearchTemplate;
+    public AbstractEsConsumer() {
+        this.elasticsearchTemplate = ApplicationContexts.getBean(ElasticsearchTemplate.class);
     }
 
     @Override

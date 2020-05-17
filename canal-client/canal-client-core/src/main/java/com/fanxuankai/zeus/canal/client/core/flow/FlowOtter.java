@@ -16,7 +16,7 @@ public class FlowOtter extends AbstractOtter {
     private final SubmissionPublisher<Context> publisher;
 
     public FlowOtter(Config config) {
-        super(config.getConnectConfig(), config.getCanalProperties());
+        super(config.getConnectConfig());
         publisher = new SubmissionPublisher<>();
         ConvertProcessor converter = new ConvertProcessor(this, config);
         FilterSubscriber filter = new FilterSubscriber(this, config);
