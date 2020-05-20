@@ -9,8 +9,7 @@
 <br/>
 理论上可以实现同步到任何数据库或消息队列, 实现最少只需要三步: 定义注解、消费实现、启动 Canal 工作线程.
 <br/>
-![](http://assets.processon.com/chart_image/5e7d8f17e4b08e4e24428c33.png)
-https://www.processon.com/view/link/5e7d8f28e4b08e4e24428c6c
+![](http://processon.com/chart_image/5e7d8f17e4b08e4e24428c33.png?_=1589993535902)
 
 ### 场景
 - 同步缓存 redis
