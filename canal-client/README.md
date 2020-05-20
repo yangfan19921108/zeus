@@ -30,57 +30,58 @@ https://www.processon.com/view/link/5e7d8f28e4b08e4e24428c6c
 ### 配置文件
 ```
 ## application.yml
-canal:
-  application-name: example-service
-  redis:
-    # 对应的 Canal 实例名
-    instance: redis-example
-    #enabled: true
-  rabbit:
-    instance: rabbit-example
-    # MQ 跳过处理, 适用场景: Redis 全量同步时, MQ 跳过
-    #skip: false
-    #enabled: true
-  xxl:
-    instance: xxl-example
-    #skip: false
-    #enabled: true
-  # 集群配置
-  #cluster:
-    # zookeeper的ip+端口, 以逗号隔开
-    #nodes: localhost:2181,localhost:2182,localhost:2183
-  # 单节点配置
-  #single-node:
-    # ip
-    #hostname: localhost
-    # 端口
-    #port: 11111
-  # 账号
-  #username: canal
-  # 密码
-  #password: canal
-  # 间隔
-  #interval-millis: 1000
-  # 批次数量
-  #batch-size: 100
-  #拉取数据阻塞时间 ms
-  #一般情况下是不需要的, 会造成阻塞
-  #数据量大的时候, 可调此值减少 IO 次数
-  # timeout-millis:
-  # 打印事件日志
-  #show-event-log: false
-  # 打印 Entry 日志
-  #show-entry-log: false
-  # 打印数据明细日志
-  #show-row-change: false
-  # 格式化数据明细日志
-  #format-row-change-log: false
-  # 批次达到一定数量进行并行处理, 且确保顺序消费
-  #performance-threshold: 10000
-  # 暂不支持集群, 设置该参数为 true 时, 当启动了 Canal 服务的节点停止后可以及时补位
-  #retry-start: true
-  # retryStart 的间隔秒数
-  #retry-start-interval-seconds: 300
+zeus:
+  canal:
+    application-name: example-service
+    redis:
+      # 对应的 Canal 实例名
+      instance: redis-example
+      #enabled: true
+    rabbit:
+      instance: rabbit-example
+      # MQ 跳过处理, 适用场景: Redis 全量同步时, MQ 跳过
+      #skip: false
+      #enabled: true
+    xxl:
+      instance: xxl-example
+      #skip: false
+      #enabled: true
+      # 集群配置
+      #cluster:
+      # zookeeper的ip+端口, 以逗号隔开
+      #nodes: localhost:2181,localhost:2182,localhost:2183
+      # 单节点配置
+      #single-node:
+      # ip
+      #hostname: localhost
+      # 端口
+      #port: 11111
+    # 账号
+    #username: canal
+    # 密码
+    #password: canal
+    # 间隔
+    #interval-millis: 1000
+    # 批次数量
+    #batch-size: 100
+    #拉取数据阻塞时间 ms
+    #一般情况下是不需要的, 会造成阻塞
+    #数据量大的时候, 可调此值减少 IO 次数
+    # timeout-millis:
+    # 打印事件日志
+    #show-event-log: false
+    # 打印 Entry 日志
+    #show-entry-log: false
+    # 打印数据明细日志
+    #show-row-change: false
+    # 格式化数据明细日志
+    #format-row-change-log: false
+    # 批次达到一定数量进行并行处理, 且确保顺序消费
+    #performance-threshold: 10000
+    # 暂不支持集群, 设置该参数为 true 时, 当启动了 Canal 服务的节点停止后可以及时补位
+    #retry-start: true
+    # retryStart 的间隔秒数
+    #retry-start-interval-seconds: 300
 ```
 
 ### 使用指南

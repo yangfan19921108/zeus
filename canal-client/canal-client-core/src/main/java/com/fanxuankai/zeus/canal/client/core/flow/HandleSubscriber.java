@@ -41,15 +41,13 @@ public class HandleSubscriber extends SubmissionPublisher<ContextWrapper> implem
 
     @Override
     public void onNext(ContextWrapper item) {
-        if (!config.isSkip()) {
-            Stopwatch sw = Stopwatch.createStarted();
-            messageHandler.handle(item.getMessageWrapper());
-            sw.stop();
-            if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
-                    && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
-                log.info("{} Handle batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
-                        item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));
-            }
+        Stopwatch sw = Stopwatch.createStarted();
+        messageHandler.handle(item.getMessageWrapper());
+        sw.stop();
+        if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
+                && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
+            log.info("{} Handle batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
+                    item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));
         }
         submit(item);
         subscription.request(1);

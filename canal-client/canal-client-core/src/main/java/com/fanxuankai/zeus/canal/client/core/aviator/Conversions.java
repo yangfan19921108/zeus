@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.lang.NonNull;
 
-import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -67,7 +67,7 @@ public class Conversions {
         }
 
         @Override
-        public T convert(@Nonnull String s) {
+        public T convert(@NonNull String s) {
             synchronized (this) {
                 String key = "value";
                 jsonObject.put(key, s);

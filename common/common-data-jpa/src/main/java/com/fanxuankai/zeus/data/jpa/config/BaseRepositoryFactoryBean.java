@@ -14,8 +14,8 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.lang.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 
@@ -37,8 +37,8 @@ public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T, I exten
     }
 
     @Override
-    @Nonnull
-    protected RepositoryFactorySupport createRepositoryFactory(@Nonnull EntityManager em) {
+    @NonNull
+    protected RepositoryFactorySupport createRepositoryFactory(@NonNull EntityManager em) {
         return new MyRepositoryFactory<>(em);
     }
 
@@ -50,9 +50,9 @@ public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T, I exten
 
         @Override
         @SuppressWarnings("rawtypes unchecked")
-        @Nonnull
+        @NonNull
         protected JpaRepositoryImplementation<?, ?> getTargetRepository(RepositoryInformation information,
-                                                                        @Nonnull EntityManager entityManager) {
+                                                                        @NonNull EntityManager entityManager) {
             Class<T> domainClass = (Class<T>) information.getDomainType();
             if (BooleanLogicDeleteEntity.class.isAssignableFrom(domainClass)) {
                 return new BooleanLogicDeleteRepositoryImpl(domainClass, entityManager);
@@ -68,7 +68,7 @@ public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T, I exten
         }
 
         @Override
-        @Nonnull
+        @NonNull
         protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
             Class<?> domainClass = metadata.getDomainType();
             if (BooleanLogicDeleteEntity.class.isAssignableFrom(domainClass)) {

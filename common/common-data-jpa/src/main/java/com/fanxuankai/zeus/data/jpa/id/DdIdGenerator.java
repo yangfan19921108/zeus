@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.data.jpa.id;
 
-import com.fanxuankai.zeus.data.jpa.utils.IdGeneratorUtil;
+import com.fanxuankai.zeus.id.DangDangIdGenerator;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentityGenerator;
 
@@ -15,7 +15,7 @@ public class DdIdGenerator extends IdentityGenerator {
 
     @Override
     public Serializable generate(SharedSessionContractImplementor s, Object obj) {
-        Number number = IdGeneratorUtil.generateId();
+        Number number = DangDangIdGenerator.generateId();
         if (number != null) {
             return number.longValue();
         }

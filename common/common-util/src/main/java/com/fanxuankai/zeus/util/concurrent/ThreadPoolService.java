@@ -4,7 +4,6 @@ import com.fanxuankai.zeus.util.SystemProperties;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,21 +23,21 @@ public class ThreadPoolService {
     private ThreadPoolService() {
     }
 
-    public static ExecutorService getInstance() {
-        return Singleton.INSTANCE.executorService;
+    public static ThreadPoolExecutor getInstance() {
+        return Singleton.INSTANCE.threadPoolExecutor;
     }
 
     private enum Singleton {
         // 实例
         INSTANCE;
 
-        private final ExecutorService executorService;
+        private final ThreadPoolExecutor threadPoolExecutor;
 
         Singleton() {
-            executorService = threadPoolExecutor();
+            threadPoolExecutor = threadPoolExecutor();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 log.info("Shut down thread pool");
-                executorService.shutdown();
+                threadPoolExecutor.shutdown();
             }));
         }
 
@@ -48,7 +47,10 @@ public class ThreadPoolService {
             return new ThreadPoolExecutor(corePoolSize, corePoolSize * 2,
                     SystemProperties.getLong(PROPERTY_KAT).orElse(60L), TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<>(),
-                    new ThreadFactoryBuilder().setNameFormat("ZeusThreadPool-worker-%d").build());
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("ZeusThreadPool-worker-%d")
+                            .build()
+            );
         }
 
     }

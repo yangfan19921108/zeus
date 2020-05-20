@@ -14,8 +14,8 @@ import org.reflections.scanners.FieldAnnotationsScanner;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
+import org.springframework.lang.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -64,7 +64,7 @@ public class ConsumeConfiguration<A extends Annotation, M> {
      * @param annotationClass  定义的注解
      * @param metadataFunction 注解转换
      */
-    public ConsumeConfiguration(@Nonnull Class<A> annotationClass, @Nullable Function<A, M> metadataFunction) {
+    public ConsumeConfiguration(@NonNull Class<A> annotationClass, @Nullable Function<A, M> metadataFunction) {
         Reflections r =
                 new Reflections(new ConfigurationBuilder()
                         .forPackages(EnableCanalAttributes.getBasePackage())

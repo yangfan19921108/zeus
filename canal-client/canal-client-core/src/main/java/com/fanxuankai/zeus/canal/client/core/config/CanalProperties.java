@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class CanalProperties {
 
-    public static final String PREFIX = "canal";
+    public static final String PREFIX = "zeus.canal";
 
     /**
      * 应用名,暂不支持集群, 集群时只开启一个服务.
