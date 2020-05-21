@@ -23,7 +23,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
-import java.io.FileOutputStream;
 import java.util.Set;
 
 /**
@@ -72,17 +71,9 @@ public class XxlConsumerBeanRegister {
             classAttribute.addAnnotation(classAnnotation);
             clazz.getClassFile().addAttribute(classAttribute);
             clazz.addMethod(proxyMethod);
-            w(clazz.toBytecode(), "A");
             return clazz.toClass();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static void w(byte[] code, String name) throws Exception {
-        //将二进制流写到本地磁盘上
-        FileOutputStream fos = new FileOutputStream(name + ".class");
-        fos.write(code);
-        fos.close();
     }
 }
