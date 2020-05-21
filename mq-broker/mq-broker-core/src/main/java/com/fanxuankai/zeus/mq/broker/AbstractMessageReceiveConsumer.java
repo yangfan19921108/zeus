@@ -5,6 +5,7 @@ import com.fanxuankai.zeus.mq.broker.core.EventListener;
 import com.fanxuankai.zeus.mq.broker.core.EventListenerStrategy;
 import com.fanxuankai.zeus.mq.broker.core.MessageReceiveConsumer;
 import com.fanxuankai.zeus.mq.broker.domain.MqBrokerMessage;
+import com.fanxuankai.zeus.mq.broker.service.MqBrokerMessageService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -17,6 +18,8 @@ import java.util.List;
 public abstract class AbstractMessageReceiveConsumer implements MessageReceiveConsumer {
     @Resource
     private EventListenerFactory eventListenerFactory;
+    @Resource
+    private MqBrokerMessageService mqBrokerMessageService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -27,6 +30,7 @@ public abstract class AbstractMessageReceiveConsumer implements MessageReceiveCo
         }
         Event event = new Event(message.getQueue(), message.getCode(), message.getContent());
         onAccept(event, eventListeners);
+        mqBrokerMessageService.setSuccess(message);
     }
 
     /**

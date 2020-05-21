@@ -44,7 +44,7 @@ public class MqBrokerMessageServiceImpl extends ServiceImpl<MqBrokerMessageMappe
                         .eq(MqBrokerMessage::getType, messageType.getCode())
                         .eq(MqBrokerMessage::getStatus, Status.RUNNING.getCode()));
         if (runningCount > 0) {
-            throw new LockFailureException();
+            throw new LockFailureException("尝试锁定消息失败 " + messageType);
         }
         LambdaQueryWrapper<MqBrokerMessage> wrapper = new QueryWrapper<MqBrokerMessage>()
                 .lambda()
@@ -60,10 +60,12 @@ public class MqBrokerMessageServiceImpl extends ServiceImpl<MqBrokerMessageMappe
         }
         List<Long> ids = records.stream().map(MqBrokerMessage::getId).collect(Collectors.toList());
         MqBrokerMessage entity = new MqBrokerMessage();
-        Consumer<MqBrokerMessage> lockConsumer = messageSend ->
-                messageSend.setStatus(Status.RUNNING.getCode())
-                        .setLastModifiedDate(LocalDateTime.now())
-                        .setHostAddress(AddressUtils.getHostAddress());
+        LocalDateTime now = LocalDateTime.now();
+        Consumer<MqBrokerMessage> lockConsumer = o -> {
+            o.setStatus(Status.RUNNING.getCode())
+                    .setLastModifiedDate(now)
+                    .setHostAddress(AddressUtils.getHostAddress());
+        };
         lockConsumer.accept(entity);
         int lockCount = mapper.update(entity, new UpdateWrapper<MqBrokerMessage>()
                 .lambda()
@@ -71,10 +73,23 @@ public class MqBrokerMessageServiceImpl extends ServiceImpl<MqBrokerMessageMappe
                 .lt(MqBrokerMessage::getRetry, maxRetry)
                 .in(MqBrokerMessage::getId, ids));
         if (lockCount != records.size()) {
-            throw new LockFailureException();
+            throw new LockFailureException("锁定消息失败 " + messageType);
         }
         records.forEach(lockConsumer);
         return records;
+    }
+
+    @Override
+    public void unlock(List<MqBrokerMessage> messages) {
+        LocalDateTime now = LocalDateTime.now();
+        mqBrokerMessageMapper.update(new MqBrokerMessage()
+                        .setStatus(Status.CREATED.getCode())
+                        .setLastModifiedDate(now).setHostAddress(""),
+                new UpdateWrapper<MqBrokerMessage>()
+                        .lambda()
+                        .eq(MqBrokerMessage::getStatus, Status.RUNNING.getCode())
+                        .in(MqBrokerMessage::getId,
+                                messages.stream().map(MqBrokerMessage::getId).collect(Collectors.toList())));
     }
 
     @Override

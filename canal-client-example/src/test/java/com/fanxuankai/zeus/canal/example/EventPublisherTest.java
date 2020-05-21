@@ -21,7 +21,7 @@ public class EventPublisherTest {
 
     @Test
     public void publish() {
-        eventPublisher.publish(IntStream.range(0, 10000)
+        eventPublisher.publish(IntStream.range(0, 100)
                 .mapToObj(value -> new Event("user", UUID.randomUUID().toString(), "fanxuankai"))
                 .collect(Collectors.toList()));
     }

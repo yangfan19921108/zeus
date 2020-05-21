@@ -53,10 +53,8 @@ xxl:
 zeus:
   mq-broker:
     max-retry: 6
-    produce-interval-millis: 100
-    consume-interval-millis: 100
-    produce-batch-count: 500
-    consume-batch-count: 500
+    interval-millis: 100
+    batch-count: 500
     event-listener-strategy:
       user: DEFAULT
   canal:

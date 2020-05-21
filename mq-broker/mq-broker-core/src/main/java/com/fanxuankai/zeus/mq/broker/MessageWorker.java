@@ -68,16 +68,19 @@ public class MessageWorker implements ApplicationRunner, DisposableBean {
                             mqBrokerProperties.getBatchCount(),
                             mqBrokerProperties.getMaxRetry(), messageType);
                 } catch (LockFailureException e) {
+                    log.warn(e.getLocalizedMessage());
                     lockFailure = true;
                 }
-                for (MqBrokerMessage o : lockData) {
+                int size = lockData.size();
+                int currentIndex;
+                for (currentIndex = 0; currentIndex < size; currentIndex++) {
+                    MqBrokerMessage o = lockData.get(currentIndex);
                     try {
                         consumer.accept(o);
-                        mqBrokerMessageService.setSuccess(o);
                     } catch (Exception e) {
-                        log.error(e.getLocalizedMessage(), e);
-                        o.setRetry(o.getRetry() + 1);
-                        o.setError(e.getLocalizedMessage())
+                        log.error(messageType + " consume error", e);
+                        o.setRetry(o.getRetry() + 1)
+                                .setError(e.toString())
                                 .setLastModifiedDate(LocalDateTime.now());
                         if (o.getRetry() >= mqBrokerProperties.getMaxRetry()) {
                             mqBrokerMessageService.setFailure(o);
@@ -87,8 +90,12 @@ public class MessageWorker implements ApplicationRunner, DisposableBean {
                         break;
                     }
                 }
+                if (currentIndex < size - 1) {
+                    // 未处理的全部解锁
+                    mqBrokerMessageService.unlock(lockData.subList(currentIndex + 1, size));
+                }
                 long sleep = mqBrokerProperties.getIntervalMillis() + r.nextInt(100);
-                sleep = lockFailure ? Math.max(1000 * 30, sleep) : sleep;
+                sleep = lockFailure ? Math.max(1000 * 5, sleep) : sleep;
                 Threads.sleep(sleep, TimeUnit.MILLISECONDS);
             }
         };

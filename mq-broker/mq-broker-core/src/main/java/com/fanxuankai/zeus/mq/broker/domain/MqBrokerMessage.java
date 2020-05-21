@@ -18,7 +18,7 @@ public class MqBrokerMessage {
     /**
      * 消息类型 MessageType
      */
-    private int type;
+    private Integer type;
     /**
      * 队列名
      */

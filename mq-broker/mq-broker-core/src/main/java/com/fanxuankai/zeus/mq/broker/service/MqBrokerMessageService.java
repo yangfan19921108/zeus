@@ -23,14 +23,21 @@ public interface MqBrokerMessageService extends IService<MqBrokerMessage> {
     List<MqBrokerMessage> getAndLock(String queue, long count, int maxRetry, MessageType messageType);
 
     /**
-     * 发送成功
+     * 解锁
+     *
+     * @param messages 消息
+     */
+    void unlock(List<MqBrokerMessage> messages);
+
+    /**
+     * 成功
      *
      * @param message 消息
      */
     void setSuccess(MqBrokerMessage message);
 
     /**
-     * 发送失败
+     * 失败
      *
      * @param message 消息
      */
