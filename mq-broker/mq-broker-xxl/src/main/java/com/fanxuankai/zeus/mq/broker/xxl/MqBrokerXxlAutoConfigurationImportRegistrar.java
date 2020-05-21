@@ -1,6 +1,5 @@
 package com.fanxuankai.zeus.mq.broker.xxl;
 
-import com.fanxuankai.zeus.mq.broker.config.EnableMqBrokerAttributes;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
@@ -13,9 +12,6 @@ public class MqBrokerXxlAutoConfigurationImportRegistrar implements ImportBeanDe
     @Override
     public void registerBeanDefinitions(@NonNull AnnotationMetadata annotationMetadata,
                                         @NonNull BeanDefinitionRegistry beanDefinitionRegistry) {
-        if (!EnableMqBrokerAttributes.isEnable()) {
-            return;
-        }
         XxlConsumerBeanRegister.registry(beanDefinitionRegistry);
     }
 }

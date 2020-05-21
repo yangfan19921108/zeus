@@ -7,7 +7,6 @@ import com.fanxuankai.zeus.mq.broker.core.Status;
 import com.fanxuankai.zeus.mq.broker.domain.MessageReceive;
 import com.fanxuankai.zeus.mq.broker.mapper.MessageReceiveMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.dao.DuplicateKeyException;
 
 import javax.annotation.Resource;
@@ -40,11 +39,6 @@ public class RabbitEventConsumer implements EventConsumer {
         } catch (DuplicateKeyException e) {
             log.info("消费端防重, name: {} key: {} data: {}", event.getName(), event.getKey(), event.getData());
         }
-    }
-
-    @RabbitListener(queues = "user")
-    public void proxyMethod(Event event) {
-        this.accept(event);
     }
 
 }

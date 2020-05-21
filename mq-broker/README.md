@@ -47,7 +47,6 @@ public class UserEventListener implements EventListener {
 }
 ```
 - Usage
-    - Spring Boot 启动类添加注解 @EnableMqBroker
     - 依赖注入 
     ```
       @Resource

@@ -42,7 +42,7 @@ public class MessageSendRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         Random r = new Random();
-        eventListenerFactory.getAllListener()
+        EventListenerFactory.getListeners()
                 .stream()
                 .map(listener -> (Runnable) () -> {
                     while (true) {

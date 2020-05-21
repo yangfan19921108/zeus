@@ -6,9 +6,6 @@ import com.fanxuankai.zeus.mq.broker.core.Event;
 import com.fanxuankai.zeus.mq.broker.core.Status;
 import com.fanxuankai.zeus.mq.broker.domain.MessageReceive;
 import com.fanxuankai.zeus.mq.broker.mapper.MessageReceiveMapper;
-import com.xxl.mq.client.consumer.IMqConsumer;
-import com.xxl.mq.client.consumer.MqResult;
-import com.xxl.mq.client.consumer.annotation.MqConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 
@@ -20,8 +17,7 @@ import java.util.function.Consumer;
  * @author fanxuankai
  */
 @Slf4j
-@MqConsumer(topic = "user")
-public class XxlEventConsumer implements Consumer<String>, IMqConsumer {
+public class XxlEventConsumer implements Consumer<String> {
 
     @Resource
     private MessageReceiveMapper messageReceiveMapper;
@@ -45,12 +41,6 @@ public class XxlEventConsumer implements Consumer<String>, IMqConsumer {
         } catch (DuplicateKeyException e) {
             log.info("消费端防重, name: {} key: {} data: {}", event.getName(), event.getKey(), event.getData());
         }
-    }
-
-    @Override
-    public MqResult consume(String s) {
-        this.accept(s);
-        return MqResult.SUCCESS;
     }
 
 }

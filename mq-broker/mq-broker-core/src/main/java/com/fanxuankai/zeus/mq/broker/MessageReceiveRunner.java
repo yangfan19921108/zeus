@@ -34,14 +34,12 @@ public class MessageReceiveRunner implements ApplicationRunner {
     @Resource
     private MessageReceiveConsumerFactory messageReceiveConsumerFactory;
     @Resource
-    private EventListenerFactory eventListenerFactory;
-    @Resource
     private ThreadPoolExecutor threadPoolExecutor;
 
     @Override
     public void run(ApplicationArguments args) {
         Random r = new Random();
-        eventListenerFactory.getAllListener()
+        EventListenerFactory.getListeners()
                 .stream()
                 .map(listener -> (Runnable) () -> {
                     while (true) {
