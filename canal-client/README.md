@@ -1,14 +1,14 @@
 ## 简介
 一个轻量级、可扩展、个性化、非侵入式的 Canal Client;
-<br/>
+
 与 Spring Boot 无缝对接, application 配置修改无需重启服务;
-<br/>
+
 数据消费实现了数据选择性、高性能、顺序性、防重;
-<br/>
+
 目前支持的数据库有 Redis, 消息队列有 RabbitMQ、XXL-MQ;
-<br/>
+
 理论上可以实现同步到任何数据库或消息队列, 实现最少只需要三步: 定义注解、消费实现、启动 Canal 工作线程.
-<br/>
+
 ![](http://processon.com/chart_image/5e7d8f17e4b08e4e24428c33.png?_=1589993535902)
 
 ### 场景

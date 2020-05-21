@@ -2,10 +2,10 @@
 消息队列可靠性增强，消息一定发送成功且只发送一次，消息一定接收成功且只消费一次。
 
 ### 模型
-![](http://processon.com/chart_image/5ec55550f346fb6907090118.png)
+![](http://processon.com/chart_image/5ec55550f346fb6907090118.png?_=1590034254430)
 
 ### 处理流程
-![](http://processon.com/chart_image/5ec29045e401fd16f4445959.png)
+![](http://processon.com/chart_image/5ec29045e401fd16f4445959.png?_=1590034271735)
 
 ### 发送端的可靠性
 本地创建发送消息表并具有唯一编号，利用本地事务机制持久化，待事务提交成功，将未发送的消息发送至消息队列，失败则重试到一定次数，成功则修改状态为已发送或者删除。
