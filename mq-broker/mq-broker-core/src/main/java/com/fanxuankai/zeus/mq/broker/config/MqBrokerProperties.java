@@ -21,21 +21,13 @@ public class MqBrokerProperties {
      */
     private Integer maxRetry = 6;
     /**
-     * 生产频率 ms
+     * 工作线程睡眠时间 ms
      */
-    private Long produceIntervalMillis = 1000L;
+    private Long intervalMillis = 1000L;
     /**
-     * 消费频率 ms
+     * 抓取数据的数量
      */
-    private Long consumeIntervalMillis = 1000L;
-    /**
-     * 生产批次数量
-     */
-    private Long produceBatchCount = 100L;
-    /**
-     * 消费批次数量
-     */
-    private Long consumeBatchCount = 100L;
+    private Long batchCount = 100L;
     /**
      * key: 队列名 value: EventListenerStrategy
      */

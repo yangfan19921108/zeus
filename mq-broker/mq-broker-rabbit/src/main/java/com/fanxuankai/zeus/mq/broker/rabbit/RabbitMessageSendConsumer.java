@@ -2,7 +2,7 @@ package com.fanxuankai.zeus.mq.broker.rabbit;
 
 import com.fanxuankai.zeus.mq.broker.core.Event;
 import com.fanxuankai.zeus.mq.broker.core.MessageSendConsumer;
-import com.fanxuankai.zeus.mq.broker.domain.MessageSend;
+import com.fanxuankai.zeus.mq.broker.domain.MqBrokerMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -18,10 +18,9 @@ public class RabbitMessageSendConsumer implements MessageSendConsumer {
     private RabbitTemplate rabbitTemplate;
 
     @Override
-    public void accept(MessageSend messageSend) {
-        rabbitTemplate.convertAndSend(messageSend.getQueue(), new Event(messageSend.getQueue(), messageSend.getCode()
-                , messageSend.getContent()));
-        // todo ack 发送确认机制
+    public void accept(MqBrokerMessage message) {
+        rabbitTemplate.convertAndSend(message.getQueue(), new Event(message.getQueue(), message.getCode()
+                , message.getContent()));
     }
 
 }

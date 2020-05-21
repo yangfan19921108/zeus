@@ -1,7 +1,7 @@
 ### 简介
 消息队列可靠性增强，消息一定发送成功且只发送一次，消息一定接收成功且只消费一次。
 
-### 模型
+### 原理
 ![](http://processon.com/chart_image/5ec55550f346fb6907090118.png?_=1590034254430)
 
 ### 处理流程
@@ -17,6 +17,24 @@
 - XXL-MQ
 
 ### Getting started
+- 创建消息表
+```
+CREATE TABLE `mq_broker_message` (
+  `id` bigint(12) NOT NULL COMMENT '主键',
+  `type` int(1) DEFAULT NULL COMMENT '类型 1:发送 2:接收',
+  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '队列名',
+  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '唯一代码',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '内容',
+  `status` int(1) DEFAULT NULL COMMENT '状态 0:已创建 1:运行中 2:成功 3:失败',
+  `host_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '主机地址',
+  `retry` int(1) DEFAULT '0' COMMENT '重试次数',
+  `error` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '失败原因',
+  `create_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `last_modified_date` datetime DEFAULT NULL COMMENT '修改日期',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_message_type_queue_code` (`type`,`queue`,`code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+```
 - 添加 maven 依赖, 选择一种消息队列
 ```
 <!-- RabbitMQ -->
@@ -66,14 +84,10 @@ zeus:
   mq-broker:
     # 最大重试次数
     #max-retry: 6
-    # 生产频率 ms
-    #produce-interval-millis: 100
-    # 消费频率 ms
-    #consume-interval-millis: 100
-    # 一次性取发送消息表的数量
-    #produce-batch-count: 500
-    # 一次性取接收消息表的数量
-    #consume-batch-count: 500
+    # 工作线程睡眠时间 ms
+    #interval-millis: 1000
+    # 抓取数据的数量
+    #batch-count: 100
     # 事件监听策略
     #event-listener-strategy:
       # key: 消息队列 value: EventListenerStrategy

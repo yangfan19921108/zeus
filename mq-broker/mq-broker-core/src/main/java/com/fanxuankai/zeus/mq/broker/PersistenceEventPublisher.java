@@ -4,9 +4,10 @@ import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
 import com.fanxuankai.zeus.mq.broker.core.Event;
 import com.fanxuankai.zeus.mq.broker.core.EventPublisher;
 import com.fanxuankai.zeus.mq.broker.core.Status;
-import com.fanxuankai.zeus.mq.broker.domain.MessageSend;
-import com.fanxuankai.zeus.mq.broker.mapper.MessageSendMapper;
-import com.fanxuankai.zeus.mq.broker.service.MessageSendService;
+import com.fanxuankai.zeus.mq.broker.domain.MqBrokerMessage;
+import com.fanxuankai.zeus.mq.broker.enums.MessageType;
+import com.fanxuankai.zeus.mq.broker.mapper.MqBrokerMessageMapper;
+import com.fanxuankai.zeus.mq.broker.service.MqBrokerMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -24,16 +25,16 @@ import java.util.stream.Collectors;
 public class PersistenceEventPublisher implements EventPublisher {
 
     @Resource
-    private MessageSendMapper messageSendMapper;
+    private MqBrokerMessageMapper mqBrokerMessageMapper;
     @Resource
-    private MessageSendService messageSendService;
+    private MqBrokerMessageService mqBrokerMessageService;
     @Resource
     private IdGenerator idGenerator;
 
     @Override
     public void publish(List<Event> events) {
         try {
-            messageSendService.saveBatch(events.stream()
+            mqBrokerMessageService.saveBatch(events.stream()
                     .map(this::createMessageSend)
                     .collect(Collectors.toList()));
         } catch (DuplicateKeyException e) {
@@ -44,22 +45,23 @@ public class PersistenceEventPublisher implements EventPublisher {
     @Override
     public void publish(Event event) {
         try {
-            messageSendMapper.insert(createMessageSend(event));
+            mqBrokerMessageMapper.insert(createMessageSend(event));
         } catch (DuplicateKeyException e) {
             log.info("生产端防重, name: {} key: {} data: {}", event.getName(), event.getKey(), event.getData());
         }
     }
 
-    private MessageSend createMessageSend(Event event) {
-        MessageSend messageSend = new MessageSend();
-        messageSend.setId(idGenerator.generateId().longValue());
-        messageSend.setQueue(event.getName());
-        messageSend.setCode(event.getKey());
-        messageSend.setContent(event.getData());
-        messageSend.setStatus(Status.CREATED.getCode());
-        messageSend.setRetry(0);
-        messageSend.setCreateDate(LocalDateTime.now());
-        messageSend.setLastModifiedDate(LocalDateTime.now());
-        return messageSend;
+    private MqBrokerMessage createMessageSend(Event event) {
+        MqBrokerMessage message = new MqBrokerMessage();
+        message.setId(idGenerator.generateId().longValue());
+        message.setType(MessageType.SEND.getCode());
+        message.setQueue(event.getName());
+        message.setCode(event.getKey());
+        message.setContent(event.getData());
+        message.setStatus(Status.CREATED.getCode());
+        message.setRetry(0);
+        message.setCreateDate(LocalDateTime.now());
+        message.setLastModifiedDate(LocalDateTime.now());
+        return message;
     }
 }

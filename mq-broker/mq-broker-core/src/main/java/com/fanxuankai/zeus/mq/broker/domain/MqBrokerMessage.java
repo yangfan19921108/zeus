@@ -10,11 +10,15 @@ import java.time.LocalDateTime;
  */
 @Data
 @Accessors(chain = true)
-public class MessageSend {
+public class MqBrokerMessage {
     /**
      * 主键
      */
     private Long id;
+    /**
+     * 消息类型 MessageType
+     */
+    private int type;
     /**
      * 队列名
      */

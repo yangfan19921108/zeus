@@ -4,7 +4,7 @@ import com.fanxuankai.zeus.mq.broker.core.Event;
 import com.fanxuankai.zeus.mq.broker.core.EventListener;
 import com.fanxuankai.zeus.mq.broker.core.EventListenerStrategy;
 import com.fanxuankai.zeus.mq.broker.core.MessageReceiveConsumer;
-import com.fanxuankai.zeus.mq.broker.domain.MessageReceive;
+import com.fanxuankai.zeus.mq.broker.domain.MqBrokerMessage;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -20,12 +20,12 @@ public abstract class AbstractMessageReceiveConsumer implements MessageReceiveCo
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void accept(MessageReceive messageReceive) {
-        List<EventListener> eventListeners = eventListenerFactory.get(messageReceive.getQueue());
+    public void accept(MqBrokerMessage message) {
+        List<EventListener> eventListeners = eventListenerFactory.get(message.getQueue());
         if (CollectionUtils.isEmpty(eventListeners)) {
             return;
         }
-        Event event = new Event(messageReceive.getQueue(), messageReceive.getCode(), messageReceive.getContent());
+        Event event = new Event(message.getQueue(), message.getCode(), message.getContent());
         onAccept(event, eventListeners);
     }
 

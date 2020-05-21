@@ -3,7 +3,7 @@ package com.fanxuankai.zeus.mq.broker;
 import com.fanxuankai.zeus.mq.broker.config.MqBrokerProperties;
 import com.fanxuankai.zeus.mq.broker.core.EventListenerStrategy;
 import com.fanxuankai.zeus.mq.broker.core.MessageReceiveConsumer;
-import com.fanxuankai.zeus.mq.broker.domain.MessageReceive;
+import com.fanxuankai.zeus.mq.broker.domain.MqBrokerMessage;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,8 +34,8 @@ public class MessageReceiveConsumerFactory implements ApplicationContextAware {
                 .collect(Collectors.toMap(AbstractMessageReceiveConsumer::getEventListenerStrategy, o -> o));
     }
 
-    public MessageReceiveConsumer get(MessageReceive messageReceive) {
-        return consumerMap.get(Optional.ofNullable(mqBrokerProperties.getEventListenerStrategy().get(messageReceive.getQueue()))
+    public MessageReceiveConsumer get(MqBrokerMessage message) {
+        return consumerMap.get(Optional.ofNullable(mqBrokerProperties.getEventListenerStrategy().get(message.getQueue()))
                 .orElse(EventListenerStrategy.DEFAULT));
     }
 }
