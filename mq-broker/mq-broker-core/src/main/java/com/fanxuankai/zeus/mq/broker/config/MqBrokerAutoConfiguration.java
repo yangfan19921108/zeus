@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.fanxuankai.zeus.mq.broker.mapper")
 @ComponentScan({"com.fanxuankai.zeus.mq.broker"})
 @EnableTransactionManagement
+@EnableScheduling
 public class MqBrokerAutoConfiguration {
 
     @Bean

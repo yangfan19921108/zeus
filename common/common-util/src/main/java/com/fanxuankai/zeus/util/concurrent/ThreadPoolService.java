@@ -35,10 +35,6 @@ public class ThreadPoolService {
 
         Singleton() {
             threadPoolExecutor = threadPoolExecutor();
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                log.info("Shut down thread pool");
-                threadPoolExecutor.shutdown();
-            }));
         }
 
         private ThreadPoolExecutor threadPoolExecutor() {

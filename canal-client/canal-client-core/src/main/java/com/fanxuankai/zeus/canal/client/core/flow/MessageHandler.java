@@ -21,7 +21,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -139,7 +138,7 @@ public class MessageHandler implements Handler<MessageWrapper> {
     }
 
     private void logEntry(EntryWrapper entryWrapper, long batchId, long time) {
-        if (Objects.equals(canalProperties.getShowEntryLog(), Boolean.TRUE)) {
+        if (canalProperties.isShowEntryLog()) {
             ConsumeEntryLogger.asyncLog(ConsumeEntryLogger.LogInfo
                     .builder()
                     .canalProperties(canalProperties)

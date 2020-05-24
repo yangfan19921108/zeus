@@ -10,9 +10,11 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author fanxuankai
  */
 public class CommonUtilAutoConfiguration {
-    @Bean
+
+    @Bean(destroyMethod = "shutdown")
     @ConditionalOnMissingBean
     public ThreadPoolExecutor threadPoolExecutor() {
         return ThreadPoolService.getInstance();
     }
+
 }

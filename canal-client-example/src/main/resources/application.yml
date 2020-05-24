@@ -1,8 +1,8 @@
 server:
-  port: 6766
+  port: 6666
 spring:
   application:
-    name: admin-service
+    name: canal-client-service
   datasource:
     url: jdbc:mysql://localhost:3306/canal_client_example?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
@@ -21,10 +21,9 @@ spring:
         order_inserts: true
         order_updates: true
     show-sql: false
-  # redis:
-  #   cluster:
-  #     nodes: localhost:7001,localhost:7002,localhost:7003,localhost:7004,localhost:7005,localhost:7006
   rabbitmq:
+    publisher-confirms: true
+    publisher-returns: true
     username: guest
     password: guest
     host: localhost
@@ -39,48 +38,13 @@ spring:
   data:
     elasticsearch:
       cluster-nodes: 127.0.0.1:9300
-#      cluster-name: es6
-xxl:
-  mq:
-    admin:
-      address: http://localhost:8080/xxl-mq-admin
-# logging:
-#   level:
-#     org:
-#       hibernate:
-#         SQL: debug
-#         type: trace
 zeus:
-  mq-broker:
-    max-retry: 6
-    interval-millis: 100
-    batch-count: 500
-    event-listener-strategy:
-      user: DEFAULT
   canal:
-    batch-size: 10000
-    interval-millis: 100
-    retry-start-interval-seconds: 300
-    application-name: admin-service
+    application-name: canal-client-service
     show-event-log: true
-    performance-threshold: 10000
     redis:
       instance: canal_client_example_redis
-      enabled: false
     rabbit:
       instance: canal_client_example_rabbit
-      enabled: false
-    xxl:
-      instance: canal_client_example_xxl
-      enabled: false
     es:
       instance: canal_client_example_es
-      enabled: false
-# Logger Config
-#logging:
-#  level:
-#    com.baomidou.mybatisplus.samples.quickstart: debug
-#mybatis-plus配置控制台打印完整带参数SQL语句
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

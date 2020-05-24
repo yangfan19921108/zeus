@@ -31,7 +31,40 @@
 ## application.yml
 zeus:
   canal:
+    # 应用名,暂不支持集群, 集群时只开启一个服务.
     application-name: example-service
+    # 集群配置
+    #cluster:
+      # zookeeper的ip+端口, 以逗号隔开
+      #nodes: localhost:2181,localhost:2182,localhost:2183
+    # 单节点配置
+    #single-node:
+      # ip
+      #hostname: localhost
+      # 端口
+      #port: 11111
+    # 账号
+    #username: canal
+    # 密码
+    #password: canal
+    # 拉取数据的间隔 ms
+    #interval-millis: 1000
+    # 拉取数据的数量
+    #batch-size: 100
+    # 打印事件日志
+    #show-event-log: false
+    # 打印 Entry 日志
+    #show-entry-log: false
+    # 打印数据明细日志
+    #show-row-change: false
+    # 格式化数据明细日志
+    #format-row-change-log: false
+    # 批次达到一定数量进行并行处理, 且确保顺序消费
+    #performance-threshold: 10000
+    # 尝试启动
+    #retry-start: true
+    # 尝试启动间隔 s
+    #retry-start-interval-seconds: 300
     redis:
       # 对应的 Canal 实例名
       instance: redis-example
@@ -45,42 +78,6 @@ zeus:
       instance: xxl-example
       #skip: false
       #enabled: true
-      # 集群配置
-      #cluster:
-      # zookeeper的ip+端口, 以逗号隔开
-      #nodes: localhost:2181,localhost:2182,localhost:2183
-      # 单节点配置
-      #single-node:
-      # ip
-      #hostname: localhost
-      # 端口
-      #port: 11111
-    # 账号
-    #username: canal
-    # 密码
-    #password: canal
-    # 间隔
-    #interval-millis: 1000
-    # 批次数量
-    #batch-size: 100
-    #拉取数据阻塞时间 ms
-    #一般情况下是不需要的, 会造成阻塞
-    #数据量大的时候, 可调此值减少 IO 次数
-    # timeout-millis:
-    # 打印事件日志
-    #show-event-log: false
-    # 打印 Entry 日志
-    #show-entry-log: false
-    # 打印数据明细日志
-    #show-row-change: false
-    # 格式化数据明细日志
-    #format-row-change-log: false
-    # 批次达到一定数量进行并行处理, 且确保顺序消费
-    #performance-threshold: 10000
-    # 暂不支持集群, 设置该参数为 true 时, 当启动了 Canal 服务的节点停止后可以及时补位
-    #retry-start: true
-    # retryStart 的间隔秒数
-    #retry-start-interval-seconds: 300
 ```
 
 ### 使用指南

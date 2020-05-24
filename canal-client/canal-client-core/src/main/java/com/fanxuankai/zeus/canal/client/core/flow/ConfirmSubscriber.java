@@ -8,7 +8,6 @@ import com.fanxuankai.zeus.util.concurrent.Flow;
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,8 +40,7 @@ public class ConfirmSubscriber implements Flow.Subscriber<ContextWrapper> {
         Stopwatch sw = Stopwatch.createStarted();
         item.confirm();
         sw.stop();
-        if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
-                && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
+        if (canalProperties.isShowEventLog() && !item.getMessageWrapper().getEntryWrapperList().isEmpty()) {
             log.info("{} Confirm batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                     item.getMessageWrapper().getBatchId(), sw.elapsed(TimeUnit.MILLISECONDS));
         }

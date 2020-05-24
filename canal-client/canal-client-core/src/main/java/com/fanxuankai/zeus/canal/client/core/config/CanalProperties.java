@@ -46,52 +46,47 @@ public class CanalProperties {
     /**
      * 拉取数据的间隔 ms
      */
-    private Long intervalMillis = 1000L;
+    private long intervalMillis = 1_000;
 
     /**
      * 拉取数据的数量
      */
-    private Integer batchSize = 100;
-
-    /**
-     * 拉取数据超时时间 ms
-     */
-    private Long timeoutMillis;
+    private int batchSize = 100;
 
     /**
      * 打印事件日志
      */
-    private Boolean showEventLog = Boolean.FALSE;
+    private boolean showEventLog;
 
     /**
      * 打印 Entry 日志
      */
-    private Boolean showEntryLog = Boolean.FALSE;
+    private boolean showEntryLog;
 
     /**
-     * 显示数据变动的日志
+     * 打印数据明细日志
      */
-    private Boolean showRowChange = Boolean.FALSE;
+    private boolean showRowChange;
 
     /**
-     * 美化数据变动的日志
+     * 格式化数据明细日志
      */
-    private Boolean formatRowChangeLog = Boolean.FALSE;
+    private boolean formatRowChangeLog;
 
     /**
      * 批次达到一定数量进行并行处理, 且确保顺序消费
      */
-    private Integer performanceThreshold = 10000;
+    private int performanceThreshold = 10_000;
 
     /**
-     * 暂不支持集群, 设置该参数为 true 时, 当启动了 Canal 服务的节点停止后可以及时补位
+     * 尝试启动
      */
-    private Boolean retryStart = Boolean.TRUE;
+    private boolean retryStart = true;
 
     /**
-     * retryStart 的间隔秒数
+     * 尝试启动间隔 s
      */
-    private Long retryStartIntervalSeconds = 300L;
+    private long retryStartIntervalSeconds = 300;
 
     @Getter
     @Setter

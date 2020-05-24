@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fanxuankai.zeus.id.configuration.CommonIdAutoConfiguration
+  com.fanxuankai.zeus.id.config.CommonIdAutoConfiguration

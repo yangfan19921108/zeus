@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.mq.broker.xxl;
 
-import com.fanxuankai.zeus.mq.broker.EventListenerFactory;
+import com.fanxuankai.zeus.mq.broker.core.consume.EventListenerFactory;
 import com.xxl.mq.client.consumer.IMqConsumer;
 import com.xxl.mq.client.consumer.MqResult;
 import com.xxl.mq.client.consumer.annotation.MqConsumer;
@@ -38,11 +38,11 @@ public class XxlConsumerBeanRegister {
     private static Class<?> newProxyClass(String topic) {
         try {
             ClassPool pool = ClassPool.getDefault();
-            CtClass eventConsumerCtClass = pool.getCtClass(XxlEventConsumer.class.getName());
+            CtClass mqConsumerCtClass = pool.getCtClass(XxlMqConsumer.class.getName());
             CtClass clazz =
                     pool.makeClass(ClassUtils.getPackageName(XxlConsumerBeanRegister.class) +
                                     ".MqBrokerXxlMqJavassistProxyMqConsumer4" + StringUtils.capitalize(topic),
-                            eventConsumerCtClass);
+                            mqConsumerCtClass);
             clazz.addInterface(pool.getCtClass(IMqConsumer.class.getName()));
             ConstPool constPool = clazz.getClassFile().getConstPool();
             String src = "public %s consume(String s) {this.accept($1); return %s.SUCCESS; }";
@@ -60,4 +60,5 @@ public class XxlConsumerBeanRegister {
             throw new RuntimeException(e);
         }
     }
+
 }

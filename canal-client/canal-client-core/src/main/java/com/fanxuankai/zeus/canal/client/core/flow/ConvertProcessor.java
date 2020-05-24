@@ -10,7 +10,6 @@ import com.fanxuankai.zeus.util.concurrent.SubmissionPublisher;
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,8 +43,7 @@ public class ConvertProcessor extends SubmissionPublisher<ContextWrapper>
         Stopwatch sw = Stopwatch.createStarted();
         ContextWrapper wrapper = new ContextWrapper(item);
         sw.stop();
-        if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
-                && !item.getMessage().getEntries().isEmpty()) {
+        if (canalProperties.isShowEventLog() && !item.getMessage().getEntries().isEmpty()) {
             log.info("{} Convert batchId: {} time: {}ms", config.getApplicationInfo().uniqueString(),
                     item.getMessage().getId(), sw.elapsed(TimeUnit.MILLISECONDS));
         }

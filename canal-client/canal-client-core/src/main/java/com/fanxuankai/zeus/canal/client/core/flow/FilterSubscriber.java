@@ -21,7 +21,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -60,7 +59,7 @@ public class FilterSubscriber extends SubmissionPublisher<ContextWrapper> implem
             Stopwatch sw = Stopwatch.createStarted();
             messageWrapper.getEntryWrapperList().forEach(this::filterEntryRowData);
             sw.stop();
-            if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)) {
+            if (canalProperties.isShowEventLog()) {
                 log.info("{} Filter batchId: {} rowDataCount: {} -> {} time: {}ms",
                         config.getApplicationInfo().uniqueString(), batchId,
                         messageWrapper.getRowDataCountBeforeFilter(),

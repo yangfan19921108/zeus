@@ -16,7 +16,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -63,19 +62,12 @@ public abstract class AbstractOtter implements Otter {
                     // 获取指定数量的数据
                     CanalConnector canalConnector = CanalConnectorHolder.get();
                     Stopwatch sw = Stopwatch.createStarted();
-                    Message message;
-                    if (canalProperties.getTimeoutMillis() == null) {
-                        message = canalConnector.getWithoutAck(canalProperties.getBatchSize());
-                    } else {
-                        message = canalConnector.getWithoutAck(canalProperties.getBatchSize(),
-                                canalProperties.getTimeoutMillis(), TimeUnit.MILLISECONDS);
-                    }
+                    Message message = canalConnector.getWithoutAck(canalProperties.getBatchSize());
                     sw.stop();
                     message.setEntries(filter(message.getEntries()));
                     long batchId = message.getId();
                     if (batchId != -1) {
-                        if (Objects.equals(canalProperties.getShowEventLog(), Boolean.TRUE)
-                                && !message.getEntries().isEmpty()) {
+                        if (canalProperties.isShowEventLog() && !message.getEntries().isEmpty()) {
                             log.info("{} Get batchId: {} time: {}ms", subscriberName, batchId,
                                     sw.elapsed(TimeUnit.MILLISECONDS));
                         }

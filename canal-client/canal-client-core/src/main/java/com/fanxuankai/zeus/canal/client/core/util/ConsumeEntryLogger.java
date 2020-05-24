@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.*;
@@ -30,12 +29,12 @@ public class ConsumeEntryLogger {
             LogRowChange logRowChange = new LogRowChange(logInfo.applicationInfo.uniqueString(), logInfo.batchId,
                     logInfo.time, entryWrapper);
             CanalProperties canalProperties = logInfo.getCanalProperties();
-            if (Objects.equals(canalProperties.getShowRowChange(), Boolean.TRUE)) {
+            if (canalProperties.isShowRowChange()) {
                 List<List<LogColumn>> list = entryWrapper.getAllRowDataList().stream()
                         .map(o -> logColumns(o, entryWrapper.getEventType()))
                         .collect(Collectors.toList());
                 log.info("{}\n{}", logRowChange.toString(), JSON.toJSONString(list,
-                        Objects.equals(canalProperties.getFormatRowChangeLog(), Boolean.TRUE)));
+                        canalProperties.isFormatRowChangeLog()));
             } else {
                 log.info("{}", logRowChange.toString());
             }

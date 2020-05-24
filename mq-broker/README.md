@@ -2,10 +2,7 @@
 消息队列可靠性增强，消息一定发送成功且只发送一次，消息一定接收成功且只消费一次。
 
 ### 原理
-![](http://processon.com/chart_image/5ec55550f346fb6907090118.png?_=1590034254430)
-
-### 处理流程
-![](http://processon.com/chart_image/5ec29045e401fd16f4445959.png?_=1590034271735)
+![](http://processon.com/chart_image/5ec55550f346fb6907090118.png)
 
 ### 发送端的可靠性
 本地创建发送消息表并具有唯一编号，利用本地事务机制持久化，待事务提交成功，将未发送的消息发送至消息队列，失败则重试到一定次数，成功则修改状态为已发送或者删除。
@@ -17,23 +14,48 @@
 - XXL-MQ
 
 ### Getting started
-- 创建消息表
+- 建表
 ```
-CREATE TABLE `mq_broker_message` (
-  `id` bigint(12) NOT NULL COMMENT '主键',
-  `type` int(1) DEFAULT NULL COMMENT '类型 1:发送 2:接收',
-  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '队列名',
-  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '代码',
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '内容',
-  `status` int(1) DEFAULT NULL COMMENT '状态 0:已创建 1:正在发送 2:发送成功 3:发送失败',
+drop table if exists `mq_broker_lock`;
+drop table if exists `mq_broker_msg_send`;
+drop table if exists `mq_broker_msg_receive`;
+CREATE TABLE `mq_broker_msg_send` (
+  `id` bigint(12) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '队列名',
+  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '代码',
+  `data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '内容',
+  `status` int(1) NOT NULL COMMENT '状态 0:已创建 1:运行中 2:成功 3:失败',
   `host_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '主机地址',
-  `retry` int(1) DEFAULT '0' COMMENT '重试次数',
-  `error` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '失败原因',
-  `create_date` datetime DEFAULT NULL COMMENT '创建日期',
-  `last_modified_date` datetime DEFAULT NULL COMMENT '修改日期',
+  `retry` int(1) NOT NULL DEFAULT '0' COMMENT '重试次数',
+  `cause` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '失败原因',
+  `create_date` datetime NOT NULL COMMENT '创建日期',
+  `last_modified_date` datetime NOT NULL COMMENT '修改日期',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_message_type_queue_code` (`type`,`queue`,`code`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+  UNIQUE KEY `uk_topic_code` (`topic`,`code`) USING BTREE
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='发送消息表';
+
+CREATE TABLE `mq_broker_msg_receive` (
+  `id` bigint(12) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '队列名',
+  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '代码',
+  `data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '内容',
+  `status` int(1) NOT NULL COMMENT '状态 0:已创建 1:运行中 2:成功 3:失败',
+  `host_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '主机地址',
+  `retry` int(1) NOT NULL DEFAULT '0' COMMENT '重试次数',
+  `cause` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '失败原因',
+  `create_date` datetime NOT NULL COMMENT '创建日期',
+  `last_modified_date` datetime NOT NULL COMMENT '修改日期',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_topic_code` (`topic`,`code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='接收消息表';
+
+CREATE TABLE `mq_broker_lock` (
+  `id` bigint(12) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `resource` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '资源',
+  `create_date` datetime NOT NULL COMMENT '创建日期',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_resource` (`resource`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='分布式锁';
 ```
 - 添加 maven 依赖, 选择一种消息队列
 ```
@@ -65,31 +87,40 @@ public class UserEventListener implements EventListener {
 }
 ```
 - Usage
-    - 依赖注入 
-    ```
-      @Resource
-      private EventPublisher eventPublisher;
-    ```
-    - 使用
-    ```
-      eventPublisher.publish(IntStream.range(0, 10000)
-          .mapToObj(value -> new Event("user", UUID.randomUUID().toString(), jsonString))
-          .collect(Collectors.toList()));
-    ```
+```
+@Resource
+private EventPublisher eventPublisher;
 
+eventPublisher.publish(IntStream.range(0, 100)
+                .mapToObj(value -> new Event()
+                        .setName("user")
+                        .setKey(UUID.randomUUID().toString())
+                        .setData("fanxuankai"))
+                .collect(Collectors.toList()));
+```
 ### 参数配置
 ```
 ## application.yml
 zeus:
   mq-broker:
     # 最大重试次数
-    #max-retry: 6
-    # 工作线程睡眠时间 ms
+    #max-retry: 3
+    # 拉取数据的间隔 ms
     #interval-millis: 1000
-    # 抓取数据的数量
-    #batch-count: 100
-    # 事件监听策略
-    #event-listener-strategy:
-      # key: 消息队列 value: EventListenerStrategy
+    # 拉取发送消息的数量
+    #msg-send-pull-data-count: 1000
+    # 拉取接收消息的数量
+    #msg-receive-pull-data-count: 500
+    # 拉取发送消息分布式锁超时时间 ms
+    #msg-send-lock-timeout: 30000
+    # 拉取接收消息分布式锁超时时间 ms
+    #msg-receive-lock-timeout: 60000
+    # 发布回调超时
+    #publisher-callback-timeout: 20000
+    # 发布回调超时处理分布式锁超时时间 ms
+    #publisher-callback-lock-timeout: 300000
+    # 事件策略
+    #event-strategy:
+      # key: 消息队列 value: EventStrategy
       #user: DEFAULT
 ```

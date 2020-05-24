@@ -16,7 +16,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -61,7 +60,7 @@ public class CanalWorker implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         key = RedisUtils.customKey(RedisKeyPrefix.SERVICE_CACHE,
                 config.getApplicationInfo().uniqueString() + CommonConstants.SEPARATOR + RedisConstants.CANAL_RUNNING_TAG);
-        if (Objects.equals(canalProperties.getRetryStart(), Boolean.TRUE)) {
+        if (canalProperties.isRetryStart()) {
             scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
                 if (retryStart()) {
                     scheduledFuture.cancel(true);

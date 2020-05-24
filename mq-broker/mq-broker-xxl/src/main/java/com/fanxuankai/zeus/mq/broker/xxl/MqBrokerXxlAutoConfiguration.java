@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.mq.broker.xxl;
 
-import com.fanxuankai.zeus.mq.broker.core.MessageSendConsumer;
+import com.fanxuankai.zeus.mq.broker.core.produce.MqProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -12,9 +12,8 @@ import org.springframework.context.annotation.Import;
 public class MqBrokerXxlAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(MessageSendConsumer.class)
-    public MessageSendConsumer messageSendConsumer() {
-        return new XxlMessageSendConsumer();
+    @ConditionalOnMissingBean(MqProducer.class)
+    public XxlMqProducer mqProducer() {
+        return new XxlMqProducer();
     }
-
 }
