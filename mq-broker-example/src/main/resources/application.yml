@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: mq-broker-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/canal_client_example?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: HzB!OPxxE$5CwJIZ
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 5000
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+  rabbitmq:
+    publisher-confirms: true
+    publisher-returns: true
+    username: guest
+    password: guest
+    host: localhost
+    port: 5672
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          max-interval: 5000
+        default-requeue-rejected: false

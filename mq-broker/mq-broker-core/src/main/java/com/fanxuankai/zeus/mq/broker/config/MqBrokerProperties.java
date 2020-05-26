@@ -52,4 +52,8 @@ public class MqBrokerProperties {
      * key: 事件名 value: EventStrategy
      */
     private Map<String, EventStrategy> eventStrategy = Collections.emptyMap();
+    /**
+     * 数据库方言
+     */
+    private String dialectType = "mysql";
 }

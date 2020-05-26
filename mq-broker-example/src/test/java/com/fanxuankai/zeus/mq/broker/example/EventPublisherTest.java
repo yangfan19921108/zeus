@@ -1,4 +1,4 @@
-package com.fanxuankai.zeus.canal.example;
+package com.fanxuankai.zeus.mq.broker.example;
 
 import com.fanxuankai.zeus.mq.broker.core.Event;
 import com.fanxuankai.zeus.mq.broker.core.produce.EventPublisher;
@@ -21,9 +21,9 @@ public class EventPublisherTest {
 
     @Test
     public void publish() {
-        IntStream.range(0, 10)
+        IntStream.range(0, 3)
                 .mapToObj(value -> "user" + value)
-                .forEach(s -> eventPublisher.publish(IntStream.range(0, 10000)
+                .forEach(s -> eventPublisher.publish(IntStream.range(0, 100)
                         .mapToObj(value -> new Event()
                                 .setName(s)
                                 .setKey(UUID.randomUUID().toString())

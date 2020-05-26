@@ -19,6 +19,7 @@
         <module>canal-client-example</module>
         <module>spring-cloud</module>
         <module>mq-broker</module>
+        <module>mq-broker-example</module>
     </modules>
     <properties>
         <java.version>1.8</java.version>

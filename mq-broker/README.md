@@ -123,4 +123,6 @@ zeus:
     #event-strategy:
       # key: 消息队列 value: EventStrategy
       #user: DEFAULT
+    # 数据库方言
+    #dialect-type: mysql
 ```

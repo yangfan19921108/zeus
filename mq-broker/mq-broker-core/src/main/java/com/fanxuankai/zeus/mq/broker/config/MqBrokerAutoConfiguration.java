@@ -21,9 +21,9 @@ public class MqBrokerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public PaginationInterceptor paginationInterceptor() {
+    public PaginationInterceptor paginationInterceptor(MqBrokerProperties mqBrokerProperties) {
         PaginationInterceptor page = new PaginationInterceptor();
-        page.setDialectType("mysql");
+        page.setDialectType(mqBrokerProperties.getDialectType());
         return page;
     }
 
