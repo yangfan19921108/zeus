@@ -1,6 +1,7 @@
 package com.fanxuankai.zeus.mq.broker.core.consume;
 
 import com.fanxuankai.zeus.mq.broker.core.Event;
+import com.fanxuankai.zeus.mq.broker.core.EventRegistry;
 import com.fanxuankai.zeus.mq.broker.domain.MsgReceive;
 import com.fanxuankai.zeus.mq.broker.service.MsgReceiveService;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +17,11 @@ import java.util.function.Consumer;
 public abstract class AbstractEventDistributor implements EventDistributor, Consumer<MsgReceive> {
 
     @Resource
-    private EventListenerFactory eventListenerFactory;
-    @Resource
     private MsgReceiveService msgReceiveService;
 
     @Override
     public void distribute(Event event) {
-        List<EventListener> eventListeners = eventListenerFactory.get(event.getName());
+        List<EventListener> eventListeners = EventRegistry.getListeners(event.getName());
         if (CollectionUtils.isEmpty(eventListeners)) {
             return;
         }

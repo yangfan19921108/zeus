@@ -2,13 +2,16 @@ package com.fanxuankai.zeus.mq.broker.rabbit;
 
 import com.alibaba.fastjson.JSON;
 import com.fanxuankai.zeus.mq.broker.core.Event;
+import com.fanxuankai.zeus.mq.broker.core.EventRegistry;
 import com.fanxuankai.zeus.mq.broker.core.consume.AbstractMqConsumer;
-import com.fanxuankai.zeus.mq.broker.core.consume.EventListenerFactory;
 import com.fanxuankai.zeus.mq.broker.core.consume.MqConsumer;
 import com.fanxuankai.zeus.mq.broker.core.produce.AbstractMqProducer;
 import com.fanxuankai.zeus.mq.broker.core.produce.MqProducer;
 import com.fanxuankai.zeus.mq.broker.service.MsgSendService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,17 +23,16 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
  * @author fanxuankai
  */
 @Slf4j
-@Import({MqBrokerRabbitAutoConfigurationImportRegistrar.class})
 public class MqBrokerRabbitAutoConfiguration {
 
     @Bean
@@ -41,14 +43,26 @@ public class MqBrokerRabbitAutoConfiguration {
     @Bean
     public MessageListenerContainer simpleMessageQueueLister(ConnectionFactory connectionFactory,
                                                              AbstractMqConsumer<Event> mqConsumer,
-                                                             ThreadPoolExecutor threadPoolExecutor) {
+                                                             AmqpAdmin amqpAdmin) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
         // 监听的队列
-        EventListenerFactory.getListeners().forEach(listener -> container.addQueueNames(listener.event()));
+        List<Queue> queues = EventRegistry.allEvent()
+                .stream()
+                .map(event -> new Queue(event, true))
+                .collect(Collectors.toList());
+        queues.forEach(queue -> {
+            amqpAdmin.declareQueue(queue);
+            container.addQueues(queue);
+        });
         // 是否重回队列
         container.setDefaultRequeueRejected(false);
-        container.setMessageListener((ChannelAwareMessageListener) (message, channel) ->
-                mqConsumer.accept(JSON.parseObject(new String(message.getBody()), Event.class)));
+        // 手动签收
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        container.setErrorHandler(throwable -> log.error("消费异常", throwable));
+        container.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
+            mqConsumer.accept(JSON.parseObject(new String(message.getBody()), Event.class));
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        });
         return container;
     }
 

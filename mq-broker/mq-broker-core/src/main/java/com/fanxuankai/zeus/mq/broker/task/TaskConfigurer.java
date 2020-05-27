@@ -1,8 +1,7 @@
 package com.fanxuankai.zeus.mq.broker.task;
 
 import com.fanxuankai.zeus.mq.broker.config.MqBrokerProperties;
-import com.fanxuankai.zeus.mq.broker.constants.LockResourceConstants;
-import com.fanxuankai.zeus.mq.broker.service.LockService;
+import com.fanxuankai.zeus.mq.broker.service.MsgReceiveService;
 import com.fanxuankai.zeus.mq.broker.service.MsgSendService;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -23,9 +22,9 @@ public class TaskConfigurer implements SchedulingConfigurer {
     @Resource
     private MqBrokerProperties mqBrokerProperties;
     @Resource
-    private LockService lockService;
-    @Resource
     private MsgSendService msgSendService;
+    @Resource
+    private MsgReceiveService msgReceiveService;
     @Resource
     private MsgSendTask msgSendTask;
     @Resource
@@ -39,23 +38,11 @@ public class TaskConfigurer implements SchedulingConfigurer {
         scheduledTaskRegistrar.addTriggerTask(msgReceiveTask, triggerContext ->
                 new PeriodicTrigger(mqBrokerProperties.getIntervalMillis(), TimeUnit.MILLISECONDS)
                         .nextExecutionTime(triggerContext));
-        scheduledTaskRegistrar.addTriggerTask(() -> lockService.clear(LockResourceConstants.MSG_SEND_TASK,
-                mqBrokerProperties.getMsgSendLockTimeout()),
-                triggerContext -> new PeriodicTrigger(mqBrokerProperties.getMsgSendLockTimeout(), TimeUnit.MILLISECONDS)
-                        .nextExecutionTime(triggerContext));
-        scheduledTaskRegistrar.addTriggerTask(() -> lockService.clear(LockResourceConstants.MSG_RECEIVE_TASK,
-                mqBrokerProperties.getMsgReceiveLockTimeout()),
-                triggerContext -> new PeriodicTrigger(mqBrokerProperties.getMsgReceiveLockTimeout(),
-                        TimeUnit.MILLISECONDS).nextExecutionTime(triggerContext));
         scheduledTaskRegistrar.addTriggerTask(() -> msgSendService.publisherCallbackTimeout(),
                 triggerContext -> new PeriodicTrigger(mqBrokerProperties.getPublisherCallbackTimeout(),
-                        TimeUnit.MILLISECONDS)
-                        .nextExecutionTime(triggerContext));
-        scheduledTaskRegistrar.addTriggerTask(() ->
-                        lockService.clear(LockResourceConstants.PUBLISHER_CALLBACK_TIMEOUT,
-                                mqBrokerProperties.getPublisherCallbackTimeout()),
-                triggerContext -> new PeriodicTrigger(mqBrokerProperties.getPublisherCallbackLockTimeout(),
-                        TimeUnit.MILLISECONDS)
-                        .nextExecutionTime(triggerContext));
+                        TimeUnit.MILLISECONDS).nextExecutionTime(triggerContext));
+        scheduledTaskRegistrar.addTriggerTask(() -> msgReceiveService.consumeTimeout(),
+                triggerContext -> new PeriodicTrigger(mqBrokerProperties.getConsumeTimeout(),
+                        TimeUnit.MILLISECONDS).nextExecutionTime(triggerContext));
     }
 }

@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.mq.broker.xxl;
 
-import com.fanxuankai.zeus.mq.broker.core.consume.EventListenerFactory;
+import com.fanxuankai.zeus.mq.broker.core.EventRegistry;
 import com.xxl.mq.client.consumer.IMqConsumer;
 import com.xxl.mq.client.consumer.MqResult;
 import com.xxl.mq.client.consumer.annotation.MqConsumer;
@@ -25,9 +25,9 @@ import org.springframework.util.StringUtils;
 public class XxlConsumerBeanRegister {
 
     public static void registry(BeanDefinitionRegistry registry) {
-        EventListenerFactory.getListeners()
+        EventRegistry.allEvent()
                 .stream()
-                .map(o -> newProxyClass(o.event()))
+                .map(XxlConsumerBeanRegister::newProxyClass)
                 .map(proxyClass -> {
                     BeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(proxyClass);
                     return new BeanDefinitionHolder(beanDefinition, proxyClass.getName());

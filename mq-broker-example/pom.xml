@@ -22,9 +22,8 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fanxuankai.zeus</groupId>
-            <artifactId>common-data-jpa</artifactId>
-            <version>${project.version}</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
     </dependencies>
 

@@ -48,14 +48,6 @@ CREATE TABLE `mq_broker_msg_receive` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_topic_code` (`topic`,`code`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='接收消息表';
-
-CREATE TABLE `mq_broker_lock` (
-  `id` bigint(12) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `resource` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '资源',
-  `create_date` datetime NOT NULL COMMENT '创建日期',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_resource` (`resource`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='分布式锁';
 ```
 - 添加 maven 依赖, 选择一种消息队列
 ```
@@ -103,22 +95,20 @@ eventPublisher.publish(IntStream.range(0, 100)
 ## application.yml
 zeus:
   mq-broker:
+    # 最大并发数
+    #max-concurrent:
+    # 拉取消息的数量
+    #msg-size: 1000
+    # 事件注册, 如果有 EventListener 则不需要, 会自动注册事件
+    #events: event0,event1,event2
     # 最大重试次数
     #max-retry: 3
     # 拉取数据的间隔 ms
     #interval-millis: 1000
-    # 拉取发送消息的数量
-    #msg-send-pull-data-count: 1000
-    # 拉取接收消息的数量
-    #msg-receive-pull-data-count: 500
-    # 拉取发送消息分布式锁超时时间 ms
-    #msg-send-lock-timeout: 30000
-    # 拉取接收消息分布式锁超时时间 ms
-    #msg-receive-lock-timeout: 60000
     # 发布回调超时
     #publisher-callback-timeout: 20000
-    # 发布回调超时处理分布式锁超时时间 ms
-    #publisher-callback-lock-timeout: 300000
+    # 消费超时
+    #consume-timeout: 20000
     # 事件策略
     #event-strategy:
       # key: 消息队列 value: EventStrategy

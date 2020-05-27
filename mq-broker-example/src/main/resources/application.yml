@@ -32,4 +32,12 @@ spring:
           enabled: true
           max-attempts: 3
           max-interval: 5000
-        default-requeue-rejected: false
+#mybatis-plus配置控制台打印完整带参数SQL语句
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+zeus:
+  mq-broker:
+    events: user0,user1,user2
+    msg-size: 10000

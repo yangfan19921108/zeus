@@ -18,6 +18,14 @@ public interface MsgSendService extends IService<MsgSend> {
     List<MsgSend> pullData();
 
     /**
+     * 锁定消息
+     *
+     * @param id 消息id
+     * @return 是否成功
+     */
+    boolean lock(Long id);
+
+    /**
      * 回调超时
      */
     void publisherCallbackTimeout();

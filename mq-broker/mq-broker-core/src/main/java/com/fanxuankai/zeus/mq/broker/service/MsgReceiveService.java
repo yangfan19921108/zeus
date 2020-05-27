@@ -18,6 +18,19 @@ public interface MsgReceiveService extends IService<MsgReceive> {
     List<MsgReceive> pullData();
 
     /**
+     * 锁定消息
+     *
+     * @param id 消息id
+     * @return 是否成功
+     */
+    boolean lock(Long id);
+
+    /**
+     * 消费超时
+     */
+    void consumeTimeout();
+
+    /**
      * 成功
      *
      * @param msg 消息

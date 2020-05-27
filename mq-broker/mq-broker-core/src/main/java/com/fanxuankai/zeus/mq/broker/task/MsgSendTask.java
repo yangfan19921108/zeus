@@ -1,22 +1,18 @@
 package com.fanxuankai.zeus.mq.broker.task;
 
+import com.fanxuankai.zeus.mq.broker.config.MqBrokerProperties;
 import com.fanxuankai.zeus.mq.broker.core.produce.MqProducer;
 import com.fanxuankai.zeus.mq.broker.domain.MsgSend;
-import com.fanxuankai.zeus.mq.broker.service.LockService;
 import com.fanxuankai.zeus.mq.broker.service.MsgSendService;
 import com.fanxuankai.zeus.util.ThrowableUtils;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import static com.fanxuankai.zeus.mq.broker.constants.LockResourceConstants.MSG_SEND_TASK;
 
 /**
  * @author fanxuankai
@@ -28,47 +24,45 @@ public class MsgSendTask implements Runnable {
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
     @Resource
-    private LockService lockService;
-    @Resource
     private MsgSendService msgSendService;
     @Resource
     private MqProducer<MsgSend> mqProducer;
+    @Resource
+    private MqBrokerProperties mqBrokerProperties;
 
     @Override
     public void run() {
-        if (!lockService.lock(MSG_SEND_TASK)) {
-            return;
-        }
-        try {
-            List<MsgSend> data = msgSendService.pullData();
-            if (data.isEmpty()) {
+        while (true) {
+            List<MsgSend> records = msgSendService.pullData();
+            if (records.isEmpty()) {
                 return;
             }
-            Map<String, List<MsgSend>> grouped = new LinkedHashMap<>();
-            for (MsgSend msg : data) {
-                grouped.computeIfAbsent(msg.getTopic(), s -> new ArrayList<>()).add(msg);
-            }
-            CountDownLatch countDownLatch = new CountDownLatch(grouped.size());
-            for (Map.Entry<String, List<MsgSend>> entry : grouped.entrySet()) {
-                List<MsgSend> msgList = entry.getValue();
-                threadPoolExecutor.execute(() -> {
-                    for (MsgSend msg : msgList) {
+            int size = records.size() / mqBrokerProperties.getMaxConcurrent();
+            size = size == 0 ? records.size() : size;
+            List<List<MsgSend>> partition = Lists.partition(records, size);
+            CountDownLatch countDownLatch = new CountDownLatch(partition.size());
+            partition.forEach(list -> threadPoolExecutor.execute(() -> {
+                try {
+                    for (MsgSend msg : list) {
+                        if (!msgSendService.lock(msg.getId())) {
+                            continue;
+                        }
                         try {
                             mqProducer.produce(msg);
                         } catch (Exception e) {
                             log.error("produce error", e);
                             msgSendService.failure(msg, ThrowableUtils.getStackTrace(e));
-                            break;
                         }
                     }
+                } finally {
                     countDownLatch.countDown();
-                });
+                }
+            }));
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                log.error("计数器被中断", e);
             }
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            log.error("消息处理被中断", e);
-        } finally {
-            lockService.release(MSG_SEND_TASK);
         }
     }
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 /**
  * @author fanxuankai
  */
-@Service
 @Slf4j
+@Service
 @Listener(event = "user1")
 public class User1EventListener implements EventListener {
 

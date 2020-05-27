@@ -12,7 +12,8 @@ public class XxlMqProducer extends AbstractMqProducer {
 
     @Override
     public void accept(Event event) {
-        com.xxl.mq.client.producer.XxlMqProducer.produce(new XxlMqMessage(event.getName(), JSON.toJSONString(event)));
+        com.xxl.mq.client.producer.XxlMqProducer.produce(new XxlMqMessage(event.getName(),
+                JSON.toJSONString(event)));
     }
 
     @Override
