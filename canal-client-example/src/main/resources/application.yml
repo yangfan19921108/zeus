@@ -22,8 +22,8 @@ spring:
         order_updates: true
     show-sql: false
   rabbitmq:
-    publisher-confirms: true
-    publisher-returns: true
+    #    publisher-confirms: true
+    #    publisher-returns: true
     username: guest
     password: guest
     host: localhost
@@ -39,12 +39,16 @@ spring:
     elasticsearch:
       cluster-nodes: 127.0.0.1:9300
 zeus:
+  mq-broker:
+    msg-size: 10000
   canal:
     application-name: canal-client-service
     show-event-log: true
     redis:
       instance: canal_client_example_redis
-    rabbit:
-      instance: canal_client_example_rabbit
+      enabled: false
+    mq:
+      instance: canal_client_example_mq
     es:
       instance: canal_client_example_es
+      enabled: false

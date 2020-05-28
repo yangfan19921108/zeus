@@ -26,7 +26,7 @@ public class CanalTableMetadata {
         if (StringUtils.isBlank(schema)) {
             schema = optionalTableAttributes.map(TableAttributes::getSchema).orElse("");
             if (StringUtils.isBlank(schema)) {
-                schema = EnableCanalAttributes.getSchema();
+                schema = DefaultSchemaAttributes.getSchema();
                 if (StringUtils.isBlank(schema)) {
                     throw new RuntimeException(String.format("无法找到 %s 所对应的数据库名", domainType.getName()));
                 }

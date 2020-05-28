@@ -21,9 +21,8 @@
 - JDK 8
 - Redis
 
-### 核心注解
-@EnableCanal
-- 在 spring boot 启动类使用, 表示激活 Canal 消费
+### 注解
+@DefaultSchema
 - schema 默认数据库名
 
 ### 配置文件
@@ -69,14 +68,13 @@ zeus:
       # 对应的 Canal 实例名
       instance: redis-example
       #enabled: true
-    rabbit:
-      instance: rabbit-example
+    mq:
+      instance: mq-example
       # MQ 跳过处理, 适用场景: Redis 全量同步时, MQ 跳过
       #skip: false
       #enabled: true
-    xxl:
-      instance: xxl-example
-      #skip: false
+    es:
+      instance: es-example
       #enabled: true
 ```
 
@@ -96,7 +94,7 @@ zeus:
     <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
-- SpringBoot 启动类标注 @EnableCanal
+- SpringBoot 启动类标注 @DefaultSchema（可选）
 - 创建 XXXRedisRepository 接口, 继承 RedisRepository<XXX>
 - 使用 @CanalToRedis 注解指定消费 (可选)
 
@@ -110,7 +108,7 @@ zeus:
     <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
-- SpringBoot 启动类标注 @EnableCanal
+- SpringBoot 启动类标注 @DefaultSchema（可选）
 - 创建 MqConsumer<XXX> 的实现类, 并作为 Spring Bean
 - 使用 @CanalToMq 注解指定消费 (可选)
 
@@ -124,7 +122,7 @@ zeus:
     <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
-- SpringBoot 启动类标注 @EnableCanal
+- SpringBoot 启动类标注 @DefaultSchema（可选）
 - 创建 MqConsumer<XXX> 的实现类, 并作为 Spring Bean
 - 使用 @CanalToMq 注解指定消费 (可选)
 

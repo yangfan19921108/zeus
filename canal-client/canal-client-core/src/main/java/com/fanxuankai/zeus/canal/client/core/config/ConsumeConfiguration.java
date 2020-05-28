@@ -1,7 +1,7 @@
 package com.fanxuankai.zeus.canal.client.core.config;
 
 import com.fanxuankai.zeus.canal.client.core.metadata.CanalTableMetadata;
-import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
+import com.fanxuankai.zeus.canal.client.core.metadata.DefaultSchemaAttributes;
 import com.fanxuankai.zeus.canal.client.core.util.CommonUtils;
 import com.fanxuankai.zeus.canal.client.core.wrapper.EntryWrapper;
 import com.google.common.base.Stopwatch;
@@ -67,7 +67,7 @@ public class ConsumeConfiguration<A extends Annotation, M> {
     public ConsumeConfiguration(@NonNull Class<A> annotationClass, @Nullable Function<A, M> metadataFunction) {
         Reflections r =
                 new Reflections(new ConfigurationBuilder()
-                        .forPackages(EnableCanalAttributes.getBasePackage())
+                        .forPackages(DefaultSchemaAttributes.getBasePackage())
                         .setScanners(new TypeAnnotationsScanner(), new FieldAnnotationsScanner(),
                                 new MethodAnnotationsScanner())
                 );

@@ -1,6 +1,6 @@
 package com.fanxuankai.zeus.canal.client.core.util;
 
-import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
+import com.fanxuankai.zeus.canal.client.core.metadata.DefaultSchemaAttributes;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -48,7 +48,7 @@ public class InterfaceBeanScanner<I> {
                                 int domainClassIndex) {
         Reflections r =
                 new Reflections(new ConfigurationBuilder()
-                        .forPackages(EnableCanalAttributes.getBasePackage())
+                        .forPackages(DefaultSchemaAttributes.getBasePackage())
                         .setScanners(new SubTypesScanner())
                 );
         Stopwatch sw = Stopwatch.createStarted();

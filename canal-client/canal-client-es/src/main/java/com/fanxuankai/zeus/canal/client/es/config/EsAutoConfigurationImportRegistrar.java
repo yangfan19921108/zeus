@@ -1,6 +1,5 @@
 package com.fanxuankai.zeus.canal.client.es.config;
 
-import com.fanxuankai.zeus.canal.client.core.metadata.EnableCanalAttributes;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -17,8 +16,7 @@ public class EsAutoConfigurationImportRegistrar implements ImportBeanDefinitionR
     public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
                                         @NonNull BeanDefinitionRegistry registry) {
         System.setProperty("es.set.netty.runtime.available.processors", "false");
-        if (EnableCanalAttributes.isEnabled()
-                && !StringUtils.isBlank(CanalToEsScanner.CONSUME_CONFIGURATION.getFilter())) {
+        if (!StringUtils.isBlank(CanalToEsScanner.CONSUME_CONFIGURATION.getFilter())) {
             registry.registerBeanDefinition(CanalWorkerAutoConfiguration.class.getName(),
                     new RootBeanDefinition(CanalWorkerAutoConfiguration.class));
         }

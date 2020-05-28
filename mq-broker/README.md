@@ -16,7 +16,6 @@
 ### Getting started
 - 建表
 ```
-drop table if exists `mq_broker_lock`;
 drop table if exists `mq_broker_msg_send`;
 drop table if exists `mq_broker_msg_receive`;
 CREATE TABLE `mq_broker_msg_send` (
@@ -99,7 +98,7 @@ zeus:
     #max-concurrent:
     # 拉取消息的数量
     #msg-size: 1000
-    # 事件注册, 如果有 EventListener 则不需要, 会自动注册事件
+    # 事件注册, 若只发布事件则需要注册事件
     #events: event0,event1,event2
     # 最大重试次数
     #max-retry: 3

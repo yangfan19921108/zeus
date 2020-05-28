@@ -17,6 +17,6 @@ public class UserRepositoryTest {
 
     @Test
     public void batchSave() {
-        userRepository.batchSave(MockUtils.mock(0, 100000, User.class));
+        userRepository.batchSave(MockUtils.mock(0, 10000, User.class));
     }
 }
