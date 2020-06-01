@@ -14,7 +14,7 @@ CREATE TABLE `sys_dict_type` (
   `last_modified_date` datetime DEFAULT NULL COMMENT '修改日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='字典类型表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='字典类型表';
 
 CREATE TABLE `sys_dict` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -28,7 +28,7 @@ CREATE TABLE `sys_dict` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_type_code` (`type_id`,`code`),
   UNIQUE KEY `uk_type_en_name` (`type_id`,`english_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='字典表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='字典表';
 ```
 - 添加依赖
 ```
