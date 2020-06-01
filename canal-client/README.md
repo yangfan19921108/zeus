@@ -80,8 +80,7 @@ zeus:
 
 ### 使用指南
 - maven 添加相关 canal-client 依赖
-- SpringBoot 启动类标注 @EnableCanal
-- 依赖多个 canal-client, @EnableCanal 只需要一次注解
+- SpringBoot 启动类标注 @DefaultSchema 指定默认数据库
 - 数据库对应的实体类使用 @CanalTable 指定数据库和表名等信息
 
 #### Redis 快速使用
@@ -98,13 +97,25 @@ zeus:
 - 创建 XXXRedisRepository 接口, 继承 RedisRepository<XXX>
 - 使用 @CanalToRedis 注解指定消费 (可选)
 
-#### RabbitMQ 快速使用
+#### RabbitMQ/XXL-MQ 快速使用
 - pom.xml 添加以下配置
 ```
+<dependency>
+    <groupId>com.fanxuankai.zeus</groupId>
+    <artifactId>canal-client-mq</artifactId>
+    <version>${com.fanxuankai.zeus.version}</version>
+</dependency>
+<!-- 以下消息队列选择一种即可 -->
 <!-- RabbitMQ -->
 <dependency>
     <groupId>com.fanxuankai.zeus</groupId>
-    <artifactId>canal-client-rabbit</artifactId>
+    <artifactId>mq-broker-rabbit</artifactId>
+    <version>${com.fanxuankai.zeus.version}</version>
+</dependency>
+<!-- XXL-MQ -->
+<dependency>
+    <groupId>com.fanxuankai.zeus</groupId>
+    <artifactId>mq-broker-xxl</artifactId>
     <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
@@ -112,19 +123,18 @@ zeus:
 - 创建 MqConsumer<XXX> 的实现类, 并作为 Spring Bean
 - 使用 @CanalToMq 注解指定消费 (可选)
 
-#### XxlMQ 快速使用
+#### Elasticsearch 快速使用
 - pom.xml 添加以下配置
 ```
-<!-- XxlMQ -->
+<!-- Elasticsearch -->
 <dependency>
     <groupId>com.fanxuankai.zeus</groupId>
-    <artifactId>canal-client-xxl</artifactId>
+    <artifactId>canal-client-es</artifactId>
     <version>${com.fanxuankai.zeus.version}</version>
 </dependency>
 ```
 - SpringBoot 启动类标注 @DefaultSchema（可选）
-- 创建 MqConsumer<XXX> 的实现类, 并作为 Spring Bean
-- 使用 @CanalToMq 注解指定消费 (可选)
+- 使用 @CanalToEs 注解指定消费 (可选)
 
 ### 常见问题
 - Canal.ServiceCache.admin-service.Redis.CanalRunning Canal 已存在?

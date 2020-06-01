@@ -8,7 +8,7 @@ import org.springframework.util.ClassUtils;
 import java.util.Map;
 
 /**
- * EnableCanal 注解属性工具类
+ * DefaultSchema 注解属性工具类
  *
  * @author fanxuankai
  */
