@@ -1,4 +1,4 @@
-## 简介
+### 简介
 一个轻量级、可扩展、个性化、非侵入式的 Canal Client;
 
 与 Spring Boot 无缝对接, application 配置修改无需重启服务;
