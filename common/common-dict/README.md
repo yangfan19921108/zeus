@@ -7,24 +7,24 @@
 drop table if exists `sys_dict_type`;
 drop table if exists `sys_dict`;
 CREATE TABLE `sys_dict_type` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `create_date` datetime DEFAULT NULL,
-  `last_modified_date` datetime DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '名称',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '描述',
+  `create_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `last_modified_date` datetime DEFAULT NULL COMMENT '修改日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='字典类型表';
 
 CREATE TABLE `sys_dict` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `type_id` int(11) DEFAULT NULL,
-  `code` tinyint(4) DEFAULT NULL,
-  `english_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
-  `chinese_name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `sort` int(11) DEFAULT NULL,
-  `create_date` datetime DEFAULT NULL,
-  `last_modified_date` datetime DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `type_id` int(11) DEFAULT NULL COMMENT '类型id',
+  `code` tinyint(4) DEFAULT NULL COMMENT '代码',
+  `english_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '英文名称',
+  `chinese_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '中文名称',
+  `sort` int(11) DEFAULT NULL COMMENT '排序',
+  `create_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `last_modified_date` datetime DEFAULT NULL COMMENT '修改日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_type_code` (`type_id`,`code`),
   UNIQUE KEY `uk_type_en_name` (`type_id`,`english_name`) USING BTREE
