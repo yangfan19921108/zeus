@@ -16,8 +16,8 @@
     <modules>
         <module>common</module>
         <module>canal-client</module>
-        <module>spring-cloud</module>
         <module>mq-broker</module>
+        <module>spring-cloud</module>
         <module>example</module>
     </modules>
     <properties>

@@ -56,24 +56,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <configuration>
-                    <skipLocalStaging>true</skipLocalStaging>
-                    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-                    <skipRemoteStaging>true</skipRemoteStaging>
-                    <skipStaging>true</skipStaging>
-                    <skipStagingRepositoryClose>true</skipStagingRepositoryClose>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
