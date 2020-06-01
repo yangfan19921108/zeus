@@ -1,51 +1,31 @@
-package com.fanxuankai.zeus.mq.broker.core;
+package com.fanxuankai.zeus.common.dict.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
 /**
- * 消息
- *
  * @author fanxuankai
  */
 @Data
-public class Msg {
+@Accessors(chain = true)
+public class SysDictType {
     /**
      * 主键
      */
     @TableId(type = IdType.AUTO)
     private Long id;
     /**
-     * 主题
+     * 类型名
      */
-    private String topic;
+    private String name;
     /**
-     * code
+     * 类型描述
      */
-    private String code;
-    /**
-     * 内容
-     */
-    private String data;
-    /**
-     * 状态
-     */
-    private Integer status;
-    /**
-     * 主机地址
-     */
-    private String hostAddress;
-    /**
-     * 重试
-     */
-    private Integer retry;
-    /**
-     * 失败原因
-     */
-    private String cause;
+    private String description;
     /**
      * 创建日期
      */

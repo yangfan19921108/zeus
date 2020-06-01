@@ -19,6 +19,7 @@
         <module>common-aop-util</module>
         <module>common-xxl-job</module>
         <module>common-id</module>
+        <module>common-dict</module>
     </modules>
 
 </project>
