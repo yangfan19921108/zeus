@@ -75,7 +75,7 @@ dictGenerator.generate(new GenerateModel()
                 .setClassName("com.fanxuankai.zeus.common.dict.example.Dict"));
 ```
 
-### 字典类
+- 字典类
 ```
 package com.fanxuankai.zeus.common.dict.example;
 
@@ -173,7 +173,7 @@ public class Dict {
 }
 ```
 
-### 字典使用
+- 字典使用
 ```
 // 查找是否删除
 Dict.lookup(Deleted.class, 0).ifPresent(System.out::println);
