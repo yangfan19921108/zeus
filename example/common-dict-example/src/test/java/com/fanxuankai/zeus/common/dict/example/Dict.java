@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 字典枚举
+ * 字典
  *
  * @author fanxuankai
  */
